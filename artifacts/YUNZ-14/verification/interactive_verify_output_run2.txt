@@ -1,0 +1,43 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+interactive server port = 58235
+server ready = yes
+PASS T0 真实 app.py 服务就绪（交互级测试前置）
+PASS T1.0 GET / 由服务返回页面且含内联脚本
+PASS T1.1 页面加载后渲染既有 3 条数据
+PASS T1.2 页面「名称/类别/数量」单元格与 /api/items 双端一致
+PASS T1.3 条目计数徽标显示「3 条」
+PASS T1.4 汇总表与 /api/summary 双端一致
+PASS T2.1 新增后页面多出 1 行且 API 已持久化
+PASS T2.2 新增后页面显示与 API 一致
+PASS T2.3 新增后汇总（食品=7）双端一致
+PASS T2.4 新增成功后名称输入框被清空
+PASS T3.1 点击「编辑」进入编辑态（出现三个字段输入框）
+PASS T3.2 编辑「名称」保存后 页面显示=API=「鲜牛奶」
+PASS T4.1 编辑「类别」保存后 页面显示=API=「饮品」
+PASS T5.1 编辑「数量」保存后 页面显示=API=12
+PASS T5.2 编辑保存后条目额外字段 manual_note 在文件中保留
+PASS T5.3 三个字段编辑后页面仍只显示契约字段（无残留输入框）
+PASS T6.1 编辑取消后回到展示态且 API 未被改写
+PASS T7.1 删除（确认）后页面移除该行且 API 返回 404
+PASS T7.2 删除前弹出确认框
+PASS T8.1 删除确认框取消后不删除
+PASS T9.1 空名称提交被拦截并给出错误提示
+PASS T9.2 空类别提交被拦截并给出错误提示
+PASS T10.1 非法数量提交被拦截并给出明确提示
+FAIL T11 直接点击「名称单元格」不进入编辑态也无任何提示（可发现性/反馈问题） :: {"enteredEdit":false,"feedback":null,"hint":"点击展示字段无反应"}
+FAIL T11 直接点击「类别单元格」不进入编辑态也无任何提示（可发现性/反馈问题） :: {"enteredEdit":false,"feedback":null,"hint":"点击展示字段无反应"}
+FAIL T11 直接点击「数量单元格」不进入编辑态也无任何提示（可发现性/反馈问题） :: {"enteredEdit":false,"feedback":null,"hint":"点击展示字段无反应"}
+FAIL T11 直接点击「id 单元格」不进入编辑态也无任何提示（可发现性/反馈问题） :: {"enteredEdit":false,"feedback":null,"hint":"点击展示字段无反应"}
+FAIL T11 直接点击「汇总行单元格」不进入编辑态也无任何提示 :: {"feedback":null,"hint":"汇总行不可交互且无反馈"}
+PASS T11.x 点击展示单元格不应改动任何数据/结构
+PASS T12.1 「刷新」按钮可用并给出反馈
+PASS T13.1 名称含 HTML 时被转义为纯文本（无注入）
+PASS T13.2 含 HTML 的名称经 API 原样保存
+
+INTERACTIVE 27/32 PASSED
+FAILED: T11 直接点击「名称单元格」不进入编辑态也无任何提示（可发现性/反馈问题） :: {"enteredEdit":false,"feedback":null,"hint":"点击展示字段无反应"}
+FAILED: T11 直接点击「类别单元格」不进入编辑态也无任何提示（可发现性/反馈问题） :: {"enteredEdit":false,"feedback":null,"hint":"点击展示字段无反应"}
+FAILED: T11 直接点击「数量单元格」不进入编辑态也无任何提示（可发现性/反馈问题） :: {"enteredEdit":false,"feedback":null,"hint":"点击展示字段无反应"}
+FAILED: T11 直接点击「id 单元格」不进入编辑态也无任何提示（可发现性/反馈问题） :: {"enteredEdit":false,"feedback":null,"hint":"点击展示字段无反应"}
+FAILED: T11 直接点击「汇总行单元格」不进入编辑态也无任何提示 :: {"feedback":null,"hint":"汇总行不可交互且无反馈"}
+INTERACTIVE_DRIVER_EXIT=1

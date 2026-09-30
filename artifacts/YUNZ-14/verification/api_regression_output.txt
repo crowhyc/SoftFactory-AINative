@@ -1,0 +1,60 @@
+app     = /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-14-fe9e30bcda8a/workdir/tmp/delivered/artifacts/YUNZ-10/app.py
+index   = /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-14-fe9e30bcda8a/workdir/tmp/delivered/artifacts/YUNZ-10/index.html
+python  = 3.6.8 (default, Nov 14 2023, 16:29:52)  [GCC 4.8.5 20150623 (Red Hat 4.8.5-44)]
+PASS S1 服务启动就绪
+PASS S1 GET / 返回 200
+PASS S1 GET / Content-Type 为 text/html
+PASS S1 页面含添加表单与清单表体
+PASS S1 页面无外部 src/href（不联网）
+PASS S1 /api/health 200 且 data_file 指向指定文件
+PASS S1 API 响应 Content-Type 为 application/json
+PASS S1 GET /api/items 返回 2 条既有条目
+PASS S1 GET /api/items/<id> 投影为契约 4 字段
+PASS S1 GET 不存在 id -> 404
+PASS S1 纯 GET 不改写数据文件（只读）
+PASS S1 POST 新增 -> 201，id 由服务端生成并忽略请求 id
+PASS S1 新条目字段符合契约
+PASS S1 POST 纯数字字符串 quantity 接受为 7
+PASS S1 POST 等于整数的浮点 quantity 接受为 2
+PASS S1 POST 非法输入(负数) -> 400 且含 error
+PASS S1 POST 非法输入(非数字串) -> 400 且含 error
+PASS S1 POST 非法输入(小数) -> 400 且含 error
+PASS S1 POST 非法输入(布尔) -> 400 且含 error
+PASS S1 POST 非法输入(null) -> 400 且含 error
+PASS S1 POST 非法输入(数组) -> 400 且含 error
+PASS S1 POST 非法输入(缺字段) -> 400 且含 error
+PASS S1 POST 非法输入(空名称) -> 400 且含 error
+PASS S1 POST 非对象请求体 -> 400
+PASS S1 POST 非法 JSON -> 400
+PASS S1 PUT 部分更新仅改数量，其余字段保留
+PASS S1 PUT 不存在 id -> 404
+PASS S1 PUT 空体 -> 400
+PASS S1 PUT 非法 JSON -> 400
+PASS S1 DELETE -> 200 deleted:true
+PASS S1 删除后该 id -> 404
+PASS S1 重复删除 -> 404
+PASS S1 PATCH /api/items -> 405
+PASS S1 未知 /api 路径 -> 404
+PASS S1 未知非 api 路径 -> 404
+PASS S1 按类别汇总与逐条累加一致
+PASS S1 汇总按类别名排序
+PASS S1 未知顶层键全部保留
+PASS S1 条目额外字段 manual_note 在 PUT 后保留
+PASS S1 已删除条目确实从文件消失
+PASS S1 无 .data-* 临时文件残留（原子写）
+PASS S2 顶层数组旧档 服务就绪
+PASS S2 顶层数组旧档可读（1 条）
+PASS S2 向顶层数组旧档新增 -> 201
+PASS S2 写回后顶层仍为数组且含 2 条
+PASS S2 无临时文件残留
+PASS S3 含非对象元素 服务就绪
+PASS S3 非对象元素被安全跳过，仅返回 1 条
+PASS S3 非对象元素在写回后仍保留
+PASS S4 损坏文件场景 服务就绪
+PASS S4 数据文件损坏时写操作 -> 500 且拒绝写入
+PASS S4 损坏文件字节未被覆盖
+app.py 顶层/全部 import 模块：argparse, hashlib, http, io, json, os, shutil, socketserver, sys, tempfile, threading, time, urllib, uuid
+PASS S5 app.py 全部 import 在 -I -S（无 site-packages）下可导入（纯标准库）
+PASS S5 index.html 无外部 URL
+
+API_REGRESSION 54/54 PASSED

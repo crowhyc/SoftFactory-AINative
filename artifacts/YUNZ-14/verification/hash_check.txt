@@ -1,0 +1,39 @@
+# 哈希核对（磁盘 vs git HEAD 提交版本）  核对时间(UTC)：2026-09-30T06:09:56Z
+git HEAD = 77b1d8d24a597b827518d7105c130906d0ea9f30
+
+## 磁盘现场（artifacts/YUNZ-10/，注意 data.json 有未提交改动）
+c4a1b1218cddb5b2d396f7f669c551de75edc39d484c1c0da0c595dd5fd31930  app.py
+92b6cc19f26061866fb557ec19c84720035d4d8e0e7fabc6dfb5c9613f8160dc  index.html
+e30f3db708ce377ad9fe6c4f110ad15dd373bd4a8b7f3d36616b4ce3ca483811  data.json
+50a42736689922aa7855d8f86b70c074e0ff590dbb0aeb11ece49c4d38ee3498  README.md
+5649b967c66516940e805e1e87fcdf74fa6ba8fbca6dd2d6c9e2778666f13680  verify_e2e.sh
+
+## git HEAD 提交版本（交付基线）
+c4a1b1218cddb5b2d396f7f669c551de75edc39d484c1c0da0c595dd5fd31930  app.py
+92b6cc19f26061866fb557ec19c84720035d4d8e0e7fabc6dfb5c9613f8160dc  index.html
+f28d242a62bfb9b4419865a5f1e79cb33f6bec62d26cb5d608f760c990893e2e  data.json
+50a42736689922aa7855d8f86b70c074e0ff590dbb0aeb11ece49c4d38ee3498  README.md
+5649b967c66516940e805e1e87fcdf74fa6ba8fbca6dd2d6c9e2778666f13680  verify_e2e.sh
+
+## 提交版本 sha256sum -c SHA256SUMS
+app.py: OK
+index.html: OK
+data.json: OK
+verify_e2e.sh: OK
+README.md: OK
+selftest_output.txt: OK
+e2e_output.txt: OK
+
+## 磁盘现场 sha256sum -c SHA256SUMS（预期 data.json 不一致）
+app.py: OK
+index.html: OK
+data.json: FAILED
+verify_e2e.sh: OK
+README.md: OK
+selftest_output.txt: OK
+e2e_output.txt: OK
+sha256sum: WARNING: 1 computed checksum did NOT match
+
+## git status --porcelain（artifacts 子树）
+ M artifacts/YUNZ-10/data.json
+?? artifacts/YUNZ-14/

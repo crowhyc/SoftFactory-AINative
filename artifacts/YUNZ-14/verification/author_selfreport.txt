@@ -1,0 +1,82 @@
+# 两条证据链：实现者自报（交付目录随附）vs 验证方复跑
+## 交付目录随附自报输出（HEAD 版本，只读展示）
+### selftest_output.txt
+# 自测证据：内置 --selftest（使用临时数据文件 + 空闲端口，结束自动清理）
+# 命令： python3 app.py --selftest
+# 环境： 3.6.8 | Linux iZ2vcat760ne92b3wbxpyiZ 3.10.0-1160.119.1.el7.x86_64
+# 说明： stderr 上的 "127.0.0.1 - GET /api/..." 行是服务自身访问日志，已省略。
+
+PASS  自测用临时数据文件、空闲端口（临时目录 /tmp/multica-task-3419841699/inventory-selftest-z47lc99o）
+PASS  GET / 返回单页 HTML
+PASS  GET /api/items 初始为空
+PASS  POST /api/items 新增返回 201 与新物品
+PASS  POST /api/items 追加多条
+PASS  GET /api/items 返回全部条目
+PASS  GET /api/items/<id> 单条查询
+PASS  PUT /api/items/<id> 更新生效且不动未传字段
+PASS  GET /api/summary 按类别汇总正确
+PASS  GET /api/summary 与逐条累加一致
+PASS  DELETE /api/items/<id> 后该 id 返回 404
+PASS  DELETE 不存在的 id 返回 404
+PASS  PUT 不存在的 id 返回 404
+PASS  quantity 为负数返回 400
+PASS  quantity 非数字返回 400
+PASS  quantity 为小数返回 400
+PASS  POST 缺字段返回 400
+PASS  POST 空名称返回 400
+PASS  POST 请求体不是对象返回 400
+PASS  POST 请求体不是合法 JSON 返回 400
+PASS  PUT 无有效字段返回 400
+PASS  不支持的方法返回 405
+PASS  未知 /api 路径返回 404
+PASS  未知页面路径返回 404
+PASS  写入为原子替换且无临时文件残留
+PASS  20 路并发新增不丢数据
+PASS  预置 data.json 的既有条目可读且响应字段符合契约、文件未被改写
+PASS  新增后既有条目与未知顶层键全部保留
+PASS  更新既有条目时保留其额外字段与未知顶层键
+PASS  预置文件上的类别汇总正确
+PASS  删除仅移除目标条目且既有数据仍在
+PASS  自测未改动默认数据文件
+PASS  临时数据文件与临时目录已清理、无残留
+SELFTEST 33/33 PASSED
+
+exit code: 0
+### e2e_output.txt
+# 端到端证据：真实启动 `python3 app.py`（--data 指向预置了未知顶层键的临时 data.json），用 curl 打 HTTP API
+# 命令： bash verify_e2e.sh
+# 说明： 预置文件中 keep-1 带额外字段 manual_note，文件含未知顶层键 schema_version / custom_top_level；
+#        脚本在临时目录里完成增删改，结束时做文件级核验，并校验随附 data.json。
+
+== 启动服务：python3 app.py --host 127.0.0.1 --port 57514 --data /tmp/inventory-e2e-yrhkOi/preset.json
+PASS  服务在空闲端口启动，GET /api/health 可用
+PASS  GET / 返回 200
+PASS  GET / 返回单页 HTML 且引用 /api/items
+PASS  GET /api/items 返回 200
+PASS  预置的 2 条既有条目原样可读
+PASS  既有条目字段为 id/name/category/quantity
+PASS  POST /api/items 返回 201
+PASS  POST 返回体含新物品 id
+PASS  新增后共 3 条
+PASS  PUT 既有条目返回 200
+PASS  PUT 后 quantity 变为 9
+PASS  PUT 后 name 变为 既有物品A(改)
+PASS  PUT 未传的 category 未被改动
+PASS  GET /api/summary 返回 200
+PASS  按类别汇总正确（工具 9+2，食品 6）
+PASS  DELETE 既有条目返回 200
+PASS  删除后该 id 返回 404
+PASS  删除不存在的 id 返回 404
+PASS  删除后共 2 条
+PASS  quantity 为负数返回 400
+PASS  400 响应体含 error 字段
+PASS  quantity 非数字返回 400
+PASS  缺字段返回 400
+PASS  PUT 无有效字段返回 400
+PASS  不支持的方法返回 405
+PASS  未知 /api 路径返回 404
+PASS  文件级核验：既有条目 / 额外字段 / 未知顶层键全部保留，无临时文件残留
+PASS  随附 data.json 是合法 JSON 且 4 条样例条目字段完整
+E2E 28/28 PASSED
+
+exit code: 0
