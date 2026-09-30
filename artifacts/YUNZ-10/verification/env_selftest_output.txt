@@ -1,0 +1,81 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+== 运行时间(UTC): 2026-09-30T02:50:28Z ==
+== python3: Python 3.6.8 ==
+
+=== [E1] 交付物 sha256 与 SHA256SUMS 比对 ===
+app.py: OK
+index.html: OK
+data.json: OK
+verify_e2e.sh: OK
+README.md: OK
+selftest_output.txt: OK
+e2e_output.txt: OK
+E1_exit=0
+
+=== [E2] import 扫描：app.py 顶层 import 全量 ===
+14:import argparse
+15:import io
+16:import json
+17:import os
+18:import shutil
+19:import sys
+20:import tempfile
+21:import threading
+22:import time
+23:import urllib.error
+24:import urllib.parse
+25:import urllib.request
+26:import uuid
+27:from http.server import BaseHTTPRequestHandler, HTTPServer
+30:    from http.server import ThreadingHTTPServer
+32:    import socketserver
+573:    import hashlib
+
+=== [E3] app.py 第三方/外部资源扫描（应无命中）===
+(no hits)
+546:http://127.0.0.1:%d
+1017:http://%s:%d/
+(no external URL in index.html)
+
+=== [E4] 默认 data.json 前置 sha256 ===
+f28d242a62bfb9b4419865a5f1e79cb33f6bec62d26cb5d608f760c990893e2e  /opt/SoftFactory-AINative/artifacts/YUNZ-10/data.json
+
+=== [E5] 复跑 --selftest（工作副本，非交付目录）===
+E5_exit=0
+PASS  更新既有条目时保留其额外字段与未知顶层键
+PASS  预置文件上的类别汇总正确
+PASS  删除仅移除目标条目且既有数据仍在
+PASS  自测未改动默认数据文件
+PASS  临时数据文件与临时目录已清理、无残留
+SELFTEST 33/33 PASSED
+FAIL 行数: 0
+交付目录 data.json 在自测后是否未被改动:
+data.json: OK
+  (未改动)
+
+=== [E6] FAIL 路径退出码（复制 app.py 但移除 index.html，不改原实现）===
+E6_exit=1（期望非 0）
+FAIL  GET / 返回单页 HTML  -> GET / 期望 200，实际 500
+SELFTEST 32/33 PASSED
+FAIL 行数: 1
+
+=== [E7] 隔离模式 -I -S（无 site-packages/无用户 site）复跑 --selftest ===
+E7_exit=0
+SELFTEST 33/33 PASSED
+
+=== [E8] 默认启动 python3 app.py（127.0.0.1:8000）===
+GET / -> 200 text/html; charset=utf-8
+GET /api/items -> 200
+GET /api/summary -> {  "summary": [    {      "category": "工具",      "total_quantity": 1    },    {      "category": "用品",      "total_quantity": 5    },    {      "category": "食品",      "total_quantity": 5    }  ]}
+启动横幅: 清单管理小应用已启动：http://127.0.0.1:8000/|数据文件：/opt/SoftFactory-AINative/artifacts/YUNZ-10/data.json（可读）|
+只读访问后默认 data.json 是否改动: 未改动
+
+=== [E9] 多进程并发写同一数据文件（两个 app.py 实例）===
+并发写完成
+发起 POST 总数: 100（2 进程 x 50）
+文件中实际条目数: 81
+丢失(未落盘)条目数: 19
+未知顶层键 keep 是否保留: 'me'
+文件是否仍是合法 JSON: True
+
+== 完成 ==

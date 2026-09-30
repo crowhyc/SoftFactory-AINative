@@ -1,0 +1,4 @@
+PASS  HEAD / 与 HEAD /api/items 返回 200 且无响应体
+PASS  顶层数组旧档可读写，非对象元素与额外字段保留，写回仍为数组
+PASS  POST 请求体未知字段被忽略不入档；PUT 仅未知字段 → 400
+EDGE-CASES 3/3 PASSED

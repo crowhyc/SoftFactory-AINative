@@ -1,0 +1,13 @@
+PASS  GET / 返回单页 HTML（含增改删查与汇总，无外部链接）
+PASS  GET /api/items 返回既有条目且响应字段恰为契约 4 字段
+PASS  POST /api/items 201 生效，且文件内既有条目/额外字段/未知顶层键保留
+PASS  PUT /api/items/<id> 200 改后值变化，未传字段与额外字段保留
+PASS  PUT 不存在的 id → 404 + {"error"}
+PASS  GET /api/summary 多类别跨条目汇总 == 逐条累加（工具11/食品6）
+PASS  DELETE /api/items/<id> 200/204 生效、删后 404，其余数据与未知键保留
+PASS  只读 API（items/summary/health）前后数据文件 sha256 不变
+PASS  非法输入 400（负/非数字/小数/缺字段/空名）、PATCH 405、未知 /api 404
+PASS  并发写期间连续读文件：始终是完整合法 JSON，既有条目/未知键不丢、无残留
+PASS  数据文件非法 JSON → 500 且拒绝写入、原文件字节不变
+PASS  写入不可用时 POST → 500 且既有数据文件 sha256 不变（不半写/不清空）
+INDEPENDENT-VERIFY 12/12 PASSED
