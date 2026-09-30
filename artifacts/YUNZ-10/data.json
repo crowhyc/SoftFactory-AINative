@@ -1,0 +1,30 @@
+{
+  "items": [
+    {
+      "id": "demo-0001",
+      "name": "牛奶",
+      "category": "食品",
+      "quantity": 3
+    },
+    {
+      "id": "demo-0002",
+      "name": "面包",
+      "category": "食品",
+      "quantity": 2
+    },
+    {
+      "id": "demo-0003",
+      "name": "电池",
+      "category": "用品",
+      "quantity": 5
+    },
+    {
+      "id": "demo-0004",
+      "name": "扳手",
+      "category": "工具",
+      "quantity": 1
+    }
+  ],
+  "schema_version": 1,
+  "note": "样例数据：app.py 写入时会保留 schema_version、note 等未知顶层键，以及条目上的额外字段。"
+}
