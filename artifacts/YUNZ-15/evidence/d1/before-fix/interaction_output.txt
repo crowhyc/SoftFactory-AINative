@@ -1,0 +1,34 @@
+PASS T0 真实 app.py 服务就绪（DOM 级测试前置）
+PASS T1.0 GET / 由服务返回页面且含内联脚本
+PASS T1.1 初始 3 条数据渲染完成
+FAIL T11 点击「物品清单 · 名称单元格」→ 进入编辑态或给出明确可见反馈 :: {"enteredEdit":false,"feedback":null,"hint":"缺陷 D-1：点了没反应"}
+FAIL T11 点击「物品清单 · 类别单元格」→ 进入编辑态或给出明确可见反馈 :: {"enteredEdit":false,"feedback":null,"hint":"缺陷 D-1：点了没反应"}
+FAIL T11 点击「物品清单 · 数量单元格」→ 进入编辑态或给出明确可见反馈 :: {"enteredEdit":false,"feedback":null,"hint":"缺陷 D-1：点了没反应"}
+FAIL T11 点击「物品清单 · id 单元格」→ 进入编辑态或给出明确可见反馈 :: {"enteredEdit":false,"feedback":null,"hint":"缺陷 D-1：点了没反应"}
+PASS T11.4 汇总表已渲染（用于点击对抗）
+FAIL T11 点击「汇总表 · 类别单元格」→ 给出明确可见反馈 :: {"feedback":null,"hint":"缺陷 D-1：汇总单元格点击无反馈"}
+FAIL T11 点击「汇总表 · 合计数量单元格」→ 给出明确可见反馈 :: {"feedback":null,"hint":"缺陷 D-1：汇总单元格点击无反馈"}
+PASS T11.6 点击展示态单元格不产生任何数据写入
+PASS T11.7 点击展示态单元格不改变展示行结构（在未进入编辑态的实现下）
+PASS R1.1 「编辑」按钮仍能进入编辑态（三字段可编辑）
+PASS R1.2 编辑保存后页面提示且 API 落库一致
+PASS R1.3 「取消」仍能退出编辑态且不落库
+PASS R2.1 新增仍可用（页面 + API 双端一致）
+PASS R2.2 删除确认框仍弹出，取消后不删除
+PASS R2.3 名称含 HTML 仍被转义为纯文本（无注入）
+
+OBSERVED_HINTS:
+  物品清单·名称单元格 -> 反馈=null
+  物品清单·类别单元格 -> 反馈=null
+  物品清单·数量单元格 -> 反馈=null
+  物品清单·id 单元格 -> 反馈=null
+  汇总表·类别 -> 反馈=null
+  汇总表·合计数量 -> 反馈=null
+
+INTERACTION 12/18 PASSED
+FAILED: T11 点击「物品清单 · 名称单元格」→ 进入编辑态或给出明确可见反馈 :: {"enteredEdit":false,"feedback":null,"hint":"缺陷 D-1：点了没反应"}
+FAILED: T11 点击「物品清单 · 类别单元格」→ 进入编辑态或给出明确可见反馈 :: {"enteredEdit":false,"feedback":null,"hint":"缺陷 D-1：点了没反应"}
+FAILED: T11 点击「物品清单 · 数量单元格」→ 进入编辑态或给出明确可见反馈 :: {"enteredEdit":false,"feedback":null,"hint":"缺陷 D-1：点了没反应"}
+FAILED: T11 点击「物品清单 · id 单元格」→ 进入编辑态或给出明确可见反馈 :: {"enteredEdit":false,"feedback":null,"hint":"缺陷 D-1：点了没反应"}
+FAILED: T11 点击「汇总表 · 类别单元格」→ 给出明确可见反馈 :: {"feedback":null,"hint":"缺陷 D-1：汇总单元格点击无反馈"}
+FAILED: T11 点击「汇总表 · 合计数量单元格」→ 给出明确可见反馈 :: {"feedback":null,"hint":"缺陷 D-1：汇总单元格点击无反馈"}

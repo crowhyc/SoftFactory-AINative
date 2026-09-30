@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
+<html lang="zh-CN"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>清单管理</title>
@@ -102,18 +100,18 @@
   <section class="card">
     <h2>添加物品</h2>
     <form class="add" id="add-form" autocomplete="off">
-      <input id="add-name" placeholder="名称，例如：牛奶" maxlength="200" required>
-      <input id="add-category" placeholder="类别，例如：食品" list="category-options" maxlength="200" required>
-      <datalist id="category-options"></datalist>
-      <input id="add-quantity" type="number" min="0" step="1" value="1" required>
+      <input id="add-name" placeholder="名称，例如：牛奶" maxlength="200" required="">
+      <input id="add-category" placeholder="类别，例如：食品" list="category-options" maxlength="200" required="">
+      <datalist id="category-options"><option value="工具"></option><option value="测试"></option><option value="用品"></option><option value="食品"></option></datalist>
+      <input id="add-quantity" type="number" min="0" step="1" value="1" required="">
       <button type="submit">添加</button>
     </form>
   </section>
 
-  <div class="message" id="message" hidden></div>
+  <div class="message ok" id="message">已添加：&lt;b&gt;粗体&lt;/b&gt;</div>
 
   <section class="card">
-    <h2>物品清单 <span class="badge" id="item-count">0 条</span>
+    <h2>物品清单 <span class="badge" id="item-count">4 条</span>
       <button type="button" class="ghost small" id="refresh">刷新</button>
     </h2>
     <table>
@@ -126,9 +124,9 @@
           <th style="width:150px"></th>
         </tr>
       </thead>
-      <tbody id="items-body"></tbody>
+      <tbody id="items-body"><tr><td class="mono">demo-0001</td><td>牛奶</td><td>食品</td><td class="qty">3</td><td class="actions"><button type="button" class="ghost small" data-action="edit" data-id="demo-0001">编辑</button> <button type="button" class="danger small" data-action="delete" data-id="demo-0001">删除</button></td></tr><tr><td class="mono">demo-0002</td><td>扳手</td><td>工具</td><td class="qty">1</td><td class="actions"><button type="button" class="ghost small" data-action="edit" data-id="demo-0002">编辑</button> <button type="button" class="danger small" data-action="delete" data-id="demo-0002">删除</button></td></tr><tr><td class="mono">demo-0003</td><td>电池</td><td>用品</td><td class="qty">5</td><td class="actions"><button type="button" class="ghost small" data-action="edit" data-id="demo-0003">编辑</button> <button type="button" class="danger small" data-action="delete" data-id="demo-0003">删除</button></td></tr><tr><td class="mono">735d92f19732</td><td>&lt;b&gt;粗体&lt;/b&gt;</td><td>测试</td><td class="qty">2</td><td class="actions"><button type="button" class="ghost small" data-action="edit" data-id="735d92f19732">编辑</button> <button type="button" class="danger small" data-action="delete" data-id="735d92f19732">删除</button></td></tr></tbody>
     </table>
-    <p class="empty" id="items-empty" hidden>还没有物品，先在上方添加一条。</p>
+    <p class="empty" id="items-empty" hidden="">还没有物品，先在上方添加一条。</p>
   </section>
 
   <section class="card">
@@ -140,12 +138,12 @@
           <th class="qty">合计数量</th>
         </tr>
       </thead>
-      <tbody id="summary-body"></tbody>
+      <tbody id="summary-body"><tr><td>工具</td><td class="qty">1</td></tr><tr><td>测试</td><td class="qty">2</td></tr><tr><td>用品</td><td class="qty">5</td></tr><tr><td>食品</td><td class="qty">3</td></tr></tbody>
     </table>
-    <p class="empty" id="summary-empty" hidden>暂无数据。</p>
+    <p class="empty" id="summary-empty" hidden="">暂无数据。</p>
   </section>
 
-  <footer>数据文件：<code id="data-file">读取中……</code></footer>
+  <footer>数据文件：<code id="data-file">/opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-15-041a38047fc5/workdir/tmp/interaction-run/data.json</code></footer>
 </div>
 
 <script>
@@ -293,14 +291,7 @@
 
   byId('items-body').addEventListener('click', function (event) {
     var button = event.target.closest('button[data-action]');
-    if (!button) {
-      var cell = event.target.closest('td');
-      var editingRow = cell && cell.parentNode ? cell.parentNode.querySelector('input[data-field]') : null;
-      if (cell && !editingRow && !event.target.closest('input')) {
-        showMessage('提示：请点该行的「编辑」按钮修改名称 / 类别 / 数量', 'info');
-      }
-      return;
-    }
+    if (!button) { return; }
     var action = button.getAttribute('data-action');
     var id = button.getAttribute('data-id');
 
@@ -356,11 +347,6 @@
       .catch(function (error) { showMessage('刷新失败：' + error.message, 'error'); });
   });
 
-  byId('summary-body').addEventListener('click', function (event) {
-    if (!event.target.closest('td')) { return; }
-    showMessage('提示：汇总表仅供查看，请在「物品清单」中点击「编辑」按钮修改', 'info');
-  });
-
   api.health().then(function (data) {
     if (data && data.data_file) { byId('data-file').textContent = data.data_file; }
   }).catch(function () { byId('data-file').textContent = '（无法读取）'; });
@@ -368,5 +354,6 @@
   reload().catch(function (error) { showMessage('加载失败：' + error.message, 'error'); });
 })();
 </script>
-</body>
-</html>
+
+
+</body></html>

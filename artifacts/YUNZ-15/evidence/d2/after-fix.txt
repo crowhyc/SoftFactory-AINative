@@ -1,0 +1,13 @@
+# D-2 修复后：交付目录自洽校验  采集时间(UTC)：2026-09-30T06:32:31Z
+
+命令：cd /opt/SoftFactory-AINative/artifacts/YUNZ-10 && sha256sum -c SHA256SUMS
+```
+app.py: OK
+index.html: OK
+data.json: OK
+verify_e2e.sh: OK
+README.md: OK
+selftest_output.txt: OK
+e2e_output.txt: OK
+```
+退出码：0（7/7 OK）

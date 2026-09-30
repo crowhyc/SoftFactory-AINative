@@ -1,0 +1,22 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+== E2: python3 -I -S app.py --selftest（禁用 site-packages，验证纯标准库与退出码 0）==
+PASS  自测未改动默认数据文件
+PASS  临时数据文件与临时目录已清理、无残留
+SELFTEST 33/33 PASSED
+E2 exit=0
+
+== E3: 默认启动（无参数 = 127.0.0.1:8000）+ 只读访问不改写数据文件 ==
+E3 健康检查就绪：yes
+E3 GET / -> 200 (text/html; charset=utf-8)
+E3 GET /api/items -> 200
+E3 GET /api/summary -> 200
+E3 data.json before='' after='' (纯 GET 不建/不改档: yes)
+
+== E4: --selftest FAIL 路径（复制 app.py 但移除 index.html）退出码语义 ==
+PASS  删除仅移除目标条目且既有数据仍在
+PASS  自测未改动默认数据文件
+PASS  临时数据文件与临时目录已清理、无残留
+SELFTEST 32/33 PASSED
+E4 exit=1
+
+ENV_SELFTEST DONE

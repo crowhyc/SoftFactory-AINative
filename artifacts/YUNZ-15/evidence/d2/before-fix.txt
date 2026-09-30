@@ -1,0 +1,18 @@
+# D-2 复现（修复前，磁盘现场）  采集时间(UTC)：2026-09-30T06:27Z
+
+命令：cd /opt/SoftFactory-AINative/artifacts/YUNZ-10 && sha256sum -c SHA256SUMS
+```
+app.py: OK
+index.html: OK
+data.json: FAILED
+verify_e2e.sh: OK
+README.md: OK
+selftest_output.txt: OK
+e2e_output.txt: OK
+sha256sum: WARNING: 1 computed checksum did NOT match
+```
+命令：sha256sum /opt/SoftFactory-AINative/artifacts/YUNZ-10/data.json
+```
+e30f3db708ce377ad9fe6c4f110ad15dd373bd4a8b7f3d36616b4ce3ca483811  /opt/SoftFactory-AINative/artifacts/YUNZ-10/data.json
+```
+退出码：1（1/7 项 FAILED，与 YUNZ-14 复验结论一致）
