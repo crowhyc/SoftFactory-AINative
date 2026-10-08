@@ -1,0 +1,31 @@
+server: http://127.0.0.1:45598
+PASS  GET /api/items 200
+PASS  既有条目数 3
+PASS  条目响应字段=契约4字段
+PASS  GET /api/summary 200
+PASS  汇总 食品=3+4=7
+PASS  汇总 用品=5
+PASS  POST /api/items 201
+PASS  POST 返回含 id (421e3d15c6d4)
+PASS  PUT 200
+PASS  PUT 生效 quantity=9
+PASS  PUT 部分更新保留 name
+PASS  PUT 不存在 id -> 404
+PASS  DELETE 不存在 id -> 404
+PASS  POST 非法输入(缺字段) -> 400
+PASS  POST 非法输入(空名称) -> 400
+PASS  POST 非法输入(负数量) -> 400
+PASS  POST 非法输入(数量非整数) -> 400
+PASS  POST 非法输入(name 非字符串) -> 400
+PASS  PUT 既有条目 200
+PASS  DELETE 既有条目 200
+PASS  未知顶层键 schema_version 保留
+PASS  未知顶层键 note 保留
+PASS  未知顶层键 custom_top 保留
+PASS  既有条目 keep-01/keep-02 保留: ['keep-01', 'keep-02', '421e3d15c6d4']
+PASS  keep-01 额外字段保留
+PASS  keep-01 类别已更新为熟食
+PASS  keep-03 已被删除: True
+PASS  无临时文件残留(原子写)
+PASS  仅标准库导入(无第三方)
+API_REGRESSION 29/29 PASSED

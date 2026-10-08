@@ -1,0 +1,81 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+== server.log ==
+清单管理小应用已启动：http://0.0.0.0:8791/
+数据文件：/opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-17-03adc1cd78a0/workdir/tmp/domcase/data.json（可读）
+按 Ctrl+C 停止。
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+server: http://172.18.0.1:8791  data: /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-17-03adc1cd78a0/workdir/tmp/domcase/data.json
+PASS  页面加载渲染 3 行
+PASS  条目计数徽标
+PASS  名称列渲染
+PASS  类别列渲染
+PASS  数量列渲染
+PASS  汇总渲染: [["用品","5"],["食品","5"]]
+PASS  新增后页面 4 行
+PASS  新增后 API 4 条
+PASS  新增后磁盘 4 条
+PASS  新增持久化 name
+PASS  新增持久化 category
+PASS  新增持久化 quantity
+PASS  编辑按钮进入编辑态
+PASS  保存后名称页面显示
+PASS  保存后名称 API
+PASS  保存后名称 磁盘
+PASS  保存后数量页面显示
+PASS  保存后数量 API
+PASS  保存后数量 磁盘
+PASS  取消后页面名称不变
+PASS  取消后 API 名称不变
+PASS  取消后磁盘名称不变
+PASS  空名称提示错误
+PASS  空名称未产生写入
+PASS  负数量被拒绝(无写入)
+PASS  删除后页面移除
+PASS  删除后 API 移除
+PASS  删除后磁盘移除
+FAIL  [A] 点击「类别」单元格进入行内编辑态  -> 期望[true] 实际[false]
+     [A] 点击类别单元格后反馈: "提示：请点该行的「编辑」按钮修改名称 / 类别 / 数量"
+FAIL  [A] 「类别」单元格修改保存并生效(页面/API/磁盘)  -> 未进入编辑态，无法通过点击类别单元格修改
+PASS  [A] 点击类别单元格后类别未变更
+PASS  [C] 点击「名称」单元格反馈: "提示：请点该行的「编辑」按钮修改名称 / 类别 / 数量"
+PASS  [C] 点击「名称」单元格有明确提示
+PASS  [C] 点击「数量」单元格有明确提示: "提示：请点该行的「编辑」按钮修改名称 / 类别 / 数量"
+PASS  [C] 点击展示单元格未改动磁盘数据
+PASS  [D] 点击汇总单元格反馈: "提示：汇总表仅供查看，请在「物品清单」中点击「编辑」按钮修改"
+PASS  [D] 汇总表点击有明确提示；无编辑控件: 无
+PASS  [E] 编辑中点击他行单元格后本行编辑态仍在
+PASS  [E] 未保存改动未被静默丢弃
+PASS  [E] 编辑中点击他行未产生持久化写入
+PASS  未知顶层键 schema_version 保留
+PASS  未知顶层键 note 保留
+PASS  既有条目额外字段保留
+dom snapshot -> /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-17-03adc1cd78a0/workdir/tmp/domcase/dom-snapshot-after-interactions.html
+INTERACTION 41/43 PASSED
+== final on-disk data.json ==
+{
+  "items": [
+    {
+      "id": "dom-01",
+      "name": "鲜牛奶",
+      "category": "食品",
+      "quantity": 3,
+      "extra_note": "勿删我"
+    },
+    {
+      "id": "dom-02",
+      "name": "面包",
+      "category": "食品",
+      "quantity": 11
+    },
+    {
+      "id": "2362d0d9c836",
+      "name": "酱油",
+      "category": "调味",
+      "quantity": 4
+    }
+  ],
+  "schema_version": 42,
+  "note": "未知顶层键必须保留-DOM"
+}
+== OBSERVED RESIDUAL PROCESSES (not started by this run) ==
+19564 19557 python3 /opt/SoftFactory-AINative/artifacts/YUNZ-10/app.py --host 0.0.0.0 --port 8791 --data /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-17-03adc1cd78a0/workdir/tmp/domcase/data.json

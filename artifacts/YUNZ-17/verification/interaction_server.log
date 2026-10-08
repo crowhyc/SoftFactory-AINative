@@ -1,0 +1,26 @@
+清单管理小应用已启动：http://0.0.0.0:8791/
+数据文件：/opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-17-03adc1cd78a0/workdir/tmp/domcase/data.json（可读）
+按 Ctrl+C 停止。
+172.18.0.2 - "GET / HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/health HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/items HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/summary HTTP/1.1" 200 -
+172.18.0.2 - "POST /api/items HTTP/1.1" 201 -
+172.18.0.2 - "GET /api/items HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/summary HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/items HTTP/1.1" 200 -
+172.18.0.2 - "PUT /api/items/dom-01 HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/items HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/summary HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/items HTTP/1.1" 200 -
+172.18.0.2 - "PUT /api/items/dom-02 HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/items HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/summary HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/items HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/items HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/items HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/items HTTP/1.1" 200 -
+172.18.0.2 - "DELETE /api/items/dom-03 HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/items HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/summary HTTP/1.1" 200 -
+172.18.0.2 - "GET /api/items HTTP/1.1" 200 -

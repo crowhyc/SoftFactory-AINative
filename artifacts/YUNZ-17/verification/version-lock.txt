@@ -1,0 +1,40 @@
+# YUNZ-17 被验证版本三链锁定（核对时间 2026-10-08T11:48:56+0800, TZ Asia/Shanghai）
+
+被验证对象: /opt/SoftFactory-AINative/artifacts/YUNZ-10/ 当前交付版本（issue 标识符 YUNZ-10）
+资产库 git HEAD: 1030e3703b61f2c0859422b0d76d1d372c085ffc
+HEAD 提交标题: task(YUNZ-15)：修复 D-1 与 D-2
+交付提交: 937b983（index.html/data.json 由 YUNZ-15 修复后落在 HEAD=1030e37）
+
+## 链1：磁盘现场 sha256
+c4a1b1218cddb5b2d396f7f669c551de75edc39d484c1c0da0c595dd5fd31930  app.py
+92e3d4543c5d8aeddd722d8a2164a3092c3cebb1b4defcecfd3ccafdf137efb0  index.html
+f28d242a62bfb9b4419865a5f1e79cb33f6bec62d26cb5d608f760c990893e2e  data.json
+5649b967c66516940e805e1e87fcdf74fa6ba8fbca6dd2d6c9e2778666f13680  verify_e2e.sh
+50a42736689922aa7855d8f86b70c074e0ff590dbb0aeb11ece49c4d38ee3498  README.md
+f414dd9a5dcb1d007309a0b5271520a34015f9ff551c5366dd0e1c8f558e1bb3  selftest_output.txt
+70ebf36fa950b2c5a82575f18adfb377c5dc6de1e8e7b2982609561cd080b466  e2e_output.txt
+
+## 链3：git HEAD 提交版本 blob sha256
+c4a1b1218cddb5b2d396f7f669c551de75edc39d484c1c0da0c595dd5fd31930  app.py
+92e3d4543c5d8aeddd722d8a2164a3092c3cebb1b4defcecfd3ccafdf137efb0  index.html
+f28d242a62bfb9b4419865a5f1e79cb33f6bec62d26cb5d608f760c990893e2e  data.json
+5649b967c66516940e805e1e87fcdf74fa6ba8fbca6dd2d6c9e2778666f13680  verify_e2e.sh
+50a42736689922aa7855d8f86b70c074e0ff590dbb0aeb11ece49c4d38ee3498  README.md
+f414dd9a5dcb1d007309a0b5271520a34015f9ff551c5366dd0e1c8f558e1bb3  selftest_output.txt
+70ebf36fa950b2c5a82575f18adfb377c5dc6de1e8e7b2982609561cd080b466  e2e_output.txt
+
+## 链2：目录内 SHA256SUMS 内容和校验
+c4a1b1218cddb5b2d396f7f669c551de75edc39d484c1c0da0c595dd5fd31930  app.py
+92e3d4543c5d8aeddd722d8a2164a3092c3cebb1b4defcecfd3ccafdf137efb0  index.html
+f28d242a62bfb9b4419865a5f1e79cb33f6bec62d26cb5d608f760c990893e2e  data.json
+5649b967c66516940e805e1e87fcdf74fa6ba8fbca6dd2d6c9e2778666f13680  verify_e2e.sh
+50a42736689922aa7855d8f86b70c074e0ff590dbb0aeb11ece49c4d38ee3498  README.md
+f414dd9a5dcb1d007309a0b5271520a34015f9ff551c5366dd0e1c8f558e1bb3  selftest_output.txt
+70ebf36fa950b2c5a82575f18adfb377c5dc6de1e8e7b2982609561cd080b466  e2e_output.txt
+app.py: OK
+index.html: OK
+data.json: OK
+verify_e2e.sh: OK
+README.md: OK
+selftest_output.txt: OK
+e2e_output.txt: OK

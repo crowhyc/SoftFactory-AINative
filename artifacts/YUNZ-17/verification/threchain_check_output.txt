@@ -1,0 +1,9 @@
+file                 disk==SHA256SUMS==gitHEAD
+app.py               YES
+index.html           YES
+data.json            YES
+verify_e2e.sh        YES
+README.md            YES
+selftest_output.txt  YES
+e2e_output.txt       YES
+THREE-CHAIN CONSISTENT: True

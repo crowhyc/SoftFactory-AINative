@@ -1,0 +1,371 @@
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>清单管理</title>
+<style>
+  :root {
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --ink: #1f2430;
+    --muted: #6b7280;
+    --line: #e3e7ef;
+    --brand: #2563eb;
+    --brand-dark: #1d4ed8;
+    --danger: #dc2626;
+    --ok: #15803d;
+    --warn: #b45309;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px 16px 48px;
+    background: var(--bg);
+    color: var(--ink);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  h1 { margin: 0 0 4px; font-size: 22px; }
+  h2 { margin: 0 0 12px; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+  .hint { margin: 0; color: var(--muted); font-size: 13px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 16px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, .04);
+  }
+  form.add { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  input {
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font: inherit;
+    background: #fff;
+    min-width: 0;
+  }
+  input:focus { outline: 2px solid #bfdbfe; border-color: var(--brand); }
+  #add-name { flex: 1 1 200px; }
+  #add-category { flex: 0 1 160px; }
+  #add-quantity { width: 96px; }
+  button {
+    font: inherit;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: var(--brand);
+    color: #fff;
+    cursor: pointer;
+  }
+  button:hover { background: var(--brand-dark); }
+  button.ghost { background: #fff; color: var(--ink); border-color: var(--line); }
+  button.ghost:hover { background: #f3f4f6; }
+  button.danger { background: #fff; color: var(--danger); border-color: #fca5a5; }
+  button.danger:hover { background: #fef2f2; }
+  button.small { padding: 5px 10px; font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th { font-size: 13px; color: var(--muted); font-weight: 600; background: #fafbfe; }
+  tbody tr:last-child td { border-bottom: none; }
+  td.actions { white-space: nowrap; text-align: right; }
+  td.qty, th.qty { text-align: right; width: 110px; }
+  td.mono, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; color: var(--muted); }
+  .badge {
+    background: #eef2ff; color: #3730a3; border-radius: 999px;
+    padding: 1px 9px; font-size: 12px; font-weight: 500;
+  }
+  .message {
+    margin-top: 16px; padding: 10px 14px; border-radius: 8px; font-size: 14px;
+    border: 1px solid var(--line); background: #fff;
+  }
+  .message[hidden] { display: none; }
+  .message.error { border-color: #fecaca; background: #fef2f2; color: #991b1b; }
+  .message.ok { border-color: #bbf7d0; background: #f0fdf4; color: var(--ok); }
+  .message.info { border-color: #bfdbfe; background: #eff6ff; color: #1e40af; }
+  .empty { color: var(--muted); font-size: 14px; margin: 8px 0 0; }
+  .empty[hidden] { display: none; }
+  .edit-input { width: 100%; }
+  footer { margin-top: 20px; color: var(--muted); font-size: 12px; text-align: center; }
+  footer code { color: #374151; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>清单管理</h1>
+    <p class="hint">物品有名称、类别、数量；可增 / 删 / 改 / 查，并按类别汇总数量。数据保存在服务器端同一个 JSON 文件里。</p>
+  </header>
+
+  <section class="card">
+    <h2>添加物品</h2>
+    <form class="add" id="add-form" autocomplete="off">
+      <input id="add-name" placeholder="名称，例如：牛奶" maxlength="200" required="">
+      <input id="add-category" placeholder="类别，例如：食品" list="category-options" maxlength="200" required="">
+      <datalist id="category-options"><option value="调味"></option><option value="食品"></option></datalist>
+      <input id="add-quantity" type="number" min="0" step="1" value="1" required="">
+      <button type="submit">添加</button>
+    </form>
+  </section>
+
+  <div class="message info" id="message">提示：请点该行的「编辑」按钮修改名称 / 类别 / 数量</div>
+
+  <section class="card">
+    <h2>物品清单 <span class="badge" id="item-count">3 条</span>
+      <button type="button" class="ghost small" id="refresh">刷新</button>
+    </h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:150px">id</th>
+          <th>名称</th>
+          <th>类别</th>
+          <th class="qty">数量</th>
+          <th style="width:150px"></th>
+        </tr>
+      </thead>
+      <tbody id="items-body"><tr><td class="mono">dom-01</td><td>鲜牛奶</td><td>食品</td><td class="qty">3</td><td class="actions"><button type="button" class="ghost small" data-action="edit" data-id="dom-01">编辑</button> <button type="button" class="danger small" data-action="delete" data-id="dom-01">删除</button></td></tr><tr><td class="mono">dom-02</td><td><input class="edit-input" data-field="name" maxlength="200" value="面包"></td><td><input class="edit-input" data-field="category" maxlength="200" list="category-options" value="食品"></td><td class="qty"><input class="edit-input" data-field="quantity" type="number" min="0" step="1" value="11"></td><td class="actions"><button type="button" class="small" data-action="save" data-id="dom-02">保存</button> <button type="button" class="ghost small" data-action="cancel">取消</button></td></tr><tr><td class="mono">2362d0d9c836</td><td>酱油</td><td>调味</td><td class="qty">4</td><td class="actions"><button type="button" class="ghost small" data-action="edit" data-id="2362d0d9c836">编辑</button> <button type="button" class="danger small" data-action="delete" data-id="2362d0d9c836">删除</button></td></tr></tbody>
+    </table>
+    <p class="empty" id="items-empty" hidden="">还没有物品，先在上方添加一条。</p>
+  </section>
+
+  <section class="card">
+    <h2>按类别汇总</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>类别</th>
+          <th class="qty">合计数量</th>
+        </tr>
+      </thead>
+      <tbody id="summary-body"><tr><td>调味</td><td class="qty">4</td></tr><tr><td>食品</td><td class="qty">14</td></tr></tbody>
+    </table>
+    <p class="empty" id="summary-empty" hidden="">暂无数据。</p>
+  </section>
+
+  <footer>数据文件：<code id="data-file">/opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-17-03adc1cd78a0/workdir/tmp/domcase/data.json</code></footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var state = { items: [], summary: [], editingId: null };
+
+  function byId(id) { return document.getElementById(id); }
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  var messageTimer = null;
+  function showMessage(text, kind) {
+    var box = byId('message');
+    box.textContent = text;
+    box.className = 'message ' + (kind || 'info');
+    box.hidden = false;
+    if (messageTimer) { window.clearTimeout(messageTimer); messageTimer = null; }
+    if (kind !== 'error') {
+      messageTimer = window.setTimeout(function () { box.hidden = true; }, 2600);
+    }
+  }
+
+  function request(method, path, body) {
+    var options = { method: method, headers: {} };
+    if (body !== undefined) {
+      options.headers['Content-Type'] = 'application/json';
+      options.body = JSON.stringify(body);
+    }
+    return fetch(path, options).then(function (response) {
+      return response.text().then(function (text) {
+        var data = null;
+        if (text) { try { data = JSON.parse(text); } catch (error) { data = null; } }
+        if (!response.ok) {
+          var reason = (data && data.error) ? data.error : ('HTTP ' + response.status);
+          throw new Error(reason);
+        }
+        return data;
+      });
+    });
+  }
+
+  var api = {
+    items: function () { return request('GET', '/api/items'); },
+    summary: function () { return request('GET', '/api/summary'); },
+    health: function () { return request('GET', '/api/health'); },
+    create: function (item) { return request('POST', '/api/items', item); },
+    update: function (id, changes) { return request('PUT', '/api/items/' + encodeURIComponent(id), changes); },
+    remove: function (id) { return request('DELETE', '/api/items/' + encodeURIComponent(id)); }
+  };
+
+  function renderItems() {
+    var body = byId('items-body');
+    var datalist = byId('category-options');
+    body.innerHTML = '';
+    byId('item-count').textContent = state.items.length + ' 条';
+    byId('items-empty').hidden = state.items.length > 0;
+
+    var categories = {};
+    state.items.forEach(function (item) { categories[item.category] = true; });
+    datalist.innerHTML = Object.keys(categories).sort().map(function (name) {
+      return '<option value="' + escapeHtml(name) + '"></option>';
+    }).join('');
+
+    state.items.forEach(function (item) {
+      var row = document.createElement('tr');
+      if (String(state.editingId) === String(item.id)) {
+        row.innerHTML =
+          '<td class="mono">' + escapeHtml(item.id) + '</td>' +
+          '<td><input class="edit-input" data-field="name" maxlength="200" value="' + escapeHtml(item.name) + '"></td>' +
+          '<td><input class="edit-input" data-field="category" maxlength="200" list="category-options" value="' + escapeHtml(item.category) + '"></td>' +
+          '<td class="qty"><input class="edit-input" data-field="quantity" type="number" min="0" step="1" value="' + escapeHtml(item.quantity) + '"></td>' +
+          '<td class="actions">' +
+            '<button type="button" class="small" data-action="save" data-id="' + escapeHtml(item.id) + '">保存</button> ' +
+            '<button type="button" class="ghost small" data-action="cancel">取消</button>' +
+          '</td>';
+      } else {
+        row.innerHTML =
+          '<td class="mono">' + escapeHtml(item.id) + '</td>' +
+          '<td>' + escapeHtml(item.name) + '</td>' +
+          '<td>' + escapeHtml(item.category) + '</td>' +
+          '<td class="qty">' + escapeHtml(item.quantity) + '</td>' +
+          '<td class="actions">' +
+            '<button type="button" class="ghost small" data-action="edit" data-id="' + escapeHtml(item.id) + '">编辑</button> ' +
+            '<button type="button" class="danger small" data-action="delete" data-id="' + escapeHtml(item.id) + '">删除</button>' +
+          '</td>';
+      }
+      body.appendChild(row);
+    });
+  }
+
+  function renderSummary() {
+    var body = byId('summary-body');
+    body.innerHTML = '';
+    byId('summary-empty').hidden = state.summary.length > 0;
+    state.summary.forEach(function (entry) {
+      var row = document.createElement('tr');
+      row.innerHTML =
+        '<td>' + escapeHtml(entry.category) + '</td>' +
+        '<td class="qty">' + escapeHtml(entry.total_quantity) + '</td>';
+      body.appendChild(row);
+    });
+  }
+
+  function reload() {
+    return Promise.all([api.items(), api.summary()]).then(function (results) {
+      state.items = (results[0] && results[0].items) || [];
+      state.summary = (results[1] && results[1].summary) || [];
+      renderItems();
+      renderSummary();
+    });
+  }
+
+  function readQuantity(input) {
+    var raw = String(input.value).trim();
+    if (!/^\d+$/.test(raw)) { throw new Error('数量必须是非负整数'); }
+    return parseInt(raw, 10);
+  }
+
+  byId('add-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    var name = byId('add-name').value.trim();
+    var category = byId('add-category').value.trim();
+    var quantity;
+    if (!name) { showMessage('名称不能为空', 'error'); return; }
+    if (!category) { showMessage('类别不能为空', 'error'); return; }
+    try { quantity = readQuantity(byId('add-quantity')); }
+    catch (error) { showMessage(error.message, 'error'); return; }
+
+    api.create({ name: name, category: category, quantity: quantity }).then(function (created) {
+      byId('add-name').value = '';
+      byId('add-quantity').value = '1';
+      byId('add-name').focus();
+      showMessage('已添加：' + created.name, 'ok');
+      return reload();
+    }).catch(function (error) {
+      showMessage('添加失败：' + error.message, 'error');
+    });
+  });
+
+  byId('items-body').addEventListener('click', function (event) {
+    var button = event.target.closest('button[data-action]');
+    if (!button) {
+      var cell = event.target.closest('td');
+      var editingRow = cell && cell.parentNode ? cell.parentNode.querySelector('input[data-field]') : null;
+      if (cell && !editingRow && !event.target.closest('input')) {
+        showMessage('提示：请点该行的「编辑」按钮修改名称 / 类别 / 数量', 'info');
+      }
+      return;
+    }
+    var action = button.getAttribute('data-action');
+    var id = button.getAttribute('data-id');
+
+    if (action === 'edit') {
+      state.editingId = id;
+      renderItems();
+      var first = byId('items-body').querySelector('input[data-field="name"]');
+      if (first) { first.focus(); }
+      return;
+    }
+    if (action === 'cancel') {
+      state.editingId = null;
+      renderItems();
+      return;
+    }
+    if (action === 'save') {
+      var row = button.closest('tr');
+      var inputs = row.querySelectorAll('input[data-field]');
+      var changes = {};
+      try {
+        changes.name = inputs[0].value.trim();
+        changes.category = inputs[1].value.trim();
+        changes.quantity = readQuantity(inputs[2]);
+      } catch (error) {
+        showMessage(error.message, 'error');
+        return;
+      }
+      if (!changes.name) { showMessage('名称不能为空', 'error'); return; }
+      if (!changes.category) { showMessage('类别不能为空', 'error'); return; }
+      api.update(id, changes).then(function () {
+        state.editingId = null;
+        showMessage('已保存修改', 'ok');
+        return reload();
+      }).catch(function (error) {
+        showMessage('保存失败：' + error.message, 'error');
+      });
+      return;
+    }
+    if (action === 'delete') {
+      if (!window.confirm('确定删除该物品？')) { return; }
+      api.remove(id).then(function () {
+        if (String(state.editingId) === String(id)) { state.editingId = null; }
+        showMessage('已删除', 'ok');
+        return reload();
+      }).catch(function (error) {
+        showMessage('删除失败：' + error.message, 'error');
+      });
+    }
+  });
+
+  byId('refresh').addEventListener('click', function () {
+    reload().then(function () { showMessage('已刷新', 'ok'); })
+      .catch(function (error) { showMessage('刷新失败：' + error.message, 'error'); });
+  });
+
+  byId('summary-body').addEventListener('click', function (event) {
+    if (!event.target.closest('td')) { return; }
+    showMessage('提示：汇总表仅供查看，请在「物品清单」中点击「编辑」按钮修改', 'info');
+  });
+
+  api.health().then(function (data) {
+    if (data && data.data_file) { byId('data-file').textContent = data.data_file; }
+  }).catch(function () { byId('data-file').textContent = '（无法读取）'; });
+
+  reload().catch(function (error) { showMessage('加载失败：' + error.message, 'error'); });
+})();
+</script>
+
+
+</body></html>

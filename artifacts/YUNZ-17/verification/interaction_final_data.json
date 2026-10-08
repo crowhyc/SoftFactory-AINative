@@ -1,0 +1,25 @@
+{
+  "items": [
+    {
+      "id": "dom-01",
+      "name": "鲜牛奶",
+      "category": "食品",
+      "quantity": 3,
+      "extra_note": "勿删我"
+    },
+    {
+      "id": "dom-02",
+      "name": "面包",
+      "category": "食品",
+      "quantity": 11
+    },
+    {
+      "id": "2362d0d9c836",
+      "name": "酱油",
+      "category": "调味",
+      "quantity": 4
+    }
+  ],
+  "schema_version": 42,
+  "note": "未知顶层键必须保留-DOM"
+}
