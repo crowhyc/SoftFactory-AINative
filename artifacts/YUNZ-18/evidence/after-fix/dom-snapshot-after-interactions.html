@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
+<html lang="zh-CN"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>清单管理</title>
@@ -102,18 +100,18 @@
   <section class="card">
     <h2>添加物品</h2>
     <form class="add" id="add-form" autocomplete="off">
-      <input id="add-name" placeholder="名称，例如：牛奶" maxlength="200" required>
-      <input id="add-category" placeholder="类别，例如：食品" list="category-options" maxlength="200" required>
-      <datalist id="category-options"></datalist>
-      <input id="add-quantity" type="number" min="0" step="1" value="1" required>
+      <input id="add-name" placeholder="名称，例如：牛奶" maxlength="200" required="">
+      <input id="add-category" placeholder="类别，例如：食品" list="category-options" maxlength="200" required="">
+      <datalist id="category-options"><option value="乳制品"></option><option value="调味"></option><option value="食品"></option></datalist>
+      <input id="add-quantity" type="number" min="0" step="1" value="1" required="">
       <button type="submit">添加</button>
     </form>
   </section>
 
-  <div class="message" id="message" hidden></div>
+  <div class="message info" id="message">提示：当前有未保存的编辑，请先「保存」或「取消」，再点击其它行编辑</div>
 
   <section class="card">
-    <h2>物品清单 <span class="badge" id="item-count">0 条</span>
+    <h2>物品清单 <span class="badge" id="item-count">3 条</span>
       <button type="button" class="ghost small" id="refresh">刷新</button>
     </h2>
     <table>
@@ -126,9 +124,9 @@
           <th style="width:150px"></th>
         </tr>
       </thead>
-      <tbody id="items-body"></tbody>
+      <tbody id="items-body"><tr data-id="dom-01"><td class="mono">dom-01</td><td>鲜牛奶</td><td data-edit="category" title="点击直接编辑类别">乳制品</td><td class="qty">3</td><td class="actions"><button type="button" class="ghost small" data-action="edit" data-id="dom-01">编辑</button> <button type="button" class="danger small" data-action="delete" data-id="dom-01">删除</button></td></tr><tr data-id="dom-02"><td class="mono">dom-02</td><td><input class="edit-input" data-field="name" maxlength="200" value="面包"></td><td><input class="edit-input" data-field="category" maxlength="200" list="category-options" value="食品"></td><td class="qty"><input class="edit-input" data-field="quantity" type="number" min="0" step="1" value="11"></td><td class="actions"><button type="button" class="small" data-action="save" data-id="dom-02">保存</button> <button type="button" class="ghost small" data-action="cancel">取消</button></td></tr><tr data-id="0eb6bfdec974"><td class="mono">0eb6bfdec974</td><td>酱油</td><td data-edit="category" title="点击直接编辑类别">调味</td><td class="qty">4</td><td class="actions"><button type="button" class="ghost small" data-action="edit" data-id="0eb6bfdec974">编辑</button> <button type="button" class="danger small" data-action="delete" data-id="0eb6bfdec974">删除</button></td></tr></tbody>
     </table>
-    <p class="empty" id="items-empty" hidden>还没有物品，先在上方添加一条。</p>
+    <p class="empty" id="items-empty" hidden="">还没有物品，先在上方添加一条。</p>
   </section>
 
   <section class="card">
@@ -140,12 +138,12 @@
           <th class="qty">合计数量</th>
         </tr>
       </thead>
-      <tbody id="summary-body"></tbody>
+      <tbody id="summary-body"><tr><td>乳制品</td><td class="qty">3</td></tr><tr><td>调味</td><td class="qty">4</td></tr><tr><td>食品</td><td class="qty">11</td></tr></tbody>
     </table>
-    <p class="empty" id="summary-empty" hidden>暂无数据。</p>
+    <p class="empty" id="summary-empty" hidden="">暂无数据。</p>
   </section>
 
-  <footer>数据文件：<code id="data-file">读取中……</code></footer>
+  <footer>数据文件：<code id="data-file">/opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-18-68cd224cda87/workdir/repro/domcase/data.json</code></footer>
 </div>
 
 <script>
@@ -389,5 +387,6 @@
   reload().catch(function (error) { showMessage('加载失败：' + error.message, 'error'); });
 })();
 </script>
-</body>
-</html>
+
+
+</body></html>

@@ -1,0 +1,71 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+curl_health=200
+清单管理小应用已启动：http://0.0.0.0:8817/
+数据文件：/opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-18-68cd224cda87/workdir/selftest/domcase/data.json（可读）
+按 Ctrl+C 停止。
+172.17.222.63 - "GET /api/health HTTP/1.1" 200 -
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  前置：页面渲染 3 行
+PASS  [A] 点击类别单元格出现可编辑输入控件
+PASS  [A] 进入编辑态反馈: "已进入行内编辑：修改「类别」后点「保存」生效"
+PASS  [A] 保存后页面显示
+PASS  [A] 保存后 API
+PASS  [A] 保存后磁盘
+PASS  [A] 保存后其余字段未受影响(名称)
+PASS  [A] 保存后其余字段未受影响(数量)
+PASS  [B] 取消后页面类别不变
+PASS  [B] 取消后 API 类别不变
+PASS  [B] 取消后磁盘类别不变
+PASS  [E] 他行未被隐式切换为编辑目标
+PASS  [E] 本行编辑态仍在
+PASS  [E] 未保存改动未被静默丢弃
+PASS  [E] 阻止时的明确反馈: "提示：当前有未保存的编辑，请先「保存」或「取消」，再点击其它行编辑"
+PASS  [E] 阻止期间未产生持久化写入
+PASS  [E] 点击他行「编辑」按钮未被隐式切换为编辑目标
+PASS  [E] 点击他行「编辑」按钮后本行编辑态仍在
+PASS  [E] 编辑按钮阻止反馈: "提示：当前有未保存的编辑，请先「保存」或「取消」，再编辑其它行"
+PASS  [E] 编辑按钮阻止期间未产生持久化写入
+PASS  [E] 保存后磁盘生效
+PASS  [E] 无进行中编辑时切换他行类别正常进入编辑态
+PASS  [C] 点击名称单元格给出提示
+PASS  [C] 名称提示文案: "提示：请点该行的「编辑」按钮修改名称 / 类别 / 数量"
+PASS  [C] 点击名称单元格不进入编辑态
+PASS  [C] 数量提示文案: "提示：请点该行的「编辑」按钮修改名称 / 类别 / 数量"
+PASS  [C] 点击数量单元格不进入编辑态
+PASS  [C] id 单元格提示文案: "提示：请点该行的「编辑」按钮修改名称 / 类别 / 数量"
+PASS  [C] 点击展示态单元格未改动磁盘
+PASS  [D] 汇总单元格给出提示
+PASS  [D] 汇总表无编辑控件
+PASS  未知顶层键 schema_version 保留
+PASS  未知顶层键 note 保留
+PASS  既有条目额外字段保留
+PASS  条目总数仍为 3
+FIX-SELFTEST 35/35 PASSED
+== final on-disk data.json ==
+{
+  "items": [
+    {
+      "id": "dom-01",
+      "name": "牛奶",
+      "category": "乳制品",
+      "quantity": 3,
+      "extra_note": "勿删我"
+    },
+    {
+      "id": "dom-02",
+      "name": "面包",
+      "category": "未保存E",
+      "quantity": 2
+    },
+    {
+      "id": "dom-03",
+      "name": "电池",
+      "category": "用品",
+      "quantity": 5
+    }
+  ],
+  "schema_version": 42,
+  "note": "未知顶层键必须保留-DOM"
+}
+== residual app.py processes (not started by this run) ==
+24790 24786 python3 /opt/SoftFactory-AINative/artifacts/YUNZ-10/app.py --host 0.0.0.0 --port 8817 --data /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-18-68cd224cda87/workdir/selftest/domcase/data.json

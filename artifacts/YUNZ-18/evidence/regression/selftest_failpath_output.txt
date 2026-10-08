@@ -1,0 +1,92 @@
+127.0.0.1 - "GET /api/health HTTP/1.1" 200 -
+127.0.0.1 - "GET / HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/items HTTP/1.1" 200 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "GET /api/items HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/items/5a621330248e HTTP/1.1" 200 -
+127.0.0.1 - "PUT /api/items/5a621330248e HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/items/5a621330248e HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/summary HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/items HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/summary HTTP/1.1" 200 -
+127.0.0.1 - "DELETE /api/items/be154dec1f3e HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/items/be154dec1f3e HTTP/1.1" 404 -
+127.0.0.1 - "GET /api/items HTTP/1.1" 200 -
+127.0.0.1 - "DELETE /api/items/%E4%B8%8D%E5%AD%98%E5%9C%A8%E7%9A%84id HTTP/1.1" 404 -
+127.0.0.1 - "PUT /api/items/%E4%B8%8D%E5%AD%98%E5%9C%A8%E7%9A%84id HTTP/1.1" 404 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 400 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 400 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 400 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 400 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 400 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 400 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 400 -
+127.0.0.1 - "PUT /api/items/5a621330248e HTTP/1.1" 400 -
+127.0.0.1 - "PATCH /api/items HTTP/1.1" 405 -
+127.0.0.1 - "GET /api/nope HTTP/1.1" 404 -
+127.0.0.1 - "GET /nope HTTP/1.1" 404 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "GET /api/items HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/summary HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/health HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/items HTTP/1.1" 200 -
+127.0.0.1 - "POST /api/items HTTP/1.1" 201 -
+127.0.0.1 - "PUT /api/items/keep-1 HTTP/1.1" 200 -
+127.0.0.1 - "GET /api/summary HTTP/1.1" 200 -
+127.0.0.1 - "DELETE /api/items/keep-2 HTTP/1.1" 200 -
+PASS  自测用临时数据文件、空闲端口（临时目录 /tmp/multica-task-3956511019/inventory-selftest-l01ajcdn）
+PASS  GET / 返回单页 HTML
+PASS  GET /api/items 初始为空
+PASS  POST /api/items 新增返回 201 与新物品
+PASS  POST /api/items 追加多条
+PASS  GET /api/items 返回全部条目
+PASS  GET /api/items/<id> 单条查询
+PASS  PUT /api/items/<id> 更新生效且不动未传字段
+PASS  GET /api/summary 按类别汇总正确
+PASS  GET /api/summary 与逐条累加一致
+PASS  DELETE /api/items/<id> 后该 id 返回 404
+PASS  DELETE 不存在的 id 返回 404
+PASS  PUT 不存在的 id 返回 404
+PASS  quantity 为负数返回 400
+PASS  quantity 非数字返回 400
+PASS  quantity 为小数返回 400
+PASS  POST 缺字段返回 400
+PASS  POST 空名称返回 400
+PASS  POST 请求体不是对象返回 400
+PASS  POST 请求体不是合法 JSON 返回 400
+PASS  PUT 无有效字段返回 400
+PASS  不支持的方法返回 405
+PASS  未知 /api 路径返回 404
+PASS  未知页面路径返回 404
+PASS  写入为原子替换且无临时文件残留
+PASS  20 路并发新增不丢数据
+PASS  预置 data.json 的既有条目可读且响应字段符合契约、文件未被改写
+PASS  新增后既有条目与未知顶层键全部保留
+PASS  更新既有条目时保留其额外字段与未知顶层键
+PASS  预置文件上的类别汇总正确
+PASS  删除仅移除目标条目且既有数据仍在
+FAIL  注入式断言翻转（故意失败）  -> 注入式断言翻转：故意失败，用于验证 FAIL 路径以非 0 退出
+PASS  自测未改动默认数据文件
+PASS  临时数据文件与临时目录已清理、无残留
+SELFTEST 33/34 PASSED

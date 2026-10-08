@@ -1,0 +1,32 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+== 启动服务：python3 app.py --host 127.0.0.1 --port 36179 --data /tmp/inventory-e2e-tyQuz8/preset.json
+PASS  服务在空闲端口启动，GET /api/health 可用
+PASS  GET / 返回 200
+PASS  GET / 返回单页 HTML 且引用 /api/items
+PASS  GET /api/items 返回 200
+PASS  预置的 2 条既有条目原样可读
+PASS  既有条目字段为 id/name/category/quantity
+PASS  POST /api/items 返回 201
+PASS  POST 返回体含新物品 id
+PASS  新增后共 3 条
+PASS  PUT 既有条目返回 200
+PASS  PUT 后 quantity 变为 9
+PASS  PUT 后 name 变为 既有物品A(改)
+PASS  PUT 未传的 category 未被改动
+PASS  GET /api/summary 返回 200
+PASS  按类别汇总正确（工具 9+2，食品 6）
+PASS  DELETE 既有条目返回 200
+PASS  删除后该 id 返回 404
+PASS  删除不存在的 id 返回 404
+PASS  删除后共 2 条
+PASS  quantity 为负数返回 400
+PASS  400 响应体含 error 字段
+PASS  quantity 非数字返回 400
+PASS  缺字段返回 400
+PASS  PUT 无有效字段返回 400
+PASS  不支持的方法返回 405
+PASS  未知 /api 路径返回 404
+PASS  文件级核验：既有条目 / 额外字段 / 未知顶层键全部保留，无临时文件残留
+PASS  随附 data.json 是合法 JSON 且 4 条样例条目字段完整
+E2E 28/28 PASSED
+e2e exit=0

@@ -217,7 +217,6 @@
 
     state.items.forEach(function (item) {
       var row = document.createElement('tr');
-      row.setAttribute('data-id', item.id);
       if (String(state.editingId) === String(item.id)) {
         row.innerHTML =
           '<td class="mono">' + escapeHtml(item.id) + '</td>' +
@@ -232,7 +231,7 @@
         row.innerHTML =
           '<td class="mono">' + escapeHtml(item.id) + '</td>' +
           '<td>' + escapeHtml(item.name) + '</td>' +
-          '<td data-edit="category" title="点击直接编辑类别">' + escapeHtml(item.category) + '</td>' +
+          '<td>' + escapeHtml(item.category) + '</td>' +
           '<td class="qty">' + escapeHtml(item.quantity) + '</td>' +
           '<td class="actions">' +
             '<button type="button" class="ghost small" data-action="edit" data-id="' + escapeHtml(item.id) + '">编辑</button> ' +
@@ -296,24 +295,8 @@
     var button = event.target.closest('button[data-action]');
     if (!button) {
       var cell = event.target.closest('td');
-      if (!cell || event.target.closest('input')) { return; }
-      var row = cell.parentNode;
-      var rowId = row ? row.getAttribute('data-id') : null;
-      if (cell.getAttribute('data-edit') === 'category') {
-        if (state.editingId !== null && String(state.editingId) !== String(rowId)) {
-          showMessage('提示：当前有未保存的编辑，请先「保存」或「取消」，再点击其它行编辑', 'info');
-          return;
-        }
-        if (String(state.editingId) === String(rowId)) { return; }
-        state.editingId = rowId;
-        renderItems();
-        var categoryInput = byId('items-body').querySelector('input[data-field="category"]');
-        if (categoryInput) { categoryInput.focus(); }
-        showMessage('已进入行内编辑：修改「类别」后点「保存」生效', 'info');
-        return;
-      }
-      var editingRow = row ? row.querySelector('input[data-field]') : null;
-      if (!editingRow) {
+      var editingRow = cell && cell.parentNode ? cell.parentNode.querySelector('input[data-field]') : null;
+      if (cell && !editingRow && !event.target.closest('input')) {
         showMessage('提示：请点该行的「编辑」按钮修改名称 / 类别 / 数量', 'info');
       }
       return;
@@ -322,10 +305,6 @@
     var id = button.getAttribute('data-id');
 
     if (action === 'edit') {
-      if (state.editingId !== null && String(state.editingId) !== String(id)) {
-        showMessage('提示：当前有未保存的编辑，请先「保存」或「取消」，再编辑其它行', 'info');
-        return;
-      }
       state.editingId = id;
       renderItems();
       var first = byId('items-body').querySelector('input[data-field="name"]');
