@@ -1,0 +1,19 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+核对时间(UTC): 2026-10-08T04:09:05Z
+git HEAD: ddc16c394f37ff458926d740ad13c6cdf6470ebd
+SHA256SUMS 条目数: 7
+README.md              disk=50a42736689922aa sums=50a42736689922aa gitHEAD=50a42736689922aa  OK
+app.py                 disk=c4a1b1218cddb5b2 sums=c4a1b1218cddb5b2 gitHEAD=c4a1b1218cddb5b2  OK
+data.json              disk=f28d242a62bfb9b4 sums=f28d242a62bfb9b4 gitHEAD=f28d242a62bfb9b4  OK
+e2e_output.txt         disk=70ebf36fa950b2c5 sums=70ebf36fa950b2c5 gitHEAD=70ebf36fa950b2c5  OK
+index.html             disk=363fbb6e06932c75 sums=363fbb6e06932c75 gitHEAD=363fbb6e06932c75  OK
+selftest_output.txt    disk=f414dd9a5dcb1d00 sums=f414dd9a5dcb1d00 gitHEAD=f414dd9a5dcb1d00  OK
+verify_e2e.sh          disk=5649b967c6651694 sums=5649b967c6651694 gitHEAD=5649b967c6651694  OK
+三链锁定: 全部一致

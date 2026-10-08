@@ -1,0 +1,11 @@
+核对时间(本地): 2026-10-08 12:09:05 CST
+node: v24.21.0
+npm: 11.19.0
+python3: Python 3.6.8
+browser chromium: absent
+browser chromium-browser: absent
+browser google-chrome: absent
+browser google-chrome-stable: absent
+browser playwright: absent
+py playwright: absent
+jsdom 连接方式: node 无法访问 127.0.0.1 回环，改走容器网关 172.18.0.1:<port>

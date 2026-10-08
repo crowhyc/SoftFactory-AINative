@@ -1,0 +1,106 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+== server.log ==
+清单管理小应用已启动：http://0.0.0.0:8892/
+数据文件：/opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-19-a69b746134fb/workdir/inter/domcase/data.json（可读）
+按 Ctrl+C 停止。
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+server: http://172.18.0.1:8892  data: /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-19-a69b746134fb/workdir/inter/domcase/data.json
+PASS  页面加载渲染 3 行
+PASS  条目计数徽标
+PASS  名称列渲染
+PASS  类别列渲染
+PASS  数量列渲染
+PASS  类别展示单元格带 data-edit 标记
+PASS  汇总渲染: [["用品","5"],["食品","5"]]
+PASS  新增后页面 4 行
+PASS  新增后 API 4 条
+PASS  新增后磁盘 4 条
+PASS  新增持久化 category
+PASS  新增持久化 quantity
+PASS  「编辑」按钮进入编辑态
+PASS  改名后页面显示
+PASS  改名后 API
+PASS  改名后磁盘
+PASS  改数量后页面显示
+PASS  改数量后 API
+PASS  改数量后磁盘
+PASS  取消后页面名称不变
+PASS  取消后 API 名称不变
+PASS  取消后磁盘名称不变
+PASS  [A] 点击「类别」单元格进入行内编辑态
+PASS  [A] 聚焦到类别输入框
+     [A] 点击类别单元格后反馈: "已进入行内编辑：修改「类别」后点「保存」生效"
+PASS  [A] 类别输入框初值为原类别
+PASS  [A] 类别保存后页面显示
+PASS  [A] 类别保存后 API
+PASS  [A] 类别保存后 磁盘
+PASS  [A] 保存未牵连名称
+PASS  [A] 保存未牵连数量
+PASS  [C] 点击「名称」单元格反馈: "提示：请点该行的「编辑」按钮修改名称 / 类别 / 数量"
+PASS  [C] 名称单元格有明确提示
+PASS  [C] 名称单元格未进入编辑态
+PASS  [C] 数量单元格有明确提示
+PASS  [C] 数量单元格未进入编辑态
+PASS  [C] id 单元格有明确提示
+PASS  [C] 计数未变(无写入)
+PASS  [D] 点击汇总单元格反馈: "提示：汇总表仅供查看，请在「物品清单」中点击「编辑」按钮修改"
+PASS  [D] 汇总表有明确提示
+PASS  [D] 汇总表无编辑控件
+PASS  [A] 汇总已按新类别更新: [["乳制品","3"],["用品","5"],["调味","4"],["食品","11"]]
+PASS  [E] 准备态：editingId=dom-02
+PASS  [E] 点他行「类别」单元格反馈: "提示：当前有未保存的编辑，请先「保存」或「取消」，再点击其它行编辑"
+PASS  [E] 有明确反馈(非静默)
+PASS  [E] 未隐式切换编辑目标
+PASS  [E] 本行未保存改动仍在
+PASS  [E] 他行未被置入编辑态
+PASS  [E] 未产生持久化写入
+PASS  [E] 点他行「编辑」按钮反馈: "提示：当前有未保存的编辑，请先「保存」或「取消」，再编辑其它行"
+PASS  [E] 点他行「编辑」按钮有明确反馈
+PASS  [E] 编辑目标仍为 dom-02
+PASS  [E] 未保存改动仍保留
+PASS  [E] 未产生持久化写入(编辑按钮)
+PASS  [E] 无进行中编辑时切换正常(不过度阻止)
+PASS  空名称明确报错
+PASS  空名称未写入
+PASS  空类别明确报错
+PASS  空类别未写入
+PASS  负数量明确报错
+PASS  负数量未写入
+PASS  负数量条目未落库
+PASS  删除后页面移除
+PASS  删除后 API 移除
+PASS  删除后磁盘移除
+PASS  未知顶层键 schema_version 保留
+PASS  未知顶层键 note 保留
+PASS  既有条目额外字段保留
+dom snapshot -> /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-19-a69b746134fb/workdir/inter/domcase/dom-snapshot.html
+INTERACTION 67/67 PASSED
+== final on-disk data.json ==
+{
+  "items": [
+    {
+      "id": "dom-01",
+      "name": "鲜牛奶",
+      "category": "乳制品",
+      "quantity": 3,
+      "extra_note": "勿删我"
+    },
+    {
+      "id": "dom-02",
+      "name": "面包",
+      "category": "食品",
+      "quantity": 11
+    },
+    {
+      "id": "39dfd91834e5",
+      "name": "酱油",
+      "category": "调味",
+      "quantity": 4
+    }
+  ],
+  "schema_version": 42,
+  "note": "未知顶层键必须保留-DOM"
+}
+== residual app.py processes not started by this run ==
+29064 29060 bash inter/run_interaction.sh /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-19-a69b746134fb/workdir/repro/app.py
+interaction rc=0

@@ -1,0 +1,9 @@
+{
+  "items": [
+    {"id":"dom-01","name":"牛奶","category":"食品","quantity":3,"extra_note":"勿删我"},
+    {"id":"dom-02","name":"面包","category":"食品","quantity":2},
+    {"id":"dom-03","name":"电池","category":"用品","quantity":5}
+  ],
+  "schema_version": 42,
+  "note": "未知顶层键必须保留-DOM"
+}

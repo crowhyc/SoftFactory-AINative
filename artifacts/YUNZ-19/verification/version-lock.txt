@@ -1,0 +1,27 @@
+YUNZ-19 版本三链锁定（核对时间 2026-10-08T04:09:05Z / 2026-10-08 12:09:05 CST）
+被验证对象：/opt/SoftFactory-AINative/artifacts/YUNZ-10/（当前交付版本）
+git HEAD：ddc16c394f37ff458926d740ad13c6cdf6470ebd（task(YUNZ-18)：修复 YUNZ-10 缺陷 D-1，点击类别单元格进入行内编辑态）
+
+三链 = ① 磁盘现场 sha256 ② 交付目录 SHA256SUMS 条目 ③ git HEAD 提交 blob sha256
+文件名                  磁盘sha256(前16)   SHA256SUMS(前16)   gitHEAD-blob(前16)   一致
+README.md               50a42736689922aa   50a42736689922aa   50a42736689922aa   OK
+app.py                  c4a1b1218cddb5b2   c4a1b1218cddb5b2   c4a1b1218cddb5b2   OK
+data.json               f28d242a62bfb9b4   f28d242a62bfb9b4   f28d242a62bfb9b4   OK
+e2e_output.txt          70ebf36fa950b2c5   70ebf36fa950b2c5   70ebf36fa950b2c5   OK
+index.html              363fbb6e06932c75   363fbb6e06932c75   363fbb6e06932c75   OK
+selftest_output.txt     f414dd9a5dcb1d00   f414dd9a5dcb1d00   f414dd9a5dcb1d00   OK
+verify_e2e.sh           5649b967c6651694   5649b967c6651694   5649b967c6651694   OK
+结论：7/7 三链全部一致。
+
+index.html 完整 sha256：
+  磁盘            363fbb6e06932c758040a0a7e6c5be0e8ac25b2c5a79835206e829d4b874989f
+  SHA256SUMS      363fbb6e06932c758040a0a7e6c5be0e8ac25b2c5a79835206e829d4b874989f
+  git HEAD blob   363fbb6e06932c758040a0a7e6c5be0e8ac25b2c5a79835206e829d4b874989f
+  与 YUNZ-18 报告一致。
+
+修复前 index.html（git HEAD^ = cbc645d 的 blob）sha256：
+  92e3d4543c5d8aeddd722d8a2164a3092c3cebb1b4defcecfd3ccafdf137efb0
+  与 YUNZ-18 evidence/index.html.before 一致。
+
+交付目录自洽：cd /opt/SoftFactory-AINative/artifacts/YUNZ-10 && sha256sum -c SHA256SUMS -> 7/7 OK，exit 0
+只读约束：全程未写入 YUNZ-10/YUNZ-14/YUNZ-15/YUNZ-17/YUNZ-18；所有运行在临时目录副本 + 临时数据文件上进行。

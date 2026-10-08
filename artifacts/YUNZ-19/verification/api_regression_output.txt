@@ -1,0 +1,60 @@
+PASS  GET /api/items 200
+PASS  既有条目 3 条可读
+PASS  API 响应字段符合契约(4 字段)
+PASS  磁盘既有额外字段 extra_note 保留
+PASS  GET /api/summary 200
+PASS  汇总 食品=5(3+2)
+PASS  汇总 用品=5
+PASS  POST /api/items 201
+PASS  POST 返回新物品名
+PASS  POST 忽略请求体自带 id
+PASS  POST 磁盘新增 4 条
+PASS  GET 单条 200
+PASS  GET 单条名称
+PASS  GET 不存在 id 404
+PASS  PUT 200
+PASS  PUT 只改 quantity
+PASS  PUT 未牵连 name
+PASS  PUT 改 category
+PASS  PUT 后磁盘 category
+PASS  PUT 不存在 id 404
+PASS  POST 非法输入 缺字段 400
+PASS  POST 非法输入 缺字段 错误体含 error
+PASS  POST 非法输入 空名称 400
+PASS  POST 非法输入 空名称 错误体含 error
+PASS  POST 非法输入 负数量 400
+PASS  POST 非法输入 负数量 错误体含 error
+PASS  POST 非法输入 小数数量 400
+PASS  POST 非法输入 小数数量 错误体含 error
+PASS  POST 非法输入 非数字数量 400
+PASS  POST 非法输入 非数字数量 错误体含 error
+PASS  POST 非法 JSON 400
+PASS  PUT 空字段 400
+PASS  未知顶层键 schema_version 保留
+PASS  未知顶层键 note 保留
+PASS  未知顶层键 custom_top 保留
+PASS  既有条目 keep-1/keep-3 仍在
+PASS  既有条目额外字段 extra_note 保留
+PASS  PUT 既有条目 200
+PASS  更新既有条目后额外字段保留
+PASS  更新既有条目后未知顶层键保留
+PASS  DELETE 200
+PASS  DELETE 返回 deleted
+PASS  DELETE 后单条 404
+PASS  DELETE 不存在 404
+PASS  删除仅移除目标，其余 3 条仍在
+PASS  删除后未知顶层键保留
+PASS  写入原子无临时残留
+PASS  仅标准库无第三方依赖
+PASS  PATCH 405
+PASS  未知 /api 路径 404
+PASS  未知页面 404
+== server.log tail ==
+127.0.0.1 - "GET /api/items/af1cfc3fa272 HTTP/1.1" 404 -
+127.0.0.1 - "DELETE /api/items/af1cfc3fa272 HTTP/1.1" 404 -
+127.0.0.1 - "PATCH /api/items HTTP/1.1" 405 -
+127.0.0.1 - "GET /api/nope HTTP/1.1" 404 -
+127.0.0.1 - "GET /nope HTTP/1.1" 404 -
+
+API_REGRESSION 51/51 PASSED
+api rc=0

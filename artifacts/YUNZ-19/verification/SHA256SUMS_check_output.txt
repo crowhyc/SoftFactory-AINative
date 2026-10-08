@@ -1,0 +1,8 @@
+app.py: OK
+index.html: OK
+data.json: OK
+verify_e2e.sh: OK
+README.md: OK
+selftest_output.txt: OK
+e2e_output.txt: OK
+rc=0

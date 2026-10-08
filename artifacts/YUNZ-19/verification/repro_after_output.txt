@@ -1,0 +1,7 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+点击前类别展示值: "食品"
+是否出现 input[data-field="category"]: true
+反馈文案: "已进入行内编辑：修改「类别」后点「保存」生效"
+磁盘类别(点击后): "食品"
+API 类别(点击后): "食品"
+CELL_CLICK_ENTER_EDIT=YES
