@@ -225,7 +225,15 @@
     var workbook = XLSX.read(templateBytes, { type: 'array', cellStyles: true });
     var sheet = workbook.Sheets[workbook.SheetNames[0]];
     applyExportRows(sheet, exportRows(tasks));
+    stampExportLabel(sheet, new Date());
     return workbook;
+  }
+
+  /** CH-6：在 M1 写入导出日期标签（Asia/Shanghai，精确到分钟）。
+   *  仅新增 M1 一个单元格；第 1/2 行原文、A1:C1 合并与 A–K 数据区保持不动。 */
+  function stampExportLabel(sheet, at) {
+    var when = (at instanceof Date) ? at.toISOString() : String(at);
+    sheet['M1'] = { t: 's', v: '导出日期：' + formatInTz(when, HISTORY_TZ).slice(0, 16) };
   }
 
   /** 日报：单文件两个 sheet（阻塞与延期 / 当日变更），浏览器本地生成，不依赖模板。 */
@@ -297,6 +305,7 @@
     exportRows: exportRows,
     applyExportRows: applyExportRows,
     buildExportWorkbook: buildExportWorkbook,
+    stampExportLabel: stampExportLabel,
     blockedRows: blockedRows,
     changeRows: changeRows,
     buildDailyWorkbook: buildDailyWorkbook,

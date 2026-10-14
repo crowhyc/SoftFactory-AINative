@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# YUNZ-27 / 变更包 #2：新增作者自测矩阵（11 项）总入口。
+# YUNZ-27 / 变更包 #2：新增作者自测矩阵（01–14）总入口。
+# 覆盖变更 CH-1…CH-7：操作列/日期状态常显/负责人池化/新增人员/日报导出/导出日期标签/新增人员写审计。
 # 浏览器项跑在 playwright Chromium 容器内（宿主 CentOS 7 无法直接跑 Chromium），
 # 服务端项用 Node 标准库脚本；每项留独立日志，完整输出见 $OUT。
 # 用法：bash tests/verify_stage7.sh [输出目录]
@@ -89,8 +90,8 @@ run_item 07 "日报「阻塞与延期」sheet：仅阻塞/延期行，A–K + �
   "require '$BROWSER_LOG' 'PASS  矩阵7a 日报文件名与日期口径正确' 'PASS  矩阵7b 日报为单个 workbook、两个 sheet' 'PASS  矩阵7c 阻塞与延期表头' 'PASS  矩阵7d 阻塞与延期 sheet 恰好'"
 run_item 08 "日报「当日变更」sheet：字段级逐行、旧值→新值、时间、操作身份" \
   "require '$BROWSER_LOG' 'PASS  矩阵8a 当日变更表头正确' 'PASS  矩阵8b 当日变更每行 = 一个被改动的字段' 'PASS  矩阵8c 当日变更同一任务按时间升序' && require '$SERVER_LOG' 'PASS  矩阵8a audit.log 每条记录带 old/new 映射' 'PASS  矩阵8b GET /api/history 字段级记录' 'PASS  矩阵8c 自然日口径 [00:00:00, 次日 00:00:00) 开区间'"
-run_item 09 "原 WBS 导出不含 status、第 1/2 行逐字一致、A–K 保真" \
-  "require '$BROWSER_LOG' 'PASS  矩阵9a 原 WBS 导出文件名保持' 'PASS  矩阵9b 原 WBS 导出第 1/2 行逐字与源模板一致' 'PASS  矩阵9c 原 WBS 导出数据区不含 status' && python3 tests/export_verify.py '$BROWSER_OUT/蓉城战役WBS-'\"\$(date +%Y%m%d)\"'.xlsx' public/template.xlsx '$BROWSER_OUT/wbs-at-export.json' 36"
+run_item 09 "原 WBS 导出不含 status、第 1/2 行 A–K 逐字一致、A–K 保真" \
+  "require '$BROWSER_LOG' 'PASS  矩阵9a 原 WBS 导出文件名保持' 'PASS  矩阵9b 原 WBS 导出第 1/2 行 A–K 逐字与源模板一致' 'PASS  矩阵9c 原 WBS 导出数据区不含 status' && python3 tests/export_verify.py '$BROWSER_OUT/蓉城战役WBS-'\"\$(date +%Y%m%d)\"'.xlsx' public/template.xlsx '$BROWSER_OUT/wbs-at-export.json' 36"
 run_item 10 "旧数据兼容：老 wbs.json 可读可保存；老/损坏 audit.log 不报错" \
   "require '$SERVER_LOG' 'PASS  矩阵10a 旧格式（无 old/new）行与损坏行被跳过' 'PASS  矩阵10b 老 wbs.json（无新增字段）可读、可保存'"
 run_item 11 "三端一致 + 刷新持久 + 409 非覆盖 + 重启持久 + health" \
@@ -98,9 +99,14 @@ run_item 11 "三端一致 + 刷新持久 + 409 非覆盖 + 重启持久 + health
 run_item 12 "回归子集：D-3 遮罩级联 / 验收1 / 验收3 / 验收4 / 无 pageerror" \
   "require '$BROWSER_LOG' 'PASS  回归(D-3) 进入工作台后身份遮罩 [hidden] 级联生效' 'PASS  回归(D-3) 工作台可见并渲染 36 行' 'PASS  验收1a 身份选择页渲染九身份' 'PASS  验收1b 刷新（localStorage 记忆）后身份保持' 'PASS  验收3 普通负责人本人行（行编辑态）可编辑并保存' 'PASS  验收4 他人行只读' 'PASS  全程无 pageerror' 'PASS  全程无 console error'"
 
+run_item 13 "CH-6 导出 M1 日期标签（Asia/Shanghai，仅新增 M1，不改原文）" \
+  "require '$BROWSER_LOG' 'PASS  矩阵13a（CH-6）' 'PASS  矩阵13b（CH-6）' && python3 tests/export_verify.py '$BROWSER_OUT/蓉城战役WBS-'\"\$(date +%Y%m%d)\"'.xlsx' public/template.xlsx '$BROWSER_OUT/wbs-at-export.json' 36"
+run_item 14 "CH-7 新增人员写 identity_added 审计 + 日报「当日变更」含该行 + 越权被拒" \
+  "require '$BROWSER_LOG' 'PASS  矩阵14a（CH-7）' 'PASS  矩阵14b（CH-7）' 'PASS  矩阵14c（CH-7）' && require '$SERVER_LOG' 'PASS  矩阵14a（CH-7）' 'PASS  矩阵14b（CH-7）' 'PASS  矩阵14c（CH-7）' 'PASS  矩阵14d（CH-7）'"
+
 echo | tee -a "$SUMMARY"
 if [ "$FAILED" -eq 0 ]; then
-  echo "结论：新增自测矩阵 01–12 全部通过（浏览器用例集 $BROWSER_RC / 服务端用例集 $SERVER_RC）" | tee -a "$SUMMARY"
+  echo "结论：新增自测矩阵 01–14 全部通过（浏览器用例集 $BROWSER_RC / 服务端用例集 $SERVER_RC）" | tee -a "$SUMMARY"
 else
   echo "结论：存在失败项，见上方与各项日志" | tee -a "$SUMMARY"
 fi

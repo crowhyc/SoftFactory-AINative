@@ -194,6 +194,8 @@ def main():
     # 5) 数据区之外的非数据单元格保持原样
     changed = []
     for ref, cell in tmpl['cells'].items():
+        if ref == 'M1':
+            continue  # CH-6：M1 是本次唯一有意新增的单元格，单独断言
         letter, row = split(ref)
         inside = 3 <= row <= 38 and col_index(letter) <= 10
         if inside:
@@ -208,6 +210,24 @@ def main():
         ok('数据区（A3:K38）之外的非数据单元格内容保持原样', '%d 个模板单元格核对' % len(tmpl['cells']))
     else:
         bad('非数据单元格被改动', '; '.join(changed[:6]))
+
+    # 5b) CH-6：导出日期标签（仅新增 M1，Asia/Shanghai，YYYY-MM-DD HH:mm）
+    m1 = out['cells'].get('M1', {}).get('v', '')
+    if re.match(r'^导出日期：\d{4}-\d{2}-\d{2} \d{2}:\d{2}$', m1 or ''):
+        ok('M1 写入导出日期标签（Asia/Shanghai，精确到分钟）', repr(m1))
+    else:
+        bad('M1 导出日期标签缺失或格式不符', '实际 %r' % m1)
+    tmpl_m1 = tmpl['cells'].get('M1', {}).get('v', '')
+    if tmpl_m1 == '':
+        ok('模板 M1 原为空（导出为纯新增，非改写原文）', '模板 M1=%r' % tmpl_m1)
+    else:
+        bad('模板 M1 非空，无法判定为纯新增', '模板 M1=%r' % tmpl_m1)
+    row1_diff = sorted(ref for ref in out['cells'] if re.match(r'^[A-Z]+1$', ref)
+                       and out['cells'][ref].get('v', '') != tmpl['cells'].get(ref, {}).get('v', ''))
+    if row1_diff == ['M1']:
+        ok('第 1 行仅 M1 一处变化（A–K 原文与其余单元格不变）', str(row1_diff))
+    else:
+        bad('第 1 行变化单元格异常', '实际变化 %s' % row1_diff)
 
     # 6) 样式部件说明（SheetJS 0.18.5 社区版不解析/不写出单元格样式）
     if out['styles_len'] < tmpl['styles_len']:

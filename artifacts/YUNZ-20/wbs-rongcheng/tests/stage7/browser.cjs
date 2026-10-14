@@ -421,9 +421,10 @@ function stopServer() {
       /^蓉城战役WBS-\d{8}\.xlsx$/.test(String(wbsExport.name)) &&
       JSON.stringify(wbsFidelity.capture_data) === JSON.stringify(expectedWbsRows),
       { name: wbsExport.name, rows: wbsFidelity.capture_data.length, expect: expectedWbsRows.length });
-    check('矩阵9b 原 WBS 导出第 1/2 行逐字与源模板一致（A–M 表头，无状态列）',
-      JSON.stringify(wbsFidelity.capture_row1) === JSON.stringify(wbsFidelity.template_row1) &&
-      JSON.stringify(wbsFidelity.capture_row2) === JSON.stringify(wbsFidelity.template_row2) &&
+    const rowA2K = (row) => (row || []).slice(0, 11);
+    check('矩阵9b 原 WBS 导出第 1/2 行 A–K 逐字与源模板一致（无状态列；CH-6 仅新增 M1 标签，不改原文）',
+      JSON.stringify(rowA2K(wbsFidelity.capture_row1)) === JSON.stringify(rowA2K(wbsFidelity.template_row1)) &&
+      JSON.stringify(rowA2K(wbsFidelity.capture_row2)) === JSON.stringify(rowA2K(wbsFidelity.template_row2)) &&
       wbsFidelity.capture_row2[3] === '负责人' && wbsFidelity.capture_row2[10] === '进展说明' && wbsFidelity.capture_row2[11] === '',
       { row2: wbsFidelity.capture_row2 });
     const dataFlat = JSON.stringify(wbsFidelity.capture_data);
@@ -431,6 +432,16 @@ function stopServer() {
       dataFlat.indexOf('status') === -1 && STATUSES.every((status) => dataFlat.indexOf(status) === -1) &&
       wbsFidelity.sheet_names.length === 1,
       { has_status_literal: dataFlat.indexOf('status') !== -1, sheets: wbsFidelity.sheet_names });
+    /* ---------- 矩阵13（CH-6）：M1 导出日期标签（Asia/Shanghai，仅新增 M1） ---------- */
+    const m1 = String(wbsFidelity.capture_row1[12] == null ? '' : wbsFidelity.capture_row1[12]);
+    const m2 = String(wbsFidelity.capture_row2[12] == null ? '' : wbsFidelity.capture_row2[12]);
+    check('矩阵13a（CH-6）原 WBS 导出 M1 写入「导出日期：YYYY-MM-DD HH:mm」（Asia/Shanghai 当日）',
+      /^导出日期：\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(m1) && m1.slice(5, 15) === today(),
+      { m1, today: today() });
+    check('矩阵13b（CH-6）M1 为唯一新增单元格：模板 M1/M2 原为空、A1:C1 合并与 A–K 数据区不受影响',
+      String(wbsFidelity.template_row1[12] == null ? '' : wbsFidelity.template_row1[12]) === '' && m2 === '' &&
+      wbsFidelity.template_row_count === wbsFidelity.capture_data.length + 2,
+      { template_m1: wbsFidelity.template_row1[12], m2: m2, template_rows: wbsFidelity.template_row_count });
 
     /* ---------- 矩阵5：项目负责人改派负责人 + 保存 + 三端一致 + 刷新持久 ---------- */
     const beforeOwner = await cellValue('T001', 'owner');
@@ -564,6 +575,35 @@ function stopServer() {
     const persisted = (await api('/api/wbs')).body;
     check('矩阵6g 新增人员已落盘 wbs.json（可通过 API / 磁盘复核）',
       persisted.identities.indexOf('赵新') !== -1 && diskDoc().identities.indexOf('赵新') !== -1, persisted.identities);
+
+    /* ---------- 矩阵14（CH-7）：新增人员写 identity_added 审计 + 日报「当日变更」含该行 ---------- */
+    const auditEntries = fs.readFileSync(path.join(DATA_DIR, 'audit.log'), 'utf8').trim().split('\n')
+      .map((line) => { try { return JSON.parse(line); } catch (e) { return null; } }).filter(Boolean);
+    const identityAdds = auditEntries.filter((e) => e && e.type === 'identity_added');
+    const zhaoAdds = identityAdds.filter((e) => e.name === '赵新');
+    check('矩阵14a（CH-7）新增人员写入 identity_added 审计（identity=操作身份 / name=新增姓名 / at=时间）',
+      zhaoAdds.length === 1 && zhaoAdds[0].identity === '项目负责人' && typeof zhaoAdds[0].at === 'string' &&
+      Date.parse(zhaoAdds[0].at) > 0 && identityAdds.every((e) => e.name !== '王言'),
+      { entries: identityAdds.length, sample: zhaoAdds[0] });
+
+    const addHistory = (await api('/api/history?tz=' + encodeURIComponent(TZ) + '&date=' + today())).body;
+    const addEvents = (addHistory.records || []).filter((r) => r.field === '人员池' && r.new === '赵新');
+    check('矩阵14b（CH-7）GET /api/history 返回新增人员事件（改动字段 人员池、旧值空、新值姓名、操作身份照实）',
+      addEvents.length === 1 && addEvents[0].old === '' && addEvents[0].task === '新增人员 赵新' && addEvents[0].identity === '项目负责人',
+      addEvents[0]);
+
+    const daily2 = await capture('#daily-btn');
+    const daily2Name = String(daily2.name || 'daily-after-add.xlsx').replace(/\.xlsx$/, '-含新增人员.xlsx');
+    if (daily2.base64) fs.writeFileSync(path.join(OUTDIR, daily2Name), Buffer.from(daily2.base64, 'base64'));
+    const changeSheet2 = (daily2.sheets || []).find((sheet) => sheet.name === '当日变更');
+    const addRow2 = changeSheet2 ? changeSheet2.rows.find((row) => row[5] === '人员池' && row[7] === '赵新') : null;
+    const poolRows2 = changeSheet2 ? changeSheet2.rows.filter((row) => row[5] === '人员池') : [];
+    check('矩阵14c（CH-7）日报「当日变更」sheet 含「新增人员 赵新」一行（任务项=新增人员 赵新 / 改动字段=人员池 / 旧值空 / 新值=姓名 / 操作身份照实）',
+      !!addRow2 && addRow2[0] === '' && addRow2[1] === '' && addRow2[2] === '' && addRow2[3] === '新增人员 赵新' &&
+      addRow2[4] === '' && addRow2[5] === '人员池' && addRow2[6] === '' && addRow2[7] === '赵新' &&
+      /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(String(addRow2[8])) && addRow2[9] === '项目负责人' &&
+      poolRows2.length === 1,
+      addRow2);
 
     await page.click('#home-btn');
     await page.waitForTimeout(400);

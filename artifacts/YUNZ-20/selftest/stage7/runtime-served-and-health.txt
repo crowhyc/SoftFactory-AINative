@@ -1,36 +1,41 @@
-# YUNZ-27 / 变更包 #2 运行现场（部署后）
-recorded_at: 2026-10-14T20:23:27+0800
+# YUNZ-27 / 变更包 #2（含 CH-6 / CH-7）运行现场（部署后）
+recorded_at: 2026-10-14T20:36:49+0800
 
 ## 容器与镜像
-container=wbs-rongcheng image=wbs-rongcheng:20261014202304 status=Up 21 seconds (health: starting)
-NetworkMode=host RestartPolicy=unless-stopped Mounts=/opt/wbs-rongcheng/data->/app/data ImageID=sha256:d103a098d830cd8e558e24e0ca4c2d08b064626765db27b79c20a98891a92a84
+container=wbs-rongcheng image=wbs-rongcheng:20261014203454 status=Up About a minute (healthy)
+NetworkMode=host RestartPolicy=unless-stopped ImageID=sha256:6bc9b7e5a7ffdcd99bbc7db7a73b7ae44bc9d1ceb0e801fc89470ac3b65cfa8b
+Mounts=/opt/wbs-rongcheng/data->/app/data 
 
-## health
-{"ok":true,"service":"wbs-rongcheng","revision":0}
+## health（Sponsor 补充口径：D-0006 授权对外暴露，绑定 0.0.0.0:4180）
+127.0.0.1: {"ok":true,"service":"wbs-rongcheng","revision":0}
+0.0.0.0:   {"ok":true,"service":"wbs-rongcheng","revision":0}
+loopback_exit=200
+anyaddr_exit=200
 
-## 回环绑定（宿主 ss -ltn）
-LISTEN     0      128    127.0.0.1:4180                     *:*                  
+## 监听套接字（宿主 ss -ltn，0.0.0.0:4180）
+LISTEN     0      128          *:4180                     *:*                  
 
 ## 服务端实际返回的静态资源 sha256 与源码比对
 index.html   served=3f73e1c1b5ead8c338f842fb730d54b78fc0e39144c6c4faa7553c337aee9a15 source=3f73e1c1b5ead8c338f842fb730d54b78fc0e39144c6c4faa7553c337aee9a15 MATCH
-app.js       served=24cb0ec27f249289d328271085a2c45584971a68f350c4f34f92e4d91d8fc610 source=24cb0ec27f249289d328271085a2c45584971a68f350c4f34f92e4d91d8fc610 MATCH
+app.js       served=7db0a47a0a7961d44339ce3a712b39526f358917354656d36126e6bd402a6ac5 source=7db0a47a0a7961d44339ce3a712b39526f358917354656d36126e6bd402a6ac5 MATCH
 styles.css   served=8b3d63929ffed604c851bf978ecd8395f3efb997480ba103e1976bcd85180f30 source=8b3d63929ffed604c851bf978ecd8395f3efb997480ba103e1976bcd85180f30 MATCH
 
 ## 镜像内源码与运行目录源码比对
-server.js   image=d72ed30559d90e1d9659ac409dd49f835c7a84de019d7170fe9a339d30ad9f34 source=d72ed30559d90e1d9659ac409dd49f835c7a84de019d7170fe9a339d30ad9f34 MATCH
-app.js      image=24cb0ec27f249289d328271085a2c45584971a68f350c4f34f92e4d91d8fc610 source=24cb0ec27f249289d328271085a2c45584971a68f350c4f34f92e4d91d8fc610 MATCH
-image files: d72ed30559d90e1d9659ac409dd49f835c7a84de019d7170fe9a339d30ad9f34  /app/server.js 3f73e1c1b5ead8c338f842fb730d54b78fc0e39144c6c4faa7553c337aee9a15  /app/public/index.html 
+server.js              image=0e6703b93a0bf72aa3a976edc7c9e3b0d913fac3b3f3a770ce741ec763dd50e1 source=0e6703b93a0bf72aa3a976edc7c9e3b0d913fac3b3f3a770ce741ec763dd50e1 MATCH
+public/app.js          image=7db0a47a0a7961d44339ce3a712b39526f358917354656d36126e6bd402a6ac5 source=7db0a47a0a7961d44339ce3a712b39526f358917354656d36126e6bd402a6ac5 MATCH
+public/index.html      image=3f73e1c1b5ead8c338f842fb730d54b78fc0e39144c6c4faa7553c337aee9a15 source=3f73e1c1b5ead8c338f842fb730d54b78fc0e39144c6c4faa7553c337aee9a15 MATCH
+public/styles.css      image=8b3d63929ffed604c851bf978ecd8395f3efb997480ba103e1976bcd85180f30 source=8b3d63929ffed604c851bf978ecd8395f3efb997480ba103e1976bcd85180f30 MATCH
 
 ## data/wbs.json / audit.log（交付态）
 revision=0 tasks=36 identities=项目负责人/李欢/王言/张航瑞/郑述文/崔文建/余宇/黄逸偲/陈江
-a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5  data/wbs.json
-2182e32eec3e13a8ad61ddf0c124c0f110f7db455d8efa873992e3f5d53bb29e  data/audit.log
+a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5  wbs.json
+e97509d25c5f5a0131c44af38fa48d691d8046fa6b6b45531e577d076a73bfde  audit.log
 
 ## state/previous.env
-PREV_IMAGE=wbs-rongcheng:20261014202245
-PREV_IMAGE_ID=sha256:d103a098d830cd8e558e24e0ca4c2d08b064626765db27b79c20a98891a92a84
-NEW_IMAGE=wbs-rongcheng:20261014202304
-DATA_BAK=/opt/wbs-rongcheng/data/wbs.json.20261014202304.bak
-DEPLOYED_AT=2026-10-14T20:23:05+0800
-BIND_HOST=127.0.0.1
+PREV_IMAGE=wbs-rongcheng:20261014203438
+PREV_IMAGE_ID=sha256:6bc9b7e5a7ffdcd99bbc7db7a73b7ae44bc9d1ceb0e801fc89470ac3b65cfa8b
+NEW_IMAGE=wbs-rongcheng:20261014203454
+DATA_BAK=/opt/wbs-rongcheng/data/wbs.json.20261014203454.bak
+DEPLOYED_AT=2026-10-14T20:34:54+0800
+BIND_HOST=0.0.0.0
 HOST_PORT=4180

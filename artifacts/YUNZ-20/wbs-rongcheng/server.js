@@ -24,6 +24,7 @@ const DATE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const TASK_FIELDS = ['level1', 'level2', 'task', 'owner', 'demo', 'note'];
 const IDENTITY_MAX_LEN = 20;
+const PROJECT_LEADER = '项目负责人';
 const DEFAULT_TZ = 'Asia/Shanghai';
 const HISTORY_SNAPSHOT_FIELDS = ['level1', 'level2', 'task', 'owner'];
 
@@ -323,7 +324,24 @@ function historyRecords(dateStr, tz) {
     if (!text) return;
     let entry = null;
     try { entry = JSON.parse(text); } catch (err) { return; }
-    if (!isPlainObject(entry) || !isPlainObject(entry.new)) return;
+    if (!isPlainObject(entry)) return;
+    /* CH-7：新增人员审计事件 → 日报「当日变更」一行（改动字段 人员池、旧值空、新值姓名）。 */
+    if (entry.type === 'identity_added') {
+      const atText = entry.at == null ? entry.ts : entry.at;
+      const atMs = Date.parse(atText);
+      if (!Number.isFinite(atMs) || atMs < range.start || atMs >= range.end) return;
+      const name = entry.name == null ? '' : String(entry.name);
+      records.push({
+        task_id: '',
+        field: '人员池',
+        at: atText,
+        identity: entry.identity == null ? '' : String(entry.identity),
+        level1: '', level2: '', task: '新增人员 ' + name, owner: '',
+        old: '', new: name
+      });
+      return;
+    }
+    if (!isPlainObject(entry.new)) return;
     const at = Date.parse(entry.ts);
     if (!Number.isFinite(at) || at < range.start || at >= range.end) return;
     const oldMap = isPlainObject(entry.old) ? entry.old : {};
@@ -449,6 +467,19 @@ function handlePut(req, res) {
       next.meta.name = body.meta.name;
     }
 
+    /* CH-7：仅项目负责人可以新增人员；非项目负责人通过 API 直接新增一律拒绝（不落盘、不写审计）。 */
+    const identity = decodeIdentity(req.headers['x-identity']);
+    const addedIdentities = next.identities.filter((name) => (current.identities || []).indexOf(name) === -1);
+    if (addedIdentities.length && identity !== PROJECT_LEADER) {
+      sendJson(res, 403, {
+        ok: false,
+        reason: 'forbidden',
+        message: '仅项目负责人可以新增人员',
+        errors: [{ id: null, field: 'identities', message: '仅项目负责人可以新增人员' }]
+      });
+      return;
+    }
+
     const diff = diffFields(current, next);
     try {
       atomicWriteJson(DATA_FILE, next);
@@ -456,9 +487,9 @@ function handlePut(req, res) {
       sendJson(res, 500, { ok: false, reason: 'storage', message: '写入失败' });
       return;
     }
-    const identity = decodeIdentity(req.headers['x-identity']);
+    const auditAt = new Date().toISOString();
     appendAudit({
-      ts: new Date().toISOString(),
+      ts: auditAt,
       identity,
       revision: nextRevision,
       changed: diff.changed,
@@ -467,6 +498,10 @@ function handlePut(req, res) {
       old: diff.old,
       new: diff.new,
       snapshot: diff.snapshot
+    });
+    /* CH-7：新增人员成功时追加一条 identity_added 审计记录（失败/重复/非法输入不会到达此处）。 */
+    addedIdentities.forEach((name) => {
+      appendAudit({ type: 'identity_added', identity, name, at: auditAt });
     });
 
     sendJson(res, 200, { ok: true, revision: nextRevision });

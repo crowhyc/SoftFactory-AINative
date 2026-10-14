@@ -1,0 +1,13 @@
+=== 自测矩阵 14 · CH-7 新增人员写 identity_added 审计 + 日报「当日变更」含该行 + 越权被拒 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage7/browser.log' 'PASS  矩阵14a（CH-7）' 'PASS  矩阵14b（CH-7）' 'PASS  矩阵14c（CH-7）' && require '/opt/wbs-rongcheng/tests/.tmp/stage7/server.log' 'PASS  矩阵14a（CH-7）' 'PASS  矩阵14b（CH-7）' 'PASS  矩阵14c（CH-7）' 'PASS  矩阵14d（CH-7）'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵14a（CH-7）
+OK    PASS  矩阵14b（CH-7）
+OK    PASS  矩阵14c（CH-7）
+PASS=3 FAIL=0
+OK    PASS  矩阵14a（CH-7）
+OK    PASS  矩阵14b（CH-7）
+OK    PASS  矩阵14c（CH-7）
+OK    PASS  矩阵14d（CH-7）
+PASS=4 FAIL=0

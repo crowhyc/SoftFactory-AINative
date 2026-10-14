@@ -188,6 +188,49 @@ const appendRaw = (text) => fs.appendFileSync(AUDIT_FILE, text + '\n', 'utf8');
     ok('矩阵6b 服务端拒绝空白 / 重复 / 超长（>20）身份并给中文提示',
       'dup400 / blank400 / len400');
 
+    /* ---- 6b. CH-7：新增人员写审计 + history 返回 + 非项目负责人被拒 ---- */
+    const linesBeforeGuard = auditLines().length;
+    const nonPm = payloadOf(await getDoc());
+    nonPm.identities = nonPm.identities.concat(['越权人员']);
+    const nonPmRes = await putDoc(nonPm, (await getDoc()).meta.revision, '李欢');
+    assert(nonPmRes.status === 403, '非项目负责人新增人员应 403，实际 ' + nonPmRes.status);
+    assert(auditLines().length === linesBeforeGuard, '被拒的新增不应写审计');
+    assert((await getDoc()).identities.indexOf('越权人员') === -1, '被拒的新增不应落盘');
+    ok('矩阵14a（CH-7）非项目负责人通过 API 新增人员被拒（403，不落盘、不写审计）', 'HTTP 403');
+
+    const pmAdd = payloadOf(await getDoc());
+    pmAdd.identities = pmAdd.identities.concat(['孙悦']);
+    const pmAddRes = await putDoc(pmAdd, (await getDoc()).meta.revision, '项目负责人');
+    assert(pmAddRes.status === 200, '项目负责人新增人员应 200，实际 ' + pmAddRes.status);
+    const zhaoLines = auditLines().filter((entry) => entry.type === 'identity_added' && entry.name === '孙悦');
+    assert(zhaoLines.length === 1 && zhaoLines[0].identity === '项目负责人' &&
+      typeof zhaoLines[0].at === 'string' && Date.parse(zhaoLines[0].at) > 0,
+      'identity_added 审计字段异常：' + JSON.stringify(zhaoLines));
+    ok('矩阵14b（CH-7）项目负责人新增人员追加 identity_added 审计（identity/name/at）',
+      JSON.stringify(zhaoLines[0]));
+
+    const histAdd = await history(today, TZ);
+    const idEvents = histAdd.body.records.filter((record) => record.field === '人员池');
+    const sunEvent = idEvents.find((record) => record.new === '孙悦');
+    assert(sunEvent && sunEvent.old === '' && sunEvent.task === '新增人员 孙悦' && sunEvent.identity === '项目负责人' &&
+      typeof sunEvent.at === 'string' && sunEvent.task_id === '',
+      'identity_added history 记录异常：' + JSON.stringify(sunEvent));
+    ok('矩阵14c（CH-7）GET /api/history 返回新增人员事件（改动字段 人员池、旧值空、新值姓名、操作身份照实）',
+      JSON.stringify({ field: sunEvent.field, old: sunEvent.old, new: sunEvent.new, task: sunEvent.task, identity: sunEvent.identity }));
+
+    const linesBeforeReject = auditLines().length;
+    const dupAdd = payloadOf(await getDoc());
+    dupAdd.identities = dupAdd.identities.concat(['孙悦']);
+    assert((await putDoc(dupAdd, (await getDoc()).meta.revision, '项目负责人')).status === 400, '重复姓名应 400');
+    const longAdd = payloadOf(await getDoc());
+    longAdd.identities = longAdd.identities.concat(['一二三四五六七八九十一二三四五六七八九十一']);
+    assert((await putDoc(longAdd, (await getDoc()).meta.revision, '项目负责人')).status === 400, '超长姓名应 400');
+    const blankAdd = payloadOf(await getDoc());
+    blankAdd.identities = blankAdd.identities.concat(['   ']);
+    assert((await putDoc(blankAdd, (await getDoc()).meta.revision, '项目负责人')).status === 400, '空白姓名应 400');
+    assert(auditLines().length === linesBeforeReject, '重复/非法新增不应写审计');
+    ok('矩阵14d（CH-7）重复 / 超长 / 空白新增均被拒且不写审计', 'audit 行数不变=' + linesBeforeReject);
+
     /* ---- 7. 409 非覆盖 ---- */
     const staleDoc = payloadOf(await getDoc());
     const fresh = await getDoc();
