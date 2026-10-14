@@ -1,0 +1,5 @@
+start 2026-10-14T15:03:47+0800
+container: wbs-rongcheng:20261014144403|host
+health: {"ok":true,"service":"wbs-rongcheng","revision":0}
+data/wbs.json sha256: a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5
+data/wbs.json bytes: 13172

@@ -1,0 +1,18 @@
+== 导出列宽保真对比（同一模板、不同导出代码路径）==
+模板: /opt/wbs-rongcheng/public/template.xlsx
+  模板 <cols> 元素: 1 | <col> 声明: 7 | A/B/C 列宽: ['11.3333333333333', '13.7777777777778', '11.3333333333333']
+
+① 交付页面路径（运行态 app.js 的页面导出入口，本轮复验证据）
+  文件: /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage3/exported-stage3.xlsx
+  sha256: 9925d8d6cdb62dff662b5ddd0d5c263a68d1f8a8afeb8c93f3b2c402acbbabd0
+  大小: 1172751 字节 | zip 成员: 11 | <cols> 元素: 1 | <col> 声明: 16384
+  A/B/C 列宽: ['11.3333333333333', '11.3333333333333', '13.7777777777778']
+
+② 自测共用函数路径（Core.buildExportWorkbook，tests/exportcheck.mjs 所调用的同一函数）
+  文件: /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage3/exported-selftest-path-stage3.xlsx
+  sha256: 9925d8d6cdb62dff662b5ddd0d5c263a68d1f8a8afeb8c93f3b2c402acbbabd0
+  大小: 1172751 字节 | zip 成员: 11 | <cols> 元素: 1 | <col> 声明: 16384
+  A/B/C 列宽: ['11.3333333333333', '11.3333333333333', '13.7777777777778']
+
+结论: 修复后交付页面路径与作者自测路径**产出逐字节一致**（sha256 相同），两路径列宽均与模板一致；
+      D-1 的“双路径差异”已消除（修复前：页面路径 sha 626b269a…/无 <cols>，自测路径 5ea26bf8…/有 <cols>）。

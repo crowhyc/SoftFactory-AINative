@@ -1,0 +1,20 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+== 运行态资源抓取开始 2026-10-14T15:03:47+0800 ==
+容器: wbs-rongcheng:20261014144403|host
+GET /index.html                   HTTP 200  3758 bytes
+GET /app.js                       HTTP 200  28589 bytes
+GET /styles.css                   HTTP 200  7858 bytes
+GET /template.xlsx                HTTP 200  14730 bytes
+GET /vendor/xlsx.full.min.js      HTTP 200  881727 bytes
+
+文件                     served_sha256                                                      disk_sha256
+一致性                                                                                     
+index.html                 f137a68defc53f2b51c24422b39dd3ed6df969f77065db0f386e0bf3d89b7387   SAME
+app.js                     53cc2bd3e60e0a948712484dd61903c093a7b1c394ffb48c2079a55b74f18f5e   SAME
+styles.css                 e6b61b37a61da8ca59a96c630a684ae30b2b972a045948b3f357543a6e367644   SAME
+template.xlsx              e01c269699adad8df3c28c05cff0634c7a1fbe4a62bb5ef2a3baf51490317483   SAME
+vendor/xlsx.full.min.js    c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99   SAME
+
+运行态 template.xlsx vs 输入基线 src/public/template.xlsx:
+  SAME e01c269699adad8df3c28c05cff0634c7a1fbe4a62bb5ef2a3baf51490317483
+== 抓取结束 2026-10-14T15:03:47+0800 ==

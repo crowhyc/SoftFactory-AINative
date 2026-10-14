@@ -1,0 +1,136 @@
+复验开始 2026-10-14T15:03:47+0800
+start 2026-10-14T15:03:47+0800
+container: wbs-rongcheng:20261014144403|host
+health: {"ok":true,"service":"wbs-rongcheng","revision":0}
+data/wbs.json sha256: a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5
+data/wbs.json bytes: 13172
+### 1. 运行态资源抓取 / served vs disk
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+== 运行态资源抓取开始 2026-10-14T15:03:47+0800 ==
+容器: wbs-rongcheng:20261014144403|host
+GET /index.html                   HTTP 200  3758 bytes
+GET /app.js                       HTTP 200  28589 bytes
+GET /styles.css                   HTTP 200  7858 bytes
+GET /template.xlsx                HTTP 200  14730 bytes
+GET /vendor/xlsx.full.min.js      HTTP 200  881727 bytes
+
+文件                     served_sha256                                                      disk_sha256
+一致性                                                                                     
+index.html                 f137a68defc53f2b51c24422b39dd3ed6df969f77065db0f386e0bf3d89b7387   SAME
+app.js                     53cc2bd3e60e0a948712484dd61903c093a7b1c394ffb48c2079a55b74f18f5e   SAME
+styles.css                 e6b61b37a61da8ca59a96c630a684ae30b2b972a045948b3f357543a6e367644   SAME
+template.xlsx              e01c269699adad8df3c28c05cff0634c7a1fbe4a62bb5ef2a3baf51490317483   SAME
+vendor/xlsx.full.min.js    c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99   SAME
+
+运行态 template.xlsx vs 输入基线 src/public/template.xlsx:
+  SAME e01c269699adad8df3c28c05cff0634c7a1fbe4a62bb5ef2a3baf51490317483
+== 抓取结束 2026-10-14T15:03:47+0800 ==
+### 2. 交付三链一致性
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+[PASS] I1 目录 SHA256SUMS 逐条自校验 :: 条目=60 OK=60
+[PASS] I2 运行产物 /opt/wbs-rongcheng 交付源码与快照 artifacts/YUNZ-20/wbs-rongcheng 逐字一致 :: snapshotFiles=20 mismatch=无 missingInLive=无
+[PASS] I3 SHA256SUMS 记录的 sha256 = 磁盘实际 = git HEAD blob（三链一致） :: checked=60 mismatch=0
+[PASS] I4 交付目录已提交并推送（HEAD == origin/main，提交信息 task(YUNZ-20)） :: HEAD=e9e844e24b0a origin/main=e9e844e24b0a last=e9e844e24b0a9f26e49f3060d9a1493772fdb91e task(YUNZ-20)：缺陷修复
+[PASS] I5 修复提交 e9e844e 仅改动交付目录，未触及 server.js/deploy（回归面收窄） :: changed=artifacts/YUNZ-20/SHA256SUMS artifacts/YUNZ-20/evidence/runtime-state.txt artifacts/YUNZ-20/selftest/01.log artifacts/YUNZ-20/selftest/03.log artifacts/YUNZ-20/selftest/04b.log artifacts/YUNZ-20/selftest/06.log artifacts/YUNZ-20/selftest/07.log artifacts/YUNZ-20/selftest/08.log artifacts/YUNZ-20/selftest/09.log artifacts/YUNZ-20/selftest/10.log artifacts/YUNZ-20/selftest/11.log artifacts/YUNZ-20/selftest/12.log artifacts/YUNZ-20/selftest/12b.log artifacts/YUNZ-20/selftest/13.log artifacts/YUNZ-20/selftest/14.log artifacts/YUNZ-20/selftest/15.log artifacts/YUNZ-20/selftest/16.log artifacts/YUNZ-20/selftest/16b.log artifacts/YUNZ-20/selftest/17.log artifacts/YUNZ-20/selftest/18.log artifacts/YUNZ-20/selftest/19.log artifacts/YUNZ-20/selftest/20.log artifacts/YUNZ-20/selftest/21.log artifacts/YUNZ-20/selftest/README.md artifacts/YUNZ-20/selftest/live/D1回归-修复前.out artifacts/YUNZ-20/selftest/live/D1回归-修复后.out artifacts/YUNZ-20/selftest/live/D2回归-修复前.out artifacts/YUNZ-20/selftest/live/D2回归-修复后.out artifacts/YUNZ-20/selftest/live/README.md artifacts/YUNZ-20/selftest/live/live-deploy.log artifacts/YUNZ-20/selftest/live/live-idcell.log artifacts/YUNZ-20/selftest/live/live-idcell.mjs artifacts/YUNZ-20/selftest/live/live-page-export.log artifacts/YUNZ-20/selftest/live/live-page-export.mjs artifacts/YUNZ-20/selftest/live/live-verify.log artifacts/YUNZ-20/selftest/live/现场页面导出.xlsx artifacts/YUNZ-20/selftest/matrix-summary.txt artifacts/YUNZ-20/wbs-rongcheng/public/app.js artifacts/YUNZ-20/wbs-rongcheng/tests/domcheck.mjs artifacts/YUNZ-20/wbs-rongcheng/tests/export_verify.py artifacts/YUNZ-20/wbs-rongcheng/tests/exportcheck.mjs artifacts/YUNZ-20/wbs-rongcheng/tests/verify.sh artifacts/YUNZ-20/wbs-rongcheng/tests/xlsxcols.mjs 
+[PASS] I6 交付源码快照无凭据样式字符串（独立正则） :: hits=无
+[PASS] I7 复跑作者 tests/scan_secrets.sh 亦判定无凭据 :: exit=0 out=bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)|PASS  /opt/wbs-rongcheng 未发现凭据样式字符串|PASS  /opt/SoftFactory-AINative/artifacts/YUNZ-20 未发现凭据样式字符�
+== 汇总: 全部通过 ==
+### 3. DOM 交互级验证（jsdom，运行态页面脚本 + 真实 /api）
+dom-verify-stage3.js 退出码=0 （判定 37 条）
+### 4. 导出（交付页面入口，运行态资源）
+export-page.js 退出码=0
+== 缺陷 D-1 闭环：导出 <cols> / A–K 列宽 逐列比对（Python 标准库）==
+运行态模板 : /opt/wbs-rongcheng/public/template.xlsx | sha=e01c269699adad8d | <col>=7 | A–K=['11.3333333333333', '11.3333333333333', '13.7777777777778', '11.3333333333333', '11.3333333333333', '13.1111111111111', '13.1111111111111', '13.1111111111111', '13.1111111111111', '16.2222222222222', '47.2592592592593']
+输入基线模板: /opt/wbs-rongcheng-staging/WC-001/src/public/template.xlsx | sha=e01c269699adad8d
+复验导出   : /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage3/exported-stage3.xlsx | sha=9925d8d6cdb62dff | 1172751 字节
+修复前导出 : /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/exported.xlsx | sha=626b269a600fda39 | 32762 字节
+
+[PASS] D1-1 运行态模板与输入基线模板逐字一致 :: tpl=e01c269699adad8d staging=e01c269699adad8d
+[PASS] D1-2 修复后页面导出文件包含 <cols> 列宽定义（修复前无 <cols>） :: pre.hasCols=False（sha 626b269a，32762 字节） post.hasCols=True（<col> 16384 条）
+[PASS] D1-3 导出 A–K 列宽与源模板逐列一致（11/11） :: diff=[] | A–K=['11.3333333333333', '11.3333333333333', '13.7777777777778', '11.3333333333333', '11.3333333333333', '13.1111111111111', '13.1111111111111', '13.1111111111111', '13.1111111111111', '16.2222222222222', '47.2592592592593']
+[PASS] D1-4 K 进展说明列宽 = 47.2592592592593（与模板一致） :: post K=47.2592592592593 tpl K=47.2592592592593
+
+附：样例行宽对比（X 列宽维度）
+  A  模板 11.3333333333333   导出 11.3333333333333   OK
+  B  模板 11.3333333333333   导出 11.3333333333333   OK
+  C  模板 13.7777777777778   导出 13.7777777777778   OK
+  D  模板 11.3333333333333   导出 11.3333333333333   OK
+  E  模板 11.3333333333333   导出 11.3333333333333   OK
+  F  模板 13.1111111111111   导出 13.1111111111111   OK
+  G  模板 13.1111111111111   导出 13.1111111111111   OK
+  H  模板 13.1111111111111   导出 13.1111111111111   OK
+  I  模板 13.1111111111111   导出 13.1111111111111   OK
+  J  模板 16.2222222222222   导出 16.2222222222222   OK
+  K  模板 47.2592592592593   导出 47.2592592592593   OK
+
+== 汇总: 全部通过 ==
+### 4b. 路径统一核验（作者自测共用函数路径 vs 页面路径）
+selftest-path-cols.js 退出码=0
+== 导出列宽保真对比（同一模板、不同导出代码路径）==
+模板: /opt/wbs-rongcheng/public/template.xlsx
+  模板 <cols> 元素: 1 | <col> 声明: 7 | A/B/C 列宽: ['11.3333333333333', '13.7777777777778', '11.3333333333333']
+
+① 交付页面路径（运行态 app.js 的页面导出入口，本轮复验证据）
+  文件: /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage3/exported-stage3.xlsx
+  sha256: 9925d8d6cdb62dff662b5ddd0d5c263a68d1f8a8afeb8c93f3b2c402acbbabd0
+  大小: 1172751 字节 | zip 成员: 11 | <cols> 元素: 1 | <col> 声明: 16384
+  A/B/C 列宽: ['11.3333333333333', '11.3333333333333', '13.7777777777778']
+
+② 自测共用函数路径（Core.buildExportWorkbook，tests/exportcheck.mjs 所调用的同一函数）
+  文件: /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage3/exported-selftest-path-stage3.xlsx
+  sha256: 9925d8d6cdb62dff662b5ddd0d5c263a68d1f8a8afeb8c93f3b2c402acbbabd0
+  大小: 1172751 字节 | zip 成员: 11 | <cols> 元素: 1 | <col> 声明: 16384
+  A/B/C 列宽: ['11.3333333333333', '11.3333333333333', '13.7777777777778']
+
+结论: 修复后交付页面路径与作者自测路径**产出逐字节一致**（sha256 相同），两路径列宽均与模板一致；
+      D-1 的“双路径差异”已消除（修复前：页面路径 sha 626b269a…/无 <cols>，自测路径 5ea26bf8…/有 <cols>）。
+== 导出保真读回（python 标准库 zipfile+ElementTree）==
+源模板: /opt/wbs-rongcheng-staging/WC-001/src/public/template.xlsx
+导出文件: /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage3/exported-stage3.xlsx (1172751 bytes)
+当前 JSON: revision=0 tasks=36
+[PASS] E10 源模板第 3–38 行 A–D 与 JSON 行序/内容逐字一致（验收 2 的 Excel 侧） :: rows=36 mismatch=0 []
+[PASS] E1 第 1 行文字与源模板逐字一致 :: refs=A1,B1,C1,D1,E1,F1,G1,H1 全部逐字一致
+[PASS] E2 第 2 行表头文字与源模板逐字一致 :: refs=A2,B2,C2,D2,E2,F2,G2,H2,I2,J2,K2 全部逐字一致
+[PASS] E3 数据区列数 A–K 共 11 列（无 L/M 及更后列） :: maxcol=11 cols_used=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+[PASS] E4 导出数据行数与当前 JSON 一致 :: exportDataRows=36 jsonTasks=36
+[PASS] E6 导出 A3:K38 每行逐列与 JSON 映射一致（三端一致导出侧） :: mismatch=0 []
+[PASS] E5 导出文件不含 status 字段/列 :: cellHits=[] sharedStringHits=[]
+[PASS] E7 A1:C1 等全部合并单元格与源模板一致 :: merges=['A1:C1'] src=['A1:C1']
+[PASS] E9 非数据区（第 1/2 行与 L/M 列等）非空单元格逐格保留 :: checked=14 mismatch=0 []
+-- 列宽观察（非验收 1–10 项规定项；D-1 断言以 cols-check-stage3.py 为准）--
+  A–K 源模板=['11.3333333333333', '11.3333333333333', '13.7777777777778', '11.3333333333333', '11.3333333333333', '13.1111111111111', '13.1111111111111', '13.1111111111111', '13.1111111111111', '16.2222222222222', '47.2592592592593']
+  A–K 导出  =['11.3333333333333', '11.3333333333333', '13.7777777777778', '11.3333333333333', '11.3333333333333', '13.1111111111111', '13.1111111111111', '13.1111111111111', '13.1111111111111', '16.2222222222222', '47.2592592592593']
+  结论: A–K 列宽逐列保持
+-- 样式保真度量化 --
+  styles.xml: 源模板 26197 字节 (sha 474457e0a40aef79) -> 导出 1572 字节 (sha bf11341dde75ae8f)
+  数据区(A3:K38) 带样式索引单元格: 源 396 -> 导出 0
+  非数据区(1..2 行) 带样式索引单元格: 源 22 -> 导出 0
+  zip 成员: 源 25 个 -> 导出 11 个
+  styles.xml 变化: 丢失/重建
+== 汇总: 全部通过 ==
+### 5. 服务 / API / 持久化 / 并发（验收 3,5,6,7,9,10）
+== YUNZ-20 Stage3 复验 服务/API/持久化/并发 ==
+python 3.6.8 / service http://127.0.0.1:4180
+[PASS] S1 GET /api/health 返回 ok（验收 10） :: HTTP 200 {"ok": true, "service": "wbs-rongcheng", "revision": 0}
+[PASS] S2 4180 仅绑定回环 127.0.0.1，未在任何非回环地址监听 :: ss lines=["LISTEN     0      128    127.0.0.1:4180                     *:*                  "]
+[PASS] S3 运行容器 wbs-rongcheng 使用 host 网络且挂载 /opt/wbs-rongcheng/data（不在非回环暴露） :: inspect=wbs-rongcheng:20261014144403|host|/opt/wbs-rongcheng/data->/app/data;
+[PASS] S4 恢复初始态：36 行，revision 0（与 seed 逐字一致） :: rev=0 rows=36
+[PASS] S5 payload 校验失败返回 400 且不落盘（验收 5 服务端侧） :: HTTP 400 errors=[{"id": "T001", "field": "task", "message": "任务项不能为空"}] diskUnchanged=True
+[PASS] S6 过期 If-Match 返回 409 conflict + current :: HTTP 409 {"ok": false, "reason": "conflict", "current": 0}
+[PASS] S8 两次并发同版本 PUT：恰好一个 200 + 一个 409，无静默覆盖，数据为先到者（验收 9） :: codes=[200, 409] winnerNote=CONC-A rev 0->1 loser={"B": [409, {"ok": false, "reason": "conflict", "current": 1}], "A": [200, {"ok": true, "revision": 1}]}
+[PASS] S9 连续 10 次保存后 36 行 A–K 无丢失/无重复/行序不变，未知字段未被清除（验收 7） :: rev=10 rows=36 orderOk=True dup=False fieldLoss=[] notesOk=True unknownKept=True
+[PASS] S10 docker restart 后服务恢复且数据完全一致（验收 6） :: restart=wbs-rongcheng healthUp=True diskShaSame=True rev=10
+[PASS] S11 服务重启后授权身份（王言）仍能读且能写，写入落盘生效 :: PUT HTTP 200 rev 10->11 note=POST-RESTART-WANGYAN
+   静态 /                            -> OK
+   静态 /app.js                      -> OK
+   静态 /styles.css                  -> OK
+   静态 /vendor/xlsx.full.min.js     -> OK
+   静态 /template.xlsx               -> OK
+[PASS] S12 全部静态资源由本服务同源提供（含 vendor bundle 与 template.xlsx），CSP default-src self :: CSP=default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+[PASS] S13 写操作产生审计记录（audit.log 记录 revision 与身份） :: lines=91 last={"ts":"2026-10-14T07:04:52.113Z","identity":"王言","revision":11,"changed":[{"id":"T002","fields":["note"]}],"added":0,"re
+[PASS] S14 收尾恢复初始态（36 行 revision 0，磁盘 sha 与验证前一致） :: rev=0 rows=36 sha=a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5
+== 汇总: 全部通过 ==
+### 6. 收尾：恢复初始数据并确认现场服务
+health: {"ok":true,"service":"wbs-rongcheng","revision":0}
+data/wbs.json sha256: a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5
+复验结束 2026-10-14T15:04:52+0800

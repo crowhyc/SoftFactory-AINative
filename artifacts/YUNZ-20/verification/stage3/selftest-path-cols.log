@@ -1,0 +1,2 @@
+selftest-path export = /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage3/exported-selftest-path-stage3.xlsx 1172751 bytes; tasks = 36
+Core.buildExportWorkbook 存在 = true

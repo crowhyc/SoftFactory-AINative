@@ -1,0 +1,21 @@
+== YUNZ-20 Stage3 复验 服务/API/持久化/并发 ==
+python 3.6.8 / service http://127.0.0.1:4180
+[PASS] S1 GET /api/health 返回 ok（验收 10） :: HTTP 200 {"ok": true, "service": "wbs-rongcheng", "revision": 0}
+[PASS] S2 4180 仅绑定回环 127.0.0.1，未在任何非回环地址监听 :: ss lines=["LISTEN     0      128    127.0.0.1:4180                     *:*                  "]
+[PASS] S3 运行容器 wbs-rongcheng 使用 host 网络且挂载 /opt/wbs-rongcheng/data（不在非回环暴露） :: inspect=wbs-rongcheng:20261014144403|host|/opt/wbs-rongcheng/data->/app/data;
+[PASS] S4 恢复初始态：36 行，revision 0（与 seed 逐字一致） :: rev=0 rows=36
+[PASS] S5 payload 校验失败返回 400 且不落盘（验收 5 服务端侧） :: HTTP 400 errors=[{"id": "T001", "field": "task", "message": "任务项不能为空"}] diskUnchanged=True
+[PASS] S6 过期 If-Match 返回 409 conflict + current :: HTTP 409 {"ok": false, "reason": "conflict", "current": 0}
+[PASS] S8 两次并发同版本 PUT：恰好一个 200 + 一个 409，无静默覆盖，数据为先到者（验收 9） :: codes=[200, 409] winnerNote=CONC-A rev 0->1 loser={"B": [409, {"ok": false, "reason": "conflict", "current": 1}], "A": [200, {"ok": true, "revision": 1}]}
+[PASS] S9 连续 10 次保存后 36 行 A–K 无丢失/无重复/行序不变，未知字段未被清除（验收 7） :: rev=10 rows=36 orderOk=True dup=False fieldLoss=[] notesOk=True unknownKept=True
+[PASS] S10 docker restart 后服务恢复且数据完全一致（验收 6） :: restart=wbs-rongcheng healthUp=True diskShaSame=True rev=10
+[PASS] S11 服务重启后授权身份（王言）仍能读且能写，写入落盘生效 :: PUT HTTP 200 rev 10->11 note=POST-RESTART-WANGYAN
+   静态 /                            -> OK
+   静态 /app.js                      -> OK
+   静态 /styles.css                  -> OK
+   静态 /vendor/xlsx.full.min.js     -> OK
+   静态 /template.xlsx               -> OK
+[PASS] S12 全部静态资源由本服务同源提供（含 vendor bundle 与 template.xlsx），CSP default-src self :: CSP=default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+[PASS] S13 写操作产生审计记录（audit.log 记录 revision 与身份） :: lines=91 last={"ts":"2026-10-14T07:04:52.113Z","identity":"王言","revision":11,"changed":[{"id":"T002","fields":["note"]}],"added":0,"re
+[PASS] S14 收尾恢复初始态（36 行 revision 0，磁盘 sha 与验证前一致） :: rev=0 rows=36 sha=a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5
+== 汇总: 全部通过 ==
