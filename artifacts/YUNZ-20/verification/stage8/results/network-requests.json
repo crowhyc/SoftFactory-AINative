@@ -1,0 +1,44 @@
+{
+  "base": "http://127.0.0.1:4180",
+  "total_requests": 7,
+  "external_requests": [],
+  "foreign_hosts": [],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4180/",
+      "method": "GET",
+      "type": "document"
+    },
+    {
+      "url": "http://127.0.0.1:4180/styles.css",
+      "method": "GET",
+      "type": "stylesheet"
+    },
+    {
+      "url": "http://127.0.0.1:4180/vendor/xlsx.full.min.js",
+      "method": "GET",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:4180/app.js",
+      "method": "GET",
+      "type": "script"
+    },
+    {
+      "url": "http://127.0.0.1:4180/api/wbs",
+      "method": "GET",
+      "type": "fetch"
+    },
+    {
+      "url": "http://127.0.0.1:4180/api/health",
+      "method": "GET",
+      "type": "fetch"
+    },
+    {
+      "url": "http://127.0.0.1:4180/template.xlsx",
+      "method": "GET",
+      "type": "fetch"
+    }
+  ],
+  "console_errors": []
+}

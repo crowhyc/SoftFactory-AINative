@@ -1,0 +1,34 @@
+# YUNZ-28 / Stage8 独立复验：运行态与数据现场记录（+08 2026-10-14 20:42–20:56）
+
+## 一、部署与绑定（按 D-0006 追加口径）
+- 容器 wbs-rongcheng（image wbs-rongcheng:20261014203454，image id sha256:6bc9b7e5a7ff…），HostConfig.NetworkMode=host，env WBS_HOST=0.0.0.0 / WBS_PORT=4180 / WBS_DATA_DIR=/app/data，挂载 /opt/wbs-rongcheng/data → /app/data
+- 宿主 ss -ltn：`*:4180` LISTEN（非回环绑定，0.0.0.0 生效）
+- curl http://127.0.0.1:4180/api/health 与 http://0.0.0.0:4180/api/health 均返回 {"ok":true,"service":"wbs-rongcheng","revision":0}
+- 阿里云安全组放行属 Sponsor 控制台操作，不在本轮验证范围（如实记录为未验证项）
+
+## 二、部署到位核验（修复/变更确已部署）
+- 运行态 served 资源 vs /opt/wbs-rongcheng/public vs artifacts/YUNZ-20/wbs-rongcheng/public：index.html/app.js/styles.css/template.xlsx/vendor/xlsx.full.min.js 五件逐字节 MATCH
+- 容器内 /app（server.js + public/*）vs 运行目录 vs 源码快照：逐字节 MATCH
+- 结论：变更包 #2 的前后端代码确实在 4180 上对外提供，不是仅落盘快照（logs/01-served-vs-snapshot.txt、logs/01b-container-vs-rundir.txt、logs/12-constraints.txt 第 4 节）
+
+## 三、数据现场前后一致（写副作用与收尾）
+- 复验前（20:42:37）：wbs.json sha256 a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5（rev 0 / 36 行 / 9 身份）；audit.log sha256 e97509d25c5f5a0131c44af38fa48d691d8046fa6b6b45531e577d076a73bfde（106 行）
+- 复验过程中为满足 CH-1/CH-3/CH-5/CH-7 的真实读写断言，在 4180 现场执行了真实保存（1 次改派 + 1 次改回 + 1 次多字段保存 + 1 次新增人员 + 1 次新增行 + 1 次删除，revision 0→5），期间数据副本留档 results/during-run/{wbs.json,audit.log}
+- 收尾（20:51:02）：把 wbs.json 与 audit.log 按字节回滚到复验前现场，sha256 与复验前完全一致（logs/06-restore-after-run.txt），revision 回到 0
+- 说明：data/*.bak 由 deploy.sh 生成，本轮未新增或删除任何 .bak 文件
+- 首轮脚本调试运行（20:46–20:48，因 AI-QV 自有断言写错而中断）的现场副本留档 results/partial-run-1/，该轮同样已按字节回滚
+
+## 四、重启持久复验（验收 6）
+- 20:51:09 `docker restart wbs-rongcheng`，2 秒后 /api/health 在 127.0.0.1 与 0.0.0.0 均 ok；绑定仍为 `*:4180`
+- 重启后 GET /api/wbs：revision 0 / 36 行 / 9 身份；data sha256 与重启前逐字节一致 → 数据跨重启保留（logs/07-restart-persistence.txt）
+- 重启后 served 资源 sha256 仍与运行目录、源码快照一致（logs/12-constraints.txt 第 4 节）
+
+## 五、隔离实例（不触碰 4180 现场）
+- 复用同一部署镜像 wbs-rongcheng:20261014203454，容器 qv-stage8-4181（host 网络、端口 4181、隔离数据目录 …/workdir/scratch/stage8-iso/data，已删除容器）
+- 数据为该镜像外的独立副本：旧格式 audit.log（2 行无 old/new 的历史行）+ 变更包前的时间戳备份 wbs.json（rev 1）
+- 用于：旧数据可读/可保存/日报不报错、并发 PUT 409 非覆盖、CH-7 反例（越权 403、非法/重复/超长 400）、重启持久（含新增人员持久）
+
+## 六、未触碰项
+- Multica 三容器 multica-frontend-1 / multica-backend-1 / multica-postgres-1：docker ps 显示仍为 Up 2 weeks（未重启、未改动）
+- 未安装任何系统级浏览器组件；Chromium 只在测试容器 mcr.microsoft.com/playwright:v1.55.0-jammy 内运行（宿主 CentOS 7 / glibc 2.17 无法直接运行该版本 Chromium）
+- 未修改被验证实现代码（/opt/wbs-rongcheng 下所有源码 sha256 与快照一致）

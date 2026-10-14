@@ -1,0 +1,16 @@
+PASS  L1.legacy-audit-format-on-disk  :: 2
+PASS  L2.isolated-health-ok  :: {"ok":true,"service":"wbs-rongcheng","revision":1}
+PASS  L3.legacy-wbs-readable  :: {"rev":1,"tasks":36,"identities":9}
+PASS  L4.legacy-history-no-detail-skipped  :: {"count":0,"from":"2026-10-13T16:00:00.000Z","to":"2026-10-14T16:00:00.000Z"}
+PASS  L5.legacy-render-36-rows  :: 36
+PASS  L6.legacy-daily-export-no-error  :: {"banner":{"cls":"banner ok","text":"已导出日报 蓉城战役日报-20261014.xlsx：sheet「阻塞与延期」0 行、sheet「当日变更」0 行（2026-10-14 Asia/Shanghai 自然日口径；原 WBS 导出仍不含 status）。"},"historyCount":0}
+PASS  L7.legacy-save-roundtrip-3way  :: {"rev":{"before":1,"after":2},"api":"旧数据兼容复验保存","disk":"旧数据兼容复验保存"}
+PASS  L8.concurrent-put-later-409-not-overwrite  :: {"a":{"status":200,"body":{"ok":true,"revision":3}},"b":{"status":409,"body":{"ok":false,"reason":"conflict","current":3}},"diskNote":"并发复验-1791982344073-先到","diskRev":3}
+PASS  N1.CH7-non-pm-api-add-forbidden-403  :: {"status":403,"body":{"ok":false,"reason":"forbidden","message":"仅项目负责人可以新增人员","errors":[{"id":null,"field":"identities","message":"仅项目负责人可以新增人员"}]},"rev":3}
+PASS  N2.CH7-forbidden-writes-no-audit  :: {"before":4,"after":4}
+PASS  N3.CH7-duplicate-empty-toolong-400  :: {"dup":400,"empty":400,"toolong":400,"msg":"身份重复：李欢"}
+PASS  N4.CH7-invalid-inputs-no-audit-no-revision  :: {"audit":4,"rev":3}
+PASS  N5.CH7-pm-api-add-writes-audit-and-history  :: {"status":200,"ev":[{"type":"identity_added","identity":"项目负责人","name":"重启甲","at":"2026-10-14T12:52:24.634Z"}],"hist":[{"task_id":"","field":"人员池","at":"2026-10-14T12:52:24.634Z","identity":"项目负责人","level1":"","level2":"","task":"新增人员 重启甲","owner":"","old":"","new":"重启甲"}]}
+PASS  N6.no-pageerror-isolated  :: []
+
+==== ISO1 PASS=14 FAIL=0 ====

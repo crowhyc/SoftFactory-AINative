@@ -1,0 +1,7 @@
+PASS  R1.health-after-restart  :: {"ok":true,"service":"wbs-rongcheng","revision":4}
+PASS  R2.data-persists-after-restart  :: {"noteT005":"旧数据兼容复验保存","noteT006":"并发复验-1791982344073-先到","identities":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江","重启甲"]}
+PASS  R3.added-identity-persists  :: ["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江","重启甲"]
+PASS  R4.history-readable-after-restart  :: {"count":3,"fields":["T005:note","T006:note",":人员池"]}
+PASS  R5.legacy-audit-lines-kept-and-append-only  :: {"legacyKept":2,"lines":6,"before":6}
+
+==== ISO2 PASS=5 FAIL=0 ====

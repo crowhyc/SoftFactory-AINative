@@ -1,0 +1,6 @@
+file                     served   run      snapshot
+index.html               3f73e1c1 3f73e1c1 3f73e1c1 MATCH
+app.js                   7db0a47a 7db0a47a 7db0a47a MATCH
+styles.css               8b3d6392 8b3d6392 8b3d6392 MATCH
+template.xlsx            e01c2696 e01c2696 e01c2696 MATCH
+vendor/xlsx.full.min.js  c9506197 c9506197 c9506197 MATCH

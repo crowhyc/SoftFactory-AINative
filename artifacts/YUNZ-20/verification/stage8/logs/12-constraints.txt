@@ -1,0 +1,58 @@
+== 时间 ==
+2026-10-14T20:54:15+0800
+
+== Multica 三容器（不得被触碰）==
+multica-frontend-1 | ghcr.io/multica-ai/multica-web:v0.5.3 | Up 2 weeks | 2 weeks ago
+multica-backend-1 | ghcr.io/multica-ai/multica-backend:v0.5.3 | Up 2 weeks | 2 weeks ago
+multica-postgres-1 | pgvector/pgvector:pg17 | Up 2 weeks (healthy) | 2 weeks ago
+
+== 1) 无跨域外链 / 无外部服务 ==
+-- index.html / app.js / styles.css 中的 http(s) 外链：
+（无）
+-- 真实浏览器请求面（详见 logs/03-network-resources.txt 与 results/network-requests.json）：
+PASS  NET1.all-requests-same-origin  :: []
+PASS  NET2.no-external-url  :: []
+PASS  NET3.no-console-error  :: []
+
+-- 请求总数与 URL 清单：
+total=7
+urls=
+  GET document http://127.0.0.1:4180/
+  GET stylesheet http://127.0.0.1:4180/styles.css
+  GET script http://127.0.0.1:4180/vendor/xlsx.full.min.js
+  GET script http://127.0.0.1:4180/app.js
+  GET fetch http://127.0.0.1:4180/api/wbs
+  GET fetch http://127.0.0.1:4180/api/health
+  GET fetch http://127.0.0.1:4180/template.xlsx
+
+== 2) 无新增依赖（纯 Node 标准库）==
+{  "name": "wbs-rongcheng",  "version": "1.0.0",  "private": true,  "description": "WC-001 蓉城战役 WBS 工作系统：九身份网页 + JSON 原子持久化 + 原模板保真导出（零运行时依赖）",  "main": "server.js",  "scripts": {    "start": "node server.js",    "test": "bash tests/verify.sh"  },  "engines": {    "node": ">=18"  },  "dependencies": {},  "devDependencies": {},  "l
+
+-- server.js require：
+8:const http = require('http');
+9:const fs = require('fs');
+10:const path = require('path');
+-- 镜像 /app 目录（无 node_modules）：
+. .. data package.json public server.js 
+== 3) 凭据扫描（有界输出：只打印命中文件:行:关键词）==
+-- /opt/wbs-rongcheng（排除第三方 vendor bundle、tests 工具与数据备份）：
+（以上为空即未命中真值样式凭据；第三方 vendor bundle 未改动，sha256 与基线一致：）
+c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99  /opt/wbs-rongcheng/public/vendor/xlsx.full.min.js
+-- artifacts/YUNZ-20/verification/stage8 全目录：
+（以上为空即未命中）
+
+== 4) 运行态最终一致性（复验收尾后）==
+-- health：
+{"ok":true,"service":"wbs-rongcheng","revision":0}
+{"ok":true,"service":"wbs-rongcheng","revision":0}
+-- 绑定：
+LISTEN     0      128          *:4180                     *:*                  
+-- data sha256（等于复验前字节）：
+a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5  /opt/wbs-rongcheng/data/wbs.json
+e97509d25c5f5a0131c44af38fa48d691d8046fa6b6b45531e577d076a73bfde  /opt/wbs-rongcheng/data/audit.log
+-- served 资源 sha256（重启后仍与快照一致）：
+index.html               served=3f73e1c1b5ead8c3 rundir=3f73e1c1b5ead8c3 snapshot=3f73e1c1b5ead8c3 MATCH
+app.js                   served=7db0a47a0a7961d4 rundir=7db0a47a0a7961d4 snapshot=7db0a47a0a7961d4 MATCH
+styles.css               served=8b3d63929ffed604 rundir=8b3d63929ffed604 snapshot=8b3d63929ffed604 MATCH
+template.xlsx            served=e01c269699adad8d rundir=e01c269699adad8d snapshot=e01c269699adad8d MATCH
+vendor/xlsx.full.min.js  served=c9506197caf809a0 rundir=c9506197caf809a0 snapshot=c9506197caf809a0 MATCH

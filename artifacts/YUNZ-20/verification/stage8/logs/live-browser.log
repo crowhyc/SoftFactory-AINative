@@ -1,0 +1,81 @@
+PASS  A1.identity-list-9  :: {"page":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江"],"api":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江"]}
+PASS  A2.initial-identity-layer-visible-workbench-hidden  :: {"idLayerDisplay":"flex","workbenchDisplay":"none"}
+PASS  A3.d3-identity-layer-computed-display-none  :: {"idLayerDisplay":"none","idLayerHiddenAttr":true,"rect":{"w":0,"h":0},"workbenchDisplay":"block","workbenchRectY":0,"centerHit":"date-input","centerInWorkbench":true}
+PASS  A3b.d3-rect-collapsed-and-workbench-visible-top  :: {"idLayerDisplay":"none","idLayerHiddenAttr":true,"rect":{"w":0,"h":0},"workbenchDisplay":"block","workbenchRectY":0,"centerHit":"date-input","centerInWorkbench":true}
+PASS  A3c.d3-viewport-center-hits-workbench  :: {"hit":"date-input"}
+PASS  A4.render-36-rows-order  :: {"rendered":36,"api":36}
+PASS  A5.task-count-text  :: "36 条"
+PASS  A6.health-probe-ok  :: "探针：服务正常 · v0"
+PASS  A7.CH2-pm-date-design-always-visible  :: {"sample":{"kind":"date","type":"date","disabled":false,"value":"","tdClass":"cell cell-date editable"}}
+PASS  A7.CH2-pm-date-dev-always-visible  :: {"sample":{"kind":"date","type":"date","disabled":false,"value":"","tdClass":"cell cell-date editable"}}
+PASS  A7.CH2-pm-date-test-always-visible  :: {"sample":{"kind":"date","type":"date","disabled":false,"value":"","tdClass":"cell cell-date editable"}}
+PASS  A7.CH2-pm-date-product-always-visible  :: {"sample":{"kind":"date","type":"date","disabled":false,"value":"","tdClass":"cell cell-date editable"}}
+PASS  A7.CH2-pm-date-demo_prep-always-visible  :: {"sample":{"kind":"date","type":"date","disabled":false,"value":"","tdClass":"cell cell-date editable"}}
+PASS  A8.CH2-pm-5-date-controls-all-36-rows
+PASS  A9.CH2-pm-status-select-enum-order-value  :: {"sample":{"kind":"select","cls":"status-select status-未开始","disabled":false,"value":"未开始","options":["未开始","进行中","已完成","已延期","被阻塞"],"tdClass":"cell cell-status editable"}}
+PASS  A10.status-badge-present  :: {"text":"未开始","disp":"inline-block"}
+PASS  A11.CH1-edit-button-every-row  :: {"sample":{"id":"T001","cls":"l1-start l2-start","cells":{"id":{"kind":"text","text":"T001","tdClass":"cell cell-id locked"},"level1":{"kind":"text","text":"客户端","tdClass":"cell cell-l1 editable"},"level2":{"kind":"text","text":"业务工作台","tdClass":"cell cell-l2 editable"},"task":{"kind":"text","text":"业需导入","tdClass":"cell cell-task editable"},"owner":{"kind":"select","cls":"owner-select","disabled":false,"value":"李欢","options":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江"],"tdClass":"cell cell-owner editable"},"demo":{"kind":"text","text":"","tdClass":"cell cell-demo editable"},"dates.design":{"kind":"date","type":"date","disabled":false,"value":"","tdClass":"cell cell-date editable"},"dates.dev":{"kind":"date","type":"date","disabled":false,"value":"","tdClass":"cell cell-date editable"},"dates.test":{"kind":"date","type":"date","disabled":false,"value":"","tdClass":"cell cell-date editable"},"dates.product":{"kind":"date","type":"date","disabled":false,"value":"","tdClass":"cell cell-date editable"},"dates.demo_prep":{"kind":"date","type":"date","disabled":false,"value":"","tdClass":"cell cell-date editable"},"note":{"kind":"text","text":"","tdClass":"cell cell-note editable"},"status":{"kind":"select","cls":"status-select status-未开始","disabled":false,"value":"未开始","options":["未开始","进行中","已完成","已延期","被阻塞"],"tdClass":"cell cell-status editable"}},"opEdit":true,"opEditText":"编辑","opDelete":true,"hasOwnerSelect":true}}
+PASS  A12.CH1-pm-delete-visible-every-row  :: {"count":36}
+PASS  A13.CH1-row-edit-state-entered  :: {"rowClass":"l1-start l2-start row-editing","btnText":"完成","taskEditor":{"kind":"input","value":"业需导入"},"l1Editor":true,"statusStillSelect":true,"dateStillInput":true}
+PASS  A14.CH1-row-edit-state-exited  :: {"rowClass":"l1-start l2-start","btnText":"编辑","l1Editor":false}
+PASS  A15.acceptance1-nine-identity-switch-immediate  :: ["身份：项目负责人 · 版本：0 · 已与服务器一致","身份：李欢 · 版本：0 · 已与服务器一致","身份：王言 · 版本：0 · 已与服务器一致","身份：张航瑞 · 版本：0 · 已与服务器一致","身份：郑述文 · 版本：0 · 已与服务器一致","身份：崔文建 · 版本：0 · 已与服务器一致","身份：余宇 · 版本：0 · 已与服务器一致","身份：黄逸偲 · 版本：0 · 已与服务器一致","身份：陈江 · 版本：0 · 已与服务器一致"]
+PASS  A16.pm-all-editable  :: {"ident":"项目负责人","session":"身份：项目负责人 · 版本：0 · 已与服务器一致","t001Date":{"disabled":false,"tag":"INPUT"},"t001Status":{"disabled":false,"tag":"SELECT"},"t002Date":{"disabled":false,"tag":"INPUT"},"t002Status":{"disabled":false,"tag":"SELECT"},"t001OwnerText":"项目负责人李欢王言张航瑞郑述文崔文建余宇黄逸偲陈江","t001OwnerSelect":true}
+PASS  A17.non-pm-others-locked  :: {"sample":[{"ident":"李欢","t001Date":false,"t001Status":false},{"ident":"王言","t001Date":true,"t001Status":true},{"ident":"张航瑞","t001Date":true,"t001Status":true},{"ident":"郑述文","t001Date":true,"t001Status":true},{"ident":"崔文建","t001Date":true,"t001Status":true},{"ident":"余宇","t001Date":true,"t001Status":true},{"ident":"黄逸偲","t001Date":true,"t001Status":true},{"ident":"陈江","t001Date":true,"t001Status":true}]}
+PASS  A17b.permission-matrix-9x36  :: [{"ident":"项目负责人","rows":36,"violations":0,"isPm":true,"editableRows":36},{"ident":"李欢","rows":36,"violations":0,"isPm":false,"editableRows":1},{"ident":"王言","rows":36,"violations":0,"isPm":false,"editableRows":5},{"ident":"张航瑞","rows":36,"violations":0,"isPm":false,"editableRows":2},{"ident":"郑述文","rows":36,"violations":0,"isPm":false,"editableRows":2},{"ident":"崔文建","rows":36,"violations":0,"isPm":false,"editableRows":1},{"ident":"余宇","rows":36,"violations":0,"isPm":false,"editableRows":3},{"ident":"黄逸偲","rows":36,"violations":0,"isPm":false,"editableRows":20},{"ident":"陈江","rows":36,"violations":0,"isPm":false,"editableRows":2}]
+PASS  A18.non-pm-own-row-editable  :: {"ident":"王言","session":"身份：王言 · 版本：0 · 已与服务器一致","t001Date":{"disabled":true,"tag":"INPUT"},"t001Status":{"disabled":true,"tag":"SELECT"},"t002Date":{"disabled":false,"tag":"INPUT"},"t002Status":{"disabled":false,"tag":"SELECT"},"t001OwnerText":"李欢","t001OwnerSelect":false}
+PASS  A19.acceptance1-identity-kept-after-reload  :: {"idLayerDisplay":"none","workbenchDisplay":"block","session":"身份：陈江 · 版本：0 · 已与服务器一致","selected":"陈江","remembered":"陈江"}
+PASS  A20.back-home-shows-identity-layer  :: {"disp":"flex","n":9}
+PASS  A21.CH4-non-pm-identity-add-entry-hidden  :: {"idLayerDisplay":"flex","workbenchDisplay":"none","identityAddHidden":true,"list":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江"]}
+PASS  A22.CH4-pm-add-person-entry-visible  :: {"identitySelect":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江"],"ownerFilter":["","项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江"],"statusFilter":["","未开始","进行中","已完成","已延期","被阻塞"],"addPersonBtnHidden":false,"addRowBtnHidden":false,"identityAddHidden":true,"toolbarOrder":["add-person-btn","add-row-btn","export-btn","daily-btn","save-btn"],"sessionStatus":"身份：项目负责人 · 版本：0 · 已与服务器一致","taskCount":"36 条","health":"探针：服务正常 · v0"}
+PASS  A23.CH5-daily-btn-next-to-export  :: ["add-person-btn","add-row-btn","export-btn","daily-btn","save-btn"]
+PASS  A24.readonly-td-click-hint  :: {"before":{"hidden":false,"text":"已以「王言」身份进入工作台，仅“负责人 == 王言”的行可编辑。","disp":"block"},"after":{"hidden":false,"text":"当前身份「王言」对第 T001 行的「一级」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）","disp":"block"}}
+PASS  A25.readonly-note-cell-hint  :: {"hidden":false,"text":"当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）","disp":"block"}
+PASS  A26.adversarial-disabled-date-input-click-hint  :: {"hidden":false,"text":"当前身份「王言」对第 T001 行的「设计」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）","disp":"block"}
+PASS  A27.adversarial-disabled-status-select-click-hint  :: {"hidden":false,"text":"当前身份「王言」对第 T001 行的「状态」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）","disp":"block"}
+PASS  A28.disabled-date-td-edge-click-hint  :: {"hidden":false,"text":"当前身份「王言」对第 T001 行的「开发」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）","disp":"block"}
+PASS  A29.adversarial-edit-button-on-readonly-row-hint  :: {"hint":{"hidden":false,"text":"当前身份「王言」对第 T001 行只读（仅“负责人 == 自己”的行可编辑）。","disp":"block"},"rowClass":"l1-start l2-start"}
+PASS  A30.CH1-non-pm-no-delete-button  :: {"deleteCount":0,"ctrlWy":{"identitySelect":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江"],"ownerFilter":["","项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江"],"statusFilter":["","未开始","进行中","已完成","已延期","被阻塞"],"addPersonBtnHidden":true,"addRowBtnHidden":true,"identityAddHidden":true,"toolbarOrder":["add-person-btn","add-row-btn","export-btn","daily-btn","save-btn"],"sessionStatus":"身份：王言 · 版本：0 · 已与服务器一致","taskCount":"36 条","health":"探针：服务正常 · v0"}}
+PASS  A31.CH3-owner-select-options-from-identities  :: {"options":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江"],"value":"李欢"}
+PASS  B1.CH3-owner-reassign-3way  :: {"api":"张航瑞","disk":"张航瑞","page":"张航瑞","rev":{"before":0,"after":1},"banner":"保存成功，服务器版本号已更新为 1（页面、API、磁盘三端一致）。"}
+PASS  B1b.save-banner-ok-and-revision-increment  :: {"banner":"保存成功，服务器版本号已更新为 1（页面、API、磁盘三端一致）。","rev":1}
+PASS  B2.CH3-owner-revert-3way  :: {"api":"李欢","disk":"李欢"}
+PASS  B3.draft-dirty-before-save  :: {"cls":"session-status dirty","text":"身份：项目负责人 · 版本：2 · 有未保存修改","saveDisabled":false}
+PASS  B4.multifield-save-3way  :: {"t1":{"note":"独立复验：多字段保存 2026-10-14","status":"进行中","dev":"2026-10-15"},"t2":"已延期","t3":"被阻塞"}
+PASS  B5.audit-old-new-field-level  :: {"ts":"2026-10-14T12:48:55.605Z","identity":"项目负责人","revision":3,"changed":[{"id":"T001","fields":["dates.dev","note","status"]},{"id":"T002","fields":["status"]},{"id":"T003","fields":["status"]}],"added":0,"removed":0,"old":{"T001":{"dates.dev":"","note":"","status":"未开始"},"T002":{"status":"未开始"},"T003":{"status":"未开始"}},"new":{"T001":{"dates.dev":"2026-10-15","note":"独立复验：多字段保存 2026-10-14","status":"进行中"},"T002":{"status":"已延期"},"T003":{"status":"被阻塞"}},"snapshot":{"T001":{"level1":"客户端","level2":"业务工作台","task":"业需导入","owner":"李欢"},"T002":{"level1":"客户端","level2":"业务工作台","task":"需求拆分","owner":"王言"},"T003":{"level1":"客户端","level2":"业务工作台","task":"概要设计&评审","owner":"王言"}}}
+PASS  B6.api-history-today-count  :: {"status":200,"date":"2026-10-14","count":13}
+PASS  B7.api-history-multifield-split-per-field  :: ["T001|dates.dev","T001|note","T001|status","T002|status","T003|status"]
+PASS  B8.api-history-old-new-values  :: [{"task_id":"T001","field":"dates.dev","at":"2026-10-14T12:48:55.605Z","identity":"项目负责人","level1":"客户端","level2":"业务工作台","task":"业需导入","owner":"李欢","old":"","new":"2026-10-15"},{"task_id":"T001","field":"note","at":"2026-10-14T12:48:55.605Z","identity":"项目负责人","level1":"客户端","level2":"业务工作台","task":"业需导入","owner":"李欢","old":"","new":"独立复验：多字段保存 2026-10-14"},{"task_id":"T001","field":"status","at":"2026-10-14T12:48:55.605Z","identity":"项目负责人","level1":"客户端","level2":"业务工作台","task":"业需导入","owner":"李欢","old":"未开始","new":"进行中"},{"task_id":"T002","field":"status","at":"2026-10-14T12:48:55.605Z","identity":"项目负责人","level1":"客户端","level2":"业务工作台","task":"需求拆分","owner":"王言","old":"未开始","new":"已延期"},{"task_id":"T003","field":"status","at":"2026-10-14T12:48:55.605Z","identity":"项目负责人","level1":"客户端","level2":"业务工作台","task":"概要设计&评审","owner":"王言","old":"未开始","new":"被阻塞"}]
+PASS  B8b.api-history-structural-snapshot-fields  :: {"task_id":"T001","field":"dates.dev","at":"2026-10-14T12:48:55.605Z","identity":"项目负责人","level1":"客户端","level2":"业务工作台","task":"业需导入","owner":"李欢","old":"","new":"2026-10-15"}
+PASS  B9.api-history-snapshot-columns  :: {"task_id":"T001","field":"note","at":"2026-10-14T12:19:51.326Z","identity":"项目负责人","level1":"客户端","level2":"业务工作台","task":"业需导入","owner":"李欢","old":"","new":"容器自测 2026-10-14T20:19:50+0800"}
+PASS  B10.api-history-default-date-tz  :: {"date":"2026-10-14","tz":"Asia/Shanghai"}
+PASS  B11.api-history-tz-param-changes-window  :: {"from":"2026-10-14T00:00:00.000Z","to":"2026-10-15T00:00:00.000Z","shFrom":"2026-10-13T16:00:00.000Z"}
+PASS  B12.api-history-shanghai-day-bounds  :: {"from":"2026-10-13T16:00:00.000Z","to":"2026-10-14T16:00:00.000Z"}
+PASS  B13.api-history-invalid-tz-date-400  :: {"badTz":400,"badDate":400}
+PASS  B14.api-history-crossday-boundary  :: {"from":"2026-10-12T16:00:00.000Z","to":"2026-10-13T16:00:00.000Z","count":0}
+PASS  C1.CH4-panel-open-with-buttons  :: {"hidden":false,"confirmVisible":true,"cancelVisible":true}
+PASS  C2.CH4-empty-rejected-with-cn-message  :: {"msg":{"hidden":false,"text":"姓名不能为空。","panelHidden":false},"ids":9}
+PASS  C3.CH4-duplicate-rejected  :: "「李欢」已在人员池中，请勿重复添加。"
+PASS  C4.CH4-toolong-rejected  :: "姓名长度需为 1–20 个字符（当前 21 个）。"
+PASS  C5.CH7-invalid-inputs-write-no-audit-no-state  :: {"auditBefore":106,"auditAfter":106}
+PASS  C6.CH4-cancel-closes-panel-no-change  :: {"hidden":true}
+PASS  C7.CH4-valid-add-persisted-api-disk  :: {"banner":"已新增人员「验证甲」，人员池已保存到服务器（版本 4）；身份切换、负责人下拉、筛选下拉已同步。","api":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江","验证甲"],"disk":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江","验证甲"]}
+PASS  C8.CH4-four-places-sync  :: {"identitySelect":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江","验证甲"],"ownerFilter":["","项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江","验证甲"],"ownerSelect":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江","验证甲"],"layerList":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江","验证甲"]}
+PASS  C9.CH4-pm-entry-visible-on-identity-layer  :: {"hidden":false}
+PASS  C10.CH4-survives-page-reload  :: ["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江","验证甲"]
+PASS  C11.CH7-identity_added-audit  :: [{"type":"identity_added","identity":"项目负责人","name":"验证甲","at":"2026-10-14T12:48:57.348Z"}]
+PASS  C12.CH7-history-identity_added-record  :: [{"task_id":"","field":"人员池","at":"2026-10-14T12:48:57.348Z","identity":"项目负责人","level1":"","level2":"","task":"新增人员 验证甲","owner":"","old":"","new":"验证甲"}]
+PASS  D1.acceptance4-add-row-draft  :: {"id":"T037","cls":"l1-start l2-start row-dirty row-editing","l1Editor":true}
+PASS  D2.acceptance5-empty-row-blocked-no-api-no-write  :: {"banner":"前置校验未通过，未向服务器提交（共 3 项）：[T037] 一级：一级不能为空；[T037] 二级：二级不能为空；[T037] 任务项：任务项不能为空","rev":{"before":4,"after":4}}
+PASS  D3.discard-draft-reload-36-rows  :: 36
+PASS  D4.acceptance4-add-row-saved-3way  :: {"api":37,"disk":37,"page":37}
+PASS  E1.CH1-delete-cancel-keeps-row  :: {"dialog":{"type":"confirm","message":"确认删除任务 T037（删除路径验证）？该操作需保存后生效。"},"rows":37,"hint":{"hidden":false,"text":"已取消删除 T037。","disp":"block"}}
+PASS  E2.CH1-delete-confirm-removes-from-page  :: {"dialog":{"type":"confirm","message":"确认删除任务 T037（删除路径验证）？该操作需保存后生效。"},"rows":36}
+PASS  E3.CH1-delete-saved-page-api-disk-consistent  :: {"api":36,"disk":36,"page":36}
+PASS  E4.three-way-tasks-full-equal  :: {"equal":true}
+PASS  F1.CH6-wbs-export-downloaded  :: {"name":"蓉城战役WBS-20261014.xlsx","size":1172862}
+PASS  F2.CH5-daily-export-downloaded-banner  :: {"name":"蓉城战役日报-20261014.xlsx","banner":"已导出日报 蓉城战役日报-20261014.xlsx：sheet「阻塞与延期」2 行、sheet「当日变更」14 行（2026-10-14 Asia/Shanghai 自然日口径；原 WBS 导出仍不含 status）。","historyCount":14,"blockedCount":2}
+PASS  F3.health-probe-final-ok  :: "探针：服务正常 · v4"
+PASS  F4.no-pageerror  :: []
+PASS  F5.no-console-error-except-favicon  :: {"favicon":0,"other":[]}
+
+PASS=79 FAIL=0

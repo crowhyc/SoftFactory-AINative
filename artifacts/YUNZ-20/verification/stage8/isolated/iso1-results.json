@@ -1,0 +1,191 @@
+{
+  "results": {
+    "base": "http://127.0.0.1:4181",
+    "started_at": "2026-10-14T12:52:22.289Z",
+    "checks": [
+      {
+        "id": "L1.legacy-audit-format-on-disk",
+        "ok": true,
+        "detail": 2
+      },
+      {
+        "id": "L2.isolated-health-ok",
+        "ok": true,
+        "detail": {
+          "ok": true,
+          "service": "wbs-rongcheng",
+          "revision": 1
+        }
+      },
+      {
+        "id": "L3.legacy-wbs-readable",
+        "ok": true,
+        "detail": {
+          "rev": 1,
+          "tasks": 36,
+          "identities": 9
+        }
+      },
+      {
+        "id": "L4.legacy-history-no-detail-skipped",
+        "ok": true,
+        "detail": {
+          "count": 0,
+          "from": "2026-10-13T16:00:00.000Z",
+          "to": "2026-10-14T16:00:00.000Z"
+        }
+      },
+      {
+        "id": "L5.legacy-render-36-rows",
+        "ok": true,
+        "detail": 36
+      },
+      {
+        "id": "L6.legacy-daily-export-no-error",
+        "ok": true,
+        "detail": {
+          "banner": {
+            "cls": "banner ok",
+            "text": "已导出日报 蓉城战役日报-20261014.xlsx：sheet「阻塞与延期」0 行、sheet「当日变更」0 行（2026-10-14 Asia/Shanghai 自然日口径；原 WBS 导出仍不含 status）。"
+          },
+          "historyCount": 0
+        }
+      },
+      {
+        "id": "L7.legacy-save-roundtrip-3way",
+        "ok": true,
+        "detail": {
+          "rev": {
+            "before": 1,
+            "after": 2
+          },
+          "api": "旧数据兼容复验保存",
+          "disk": "旧数据兼容复验保存"
+        }
+      },
+      {
+        "id": "L8.concurrent-put-later-409-not-overwrite",
+        "ok": true,
+        "detail": {
+          "a": {
+            "status": 200,
+            "body": {
+              "ok": true,
+              "revision": 3
+            }
+          },
+          "b": {
+            "status": 409,
+            "body": {
+              "ok": false,
+              "reason": "conflict",
+              "current": 3
+            }
+          },
+          "diskNote": "并发复验-1791982344073-先到",
+          "diskRev": 3
+        }
+      },
+      {
+        "id": "N1.CH7-non-pm-api-add-forbidden-403",
+        "ok": true,
+        "detail": {
+          "status": 403,
+          "body": {
+            "ok": false,
+            "reason": "forbidden",
+            "message": "仅项目负责人可以新增人员",
+            "errors": [
+              {
+                "id": null,
+                "field": "identities",
+                "message": "仅项目负责人可以新增人员"
+              }
+            ]
+          },
+          "rev": 3
+        }
+      },
+      {
+        "id": "N2.CH7-forbidden-writes-no-audit",
+        "ok": true,
+        "detail": {
+          "before": 4,
+          "after": 4
+        }
+      },
+      {
+        "id": "N3.CH7-duplicate-empty-toolong-400",
+        "ok": true,
+        "detail": {
+          "dup": 400,
+          "empty": 400,
+          "toolong": 400,
+          "msg": "身份重复：李欢"
+        }
+      },
+      {
+        "id": "N4.CH7-invalid-inputs-no-audit-no-revision",
+        "ok": true,
+        "detail": {
+          "audit": 4,
+          "rev": 3
+        }
+      },
+      {
+        "id": "N5.CH7-pm-api-add-writes-audit-and-history",
+        "ok": true,
+        "detail": {
+          "status": 200,
+          "ev": [
+            {
+              "type": "identity_added",
+              "identity": "项目负责人",
+              "name": "重启甲",
+              "at": "2026-10-14T12:52:24.634Z"
+            }
+          ],
+          "hist": [
+            {
+              "task_id": "",
+              "field": "人员池",
+              "at": "2026-10-14T12:52:24.634Z",
+              "identity": "项目负责人",
+              "level1": "",
+              "level2": "",
+              "task": "新增人员 重启甲",
+              "owner": "",
+              "old": "",
+              "new": "重启甲"
+            }
+          ]
+        }
+      },
+      {
+        "id": "N6.no-pageerror-isolated",
+        "ok": true,
+        "detail": []
+      }
+    ]
+  },
+  "pass": 14,
+  "fail": 0,
+  "preRestart": {
+    "revision": 4,
+    "identities": [
+      "项目负责人",
+      "李欢",
+      "王言",
+      "张航瑞",
+      "郑述文",
+      "崔文建",
+      "余宇",
+      "黄逸偲",
+      "陈江",
+      "重启甲"
+    ],
+    "noteT005": "旧数据兼容复验保存",
+    "noteT006": "并发复验-1791982344073-先到",
+    "auditLines": 6
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "results": {
+    "base": "http://127.0.0.1:4181",
+    "checks": [
+      {
+        "id": "R1.health-after-restart",
+        "ok": true,
+        "detail": {
+          "ok": true,
+          "service": "wbs-rongcheng",
+          "revision": 4
+        }
+      },
+      {
+        "id": "R2.data-persists-after-restart",
+        "ok": true,
+        "detail": {
+          "noteT005": "旧数据兼容复验保存",
+          "noteT006": "并发复验-1791982344073-先到",
+          "identities": [
+            "项目负责人",
+            "李欢",
+            "王言",
+            "张航瑞",
+            "郑述文",
+            "崔文建",
+            "余宇",
+            "黄逸偲",
+            "陈江",
+            "重启甲"
+          ]
+        }
+      },
+      {
+        "id": "R3.added-identity-persists",
+        "ok": true,
+        "detail": [
+          "项目负责人",
+          "李欢",
+          "王言",
+          "张航瑞",
+          "郑述文",
+          "崔文建",
+          "余宇",
+          "黄逸偲",
+          "陈江",
+          "重启甲"
+        ]
+      },
+      {
+        "id": "R4.history-readable-after-restart",
+        "ok": true,
+        "detail": {
+          "count": 3,
+          "fields": [
+            "T005:note",
+            "T006:note",
+            ":人员池"
+          ]
+        }
+      },
+      {
+        "id": "R5.legacy-audit-lines-kept-and-append-only",
+        "ok": true,
+        "detail": {
+          "legacyKept": 2,
+          "lines": 6,
+          "before": 6
+        }
+      }
+    ],
+    "summary": {
+      "pass": 5,
+      "fail": 0
+    }
+  },
+  "prevRestart": {
+    "revision": 4,
+    "identities": [
+      "项目负责人",
+      "李欢",
+      "王言",
+      "张航瑞",
+      "郑述文",
+      "崔文建",
+      "余宇",
+      "黄逸偲",
+      "陈江",
+      "重启甲"
+    ],
+    "noteT005": "旧数据兼容复验保存",
+    "noteT006": "并发复验-1791982344073-先到",
+    "auditLines": 6
+  }
+}

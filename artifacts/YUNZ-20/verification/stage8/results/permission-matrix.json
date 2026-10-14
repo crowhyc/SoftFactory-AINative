@@ -1,0 +1,65 @@
+[
+  {
+    "ident": "项目负责人",
+    "rows": 36,
+    "violations": 0,
+    "isPm": true,
+    "editableRows": 36
+  },
+  {
+    "ident": "李欢",
+    "rows": 36,
+    "violations": 0,
+    "isPm": false,
+    "editableRows": 1
+  },
+  {
+    "ident": "王言",
+    "rows": 36,
+    "violations": 0,
+    "isPm": false,
+    "editableRows": 5
+  },
+  {
+    "ident": "张航瑞",
+    "rows": 36,
+    "violations": 0,
+    "isPm": false,
+    "editableRows": 2
+  },
+  {
+    "ident": "郑述文",
+    "rows": 36,
+    "violations": 0,
+    "isPm": false,
+    "editableRows": 2
+  },
+  {
+    "ident": "崔文建",
+    "rows": 36,
+    "violations": 0,
+    "isPm": false,
+    "editableRows": 1
+  },
+  {
+    "ident": "余宇",
+    "rows": 36,
+    "violations": 0,
+    "isPm": false,
+    "editableRows": 3
+  },
+  {
+    "ident": "黄逸偲",
+    "rows": 36,
+    "violations": 0,
+    "isPm": false,
+    "editableRows": 20
+  },
+  {
+    "ident": "陈江",
+    "rows": 36,
+    "violations": 0,
+    "isPm": false,
+    "editableRows": 2
+  }
+]

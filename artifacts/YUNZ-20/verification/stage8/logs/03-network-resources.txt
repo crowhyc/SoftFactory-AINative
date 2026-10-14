@@ -1,0 +1,13 @@
+PASS  NET1.all-requests-same-origin  :: []
+PASS  NET2.no-external-url  :: []
+PASS  NET3.no-console-error  :: []
+
+total=7
+urls=
+  GET document http://127.0.0.1:4180/
+  GET stylesheet http://127.0.0.1:4180/styles.css
+  GET script http://127.0.0.1:4180/vendor/xlsx.full.min.js
+  GET script http://127.0.0.1:4180/app.js
+  GET fetch http://127.0.0.1:4180/api/wbs
+  GET fetch http://127.0.0.1:4180/api/health
+  GET fetch http://127.0.0.1:4180/template.xlsx

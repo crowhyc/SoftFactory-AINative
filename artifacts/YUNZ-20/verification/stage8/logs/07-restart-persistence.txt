@@ -1,0 +1,12 @@
+restarted_at=2026-10-14T20:51:09+0800
+wait_seconds=2
+health_127={"ok":true,"service":"wbs-rongcheng","revision":0}
+health_000={"ok":true,"service":"wbs-rongcheng","revision":0}
+binding:
+LISTEN     0      128          *:4180                     *:*                  
+docker:
+wbs-rongcheng:20261014203454 Up 1 second (health: starting)
+revision_after_restart=0 36 9
+sha256_after_restart:
+a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5  /opt/wbs-rongcheng/data/wbs.json
+e97509d25c5f5a0131c44af38fa48d691d8046fa6b6b45531e577d076a73bfde  /opt/wbs-rongcheng/data/audit.log

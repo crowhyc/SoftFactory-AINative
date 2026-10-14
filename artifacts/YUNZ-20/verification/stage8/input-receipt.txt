@@ -1,0 +1,30 @@
+# YUNZ-28 / Stage8 独立复验：被验证产物受理与两条证据链（核对时间 +08 2026-10-14 20:42–20:56）
+
+## 一、被验证产物来源与定位（先定位后执行）
+- 运行现场（被验证）：/opt/wbs-rongcheng/，服务 http://127.0.0.1:4180、http://0.0.0.0:4180
+- 源码快照（被验证）：/opt/SoftFactory-AINative/artifacts/YUNZ-20/wbs-rongcheng/
+- 交付评论（作者自报）：YUNZ-27 评论 01a13a6b-fb84-7b63-a5d8-0226113d9cc0（2026-10-14T12:38:37Z = +08 20:38:37）
+- 作者自测证据（作者自报）：/opt/SoftFactory-AINative/artifacts/YUNZ-20/selftest/stage7/
+- 容器镜像：wbs-rongcheng:20261014203454（image id sha256:6bc9b7e5a7ff…），网络 host，挂载 /opt/wbs-rongcheng/data → /app/data
+- 数据现场：/opt/wbs-rongcheng/data/wbs.json（rev 0 / 36 行 / 9 身份）、data/audit.log
+
+## 二、作者自报链（仅做交叉核对，不作为本轮结论证据）
+| 自报项 | 自报值 | AI-QV 独立核对 | 结论 |
+| --- | --- | --- | --- |
+| server.js sha256 | 0e6703b93a0bf72aa3a976edc7c9e3b0d913fac3b3f3a770ce741ec763dd50e1 | 0e6703b9…d50e1（运行目录 + 快照 + 容器 /app 三处一致） | 一致 |
+| public/app.js sha256 | 7db0a47a0a7961d44339ce3a712b39526f358917354656d36126e6bd402a6ac5 | 7db0a47a…2a6ac5（同上三处一致） | 一致 |
+| artifacts/YUNZ-20/SHA256SUMS sha256 | 5b2482cb2a93fd026edf5f4bc67a647e6429cb051c5b4c07d09faa54b0821d2b | 5b2482cb…0821d2b | 一致 |
+| selftest/stage7/README.md sha256 | e67bab2e8a3a74788a05af7b820f059a8d05aa1fa6a8b7af20dd95ec8fca0c8d | e67bab2e…c8fca0c8d | 一致 |
+| 交付态数据未被污染（rev 0 / 36 行 / 9 身份） | — | 复验开工前 sha256 a3632236… 与 Stage6 收尾值一致 | 一致 |
+- 作者自报的浏览器断言结果（PASS=53/FAIL=0 等）只作为「作者自报」，本轮不复用其输出；所有结论来自第三节的自跑链。
+
+## 三、AI-QV 自跑链（本轮结论唯一依据）
+| 环节 | 脚本 | 输出 |
+| --- | --- | --- |
+| 部署到位核验（served vs 快照 vs 运行目录 vs 容器 /app） | scripts/00…(shell inline) | logs/01-served-vs-snapshot.txt、logs/01b-container-vs-rundir.txt |
+| 真实浏览器交互矩阵（打 4180 现场，Chromium 140） | scripts/qv-browser-live.cjs（scripts/run-live.sh） | logs/02-live-browser-console.log、results/live-browser-results.json、shots/*.png、downloads/*.xlsx |
+| 导出/日报读回（Python 标准库 zipfile+xml.etree） | scripts/qv-readback.py | logs/05-readback.log、results/readback-results.json |
+| 隔离实例：旧数据兼容 / 并发 409 / CH-7 反例 / 重启持久 | scripts/qv-iso1.cjs、scripts/qv-iso2.cjs（scripts/run-isolated.sh） | logs/08-iso1.log、logs/09-iso2.log、isolated/*.json |
+| 隔离实例旧格式导出读回 | scripts/qv-readback.py --profile legacy | logs/11-legacy-readback.log |
+| 请求面 / 约束 / 凭据扫描 | scripts/qv-network.cjs、logs/12-constraints.txt | logs/03-network-resources.txt、results/network-requests.json |
+- 执行时间（+08）：2026-10-14 20:42–20:56；本轮未修改任何被验证实现代码（/opt/wbs-rongcheng 源码与快照 sha256 全程一致）。

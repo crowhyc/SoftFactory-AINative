@@ -1,0 +1,20 @@
+== ss -ltn (4180) ==
+State      Recv-Q Send-Q Local Address:Port               Peer Address:Port              
+LISTEN     0      128          *:4180                     *:*                  
+
+== docker ps (wbs) ==
+020405b933da wbs-rongcheng:20261014203454 Up 7 minutes (healthy)  wbs-rongcheng
+
+== docker inspect ==
+image=wbs-rongcheng:20261014203454 imageid=sha256:6bc9b7e5a7ffdcd99bbc7db7a73b7ae44bc9d1ceb0e801fc89470ac3b65cfa8b net=host mounts=[{"Type":"bind","Source":"/opt/wbs-rongcheng/data","Destination":"/app/data","Mode":"","RW":true,"Propagation":"rprivate"}] env=["WBS_HOST=0.0.0.0","WBS_PORT=4180","PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","NODE_VERSION=24.21.0","YARN_VERSION=1.22.22","NODE_ENV=production","WBS_DATA_DIR=/app/data"]
+
+== health 127.0.0.1 ==
+{"ok":true,"service":"wbs-rongcheng","revision":0}
+== health 0.0.0.0 ==
+{"ok":true,"service":"wbs-rongcheng","revision":0}
+== svc pid ==
+LISTEN     0      128          *:4180                     *:*                   users:(("MainThread",pid=28021,fd=18))
+
+== data sha256 (pre) ==
+a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5  /opt/wbs-rongcheng/data/wbs.json
+e97509d25c5f5a0131c44af38fa48d691d8046fa6b6b45531e577d076a73bfde  /opt/wbs-rongcheng/data/audit.log
