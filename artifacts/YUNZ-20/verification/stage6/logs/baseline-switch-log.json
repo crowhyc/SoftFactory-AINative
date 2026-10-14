@@ -1,0 +1,83 @@
+[
+  {
+    "id": "项目负责人",
+    "layerDisplay": "flex",
+    "wbDisplay": "block",
+    "rows": 36,
+    "addRowDisplay": "block",
+    "session": "身份：项目负责人 · 版本：0 · 已与服务器一致",
+    "pass": false
+  },
+  {
+    "id": "李欢",
+    "layerDisplay": "flex",
+    "wbDisplay": "block",
+    "rows": 36,
+    "addRowDisplay": "none",
+    "session": "身份：李欢 · 版本：0 · 已与服务器一致",
+    "pass": false
+  },
+  {
+    "id": "王言",
+    "layerDisplay": "flex",
+    "wbDisplay": "block",
+    "rows": 36,
+    "addRowDisplay": "none",
+    "session": "身份：王言 · 版本：0 · 已与服务器一致",
+    "pass": false
+  },
+  {
+    "id": "张航瑞",
+    "layerDisplay": "flex",
+    "wbDisplay": "block",
+    "rows": 36,
+    "addRowDisplay": "none",
+    "session": "身份：张航瑞 · 版本：0 · 已与服务器一致",
+    "pass": false
+  },
+  {
+    "id": "郑述文",
+    "layerDisplay": "flex",
+    "wbDisplay": "block",
+    "rows": 36,
+    "addRowDisplay": "none",
+    "session": "身份：郑述文 · 版本：0 · 已与服务器一致",
+    "pass": false
+  },
+  {
+    "id": "崔文建",
+    "layerDisplay": "flex",
+    "wbDisplay": "block",
+    "rows": 36,
+    "addRowDisplay": "none",
+    "session": "身份：崔文建 · 版本：0 · 已与服务器一致",
+    "pass": false
+  },
+  {
+    "id": "余宇",
+    "layerDisplay": "flex",
+    "wbDisplay": "block",
+    "rows": 36,
+    "addRowDisplay": "none",
+    "session": "身份：余宇 · 版本：0 · 已与服务器一致",
+    "pass": false
+  },
+  {
+    "id": "黄逸偲",
+    "layerDisplay": "flex",
+    "wbDisplay": "block",
+    "rows": 36,
+    "addRowDisplay": "none",
+    "session": "身份：黄逸偲 · 版本：0 · 已与服务器一致",
+    "pass": false
+  },
+  {
+    "id": "陈江",
+    "layerDisplay": "flex",
+    "wbDisplay": "block",
+    "rows": 36,
+    "addRowDisplay": "none",
+    "session": "身份：陈江 · 版本：0 · 已与服务器一致",
+    "pass": false
+  }
+]

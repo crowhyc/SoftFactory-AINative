@@ -1,0 +1,24 @@
+# MODE=baseline BASE=http://127.0.0.1:4181 chromium=140.0.7339.16
+PASS | baseline | initial.identity-layer-visible | {"display":"flex","hidden":false,"rect":{"x":0,"y":0,"w":1440,"h":900}}
+PASS | baseline | initial.workbench-hidden | {"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}}
+PASS | baseline | initial.identity-count=9 | {"idBtns":9}
+PASS | baseline | d3.pre-click-overlay-covers-viewport | {"preRect":{"x":0,"y":0,"w":1440,"h":900},"preHit":{"tag":"div","id":"identity-list","chain":["#identity-list","div","#identity-layer","body","html"]}}
+PASS | baseline | d3.BASELINE-identity-layer-still-flex | {"display":"flex","hidden":true,"rect":{"x":0,"y":0,"w":1440,"h":900}}
+PASS | baseline | d3.BASELINE-overlay-still-covers-center | {"tag":"div","id":"identity-list","chain":["#identity-list","div","#identity-layer","body","html"]}
+PASS | baseline | d3.BASELINE-workbench-pushed-below-viewport | {"wb":{"x":0,"y":900,"w":1440,"h":1677}}
+PASS | baseline | d3.BASELINE-user-blocked | {"layer1":"flex","centerHit":["#identity-list","div","#identity-layer","body","html"]}
+PASS | baseline | hidden-audit.in-workbench.no-missing-element | {"bad":[]}
+FAIL | baseline | hidden-audit.in-workbench.hidden-implies-display-none | {"violations":[{"sel":"#identity-layer","display":"flex"},{"sel":"#banner","display":"flex"}],"data":{"#identity-layer":{"display":"flex","hidden":true,"rect":{"x":0,"y":0,"w":1440,"h":900}},"#workbench":{"display":"block","hidden":false,"rect":{"x":0,"y":900,"w":1440,"h":1677}},"#banner":{"display":"flex","hidden":true,"rect":{"x":16,"y":1100,"w":1408,"h":40}},"#hint":{"display":"block","hidden":false,"rect":{"x":16,"y":1148,"w":1408,"h":36}},"#empty-state":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}},"#add-row-btn":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}},"#identity-error":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}},"#banner-action":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}}}}
+PASS | baseline | acc1.select-has-9-identities | {"opts":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江"]}
+PASS | baseline | acc1.layer-list-matches-select | {"idNames":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江"]}
+FAIL | baseline | acc1.refresh-keeps-identity | {"layerR":"flex","wbR":"block","selR":"李欢","sessR":"身份：李欢 · 版本：0 · 已与服务器一致"}
+FAIL | baseline | acc1.switch.项目负责人 | {"layerDisplay":"flex","wbDisplay":"block","rows":36,"addRowDisplay":"block","session":"身份：项目负责人 · 版本：0 · 已与服务器一致"}
+FAIL | baseline | acc1.switch.李欢 | {"layerDisplay":"flex","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：李欢 · 版本：0 · 已与服务器一致"}
+FAIL | baseline | acc1.switch.王言 | {"layerDisplay":"flex","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：王言 · 版本：0 · 已与服务器一致"}
+FAIL | baseline | acc1.switch.张航瑞 | {"layerDisplay":"flex","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：张航瑞 · 版本：0 · 已与服务器一致"}
+FAIL | baseline | acc1.switch.郑述文 | {"layerDisplay":"flex","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：郑述文 · 版本：0 · 已与服务器一致"}
+FAIL | baseline | acc1.switch.崔文建 | {"layerDisplay":"flex","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：崔文建 · 版本：0 · 已与服务器一致"}
+FAIL | baseline | acc1.switch.余宇 | {"layerDisplay":"flex","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：余宇 · 版本：0 · 已与服务器一致"}
+FAIL | baseline | acc1.switch.黄逸偲 | {"layerDisplay":"flex","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：黄逸偲 · 版本：0 · 已与服务器一致"}
+FAIL | baseline | acc1.switch.陈江 | {"layerDisplay":"flex","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：陈江 · 版本：0 · 已与服务器一致"}
+# SUMMARY mode=baseline total=22 fail=11

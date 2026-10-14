@@ -1,0 +1,38 @@
+# Stage6 复验 —— 被验证产物受理与完整性核对
+核对时间（本地 +08）：2026-10-14T19:20:49+0800   UTC：2026-10-14T11:20:49+0000
+
+## 被验证产物（只读，AI-QV 未修改被验证实现代码）
+- 运行产物目录：/opt/wbs-rongcheng/
+- 运行服务：http://127.0.0.1:4180（容器 wbs-rongcheng，镜像 wbs-rongcheng:20261014190527）
+- 源码快照：/opt/SoftFactory-AINative/artifacts/YUNZ-20/wbs-rongcheng/
+- Stage5 作者自测：/opt/SoftFactory-AINative/artifacts/YUNZ-20/selftest/stage5/
+
+## D-3 修复点 styles.css 三链 sha256（必须一致，否则等于"改了仓库但服务未更新"）
+53afd03fdf138010247be7f26e2b6092fed920762eb684e010b01c9228f82941  /opt/wbs-rongcheng/public/styles.css（运行目录）
+53afd03fdf138010247be7f26e2b6092fed920762eb684e010b01c9228f82941  artifacts/YUNZ-20/wbs-rongcheng/public/styles.css（源码快照）
+53afd03fdf138010247be7f26e2b6092fed920762eb684e010b01c9228f82941  served http://127.0.0.1:4180/styles.css（运行中服务实际返回）
+
+## 修复点内容（/opt/wbs-rongcheng/public/styles.css:25-26）
+    /* 基础层：hidden 属性必须胜过类选择器的 display（否则 .identity-layer/.workbench 等遮罩无法隐藏） */
+    [hidden] { display: none !important; }
+（全文件 `[hidden]` 规则仅此一处，且无针对 #identity-layer 的补丁式覆盖）
+
+## 修复前对照基线（AI-QV 自建实例，非采信作者自报）
+- 镜像：wbs-rongcheng:20261014144403（Stage5 修复前，image id 50e6ed48ab39）
+- 实例：容器 qv-baseline-4181，--network host，WBS_PORT=4181，数据目录 ./baseline/data（由随包 seed 初始化，未触碰 4180 的数据）
+- 该镜像 served styles.css sha256 = e6b61b37a61da8ca59a96c630a684ae30b2b972a045948b3f357543a6e367644（与修复版 53afd03f… 不同，确认为真·修复前版本）
+- 该实例已在本轮结束时销毁（docker rm -f qv-baseline-4181）
+
+## 两条证据链（分开记录，互不采信）
+1) 作者自报链（Stage5，AI-IE，仅作对照对象）
+   - 交付评论：YUNZ-25 评论 01a13a19-5faf-744d-9e2a-ef43789fdd85，2026-10-14T11:08:23Z（+08 19:08:23）
+   - 自测证据目录：artifacts/YUNZ-20/selftest/stage5/（realbrowser.cjs / browser/ / jsdom/ / runtime/ / deploy.log）
+   - 自报要点：Chromium 140 真实浏览器 PASS=21 FAIL=0；styles.css sha256 53afd03f…；新镜像 20261014190527；health ok
+   - 自报证据文件 sha256（AI-QV 复算）：
+     0a54071180a3faf23a0ef4d47ffe932eff0a21b281d46a5deaac86229811d0dd  selftest/stage5/realbrowser.cjs
+     ebcc180c29b4892909e3f28fd29e10727e1ffe00bbdb5ee5ea49e5787d79a30f  selftest/stage5/browser/after-run.log
+2) AI-QV 自跑链（本轮，独立，结论唯一依据）
+   - 自研脚本：scripts/d3-verify.cjs（fix / baseline 双模式）、scripts/hidden-audit.cjs
+   - 执行时间：2026-10-14T19:20:49+0800（+08）
+   - 输出：logs/fix.log、logs/baseline.log、logs/hidden-audit.log、results/*.json、shots/*.png
+   - 核对对照：作者自报的 styles.css sha256 53afd03f… 与 AI-QV 三链实测一致；但作者的浏览器结论不作为证据，本轮全部结论来自 AI-QV 自跑输出。

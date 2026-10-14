@@ -1,0 +1,60 @@
+# MODE=fix BASE=http://127.0.0.1:4180 chromium=140.0.7339.16
+PASS | fix | initial.identity-layer-visible | {"display":"flex","hidden":false,"rect":{"x":0,"y":0,"w":1440,"h":900}}
+PASS | fix | initial.workbench-hidden | {"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}}
+PASS | fix | initial.identity-count=9 | {"idBtns":9}
+PASS | fix | d3.pre-click-overlay-covers-viewport | {"preRect":{"x":0,"y":0,"w":1440,"h":900},"preHit":{"tag":"div","id":"identity-list","chain":["#identity-list","div","#identity-layer","body","html"]}}
+PASS | fix | d3.identity-layer-computed-display-none | {"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}}
+PASS | fix | d3.identity-layer-hidden-attr-true | {"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}}
+PASS | fix | d3.identity-layer-rect-collapsed | {"x":0,"y":0,"w":0,"h":0}
+PASS | fix | d3.workbench-visible | {"display":"block","hidden":false,"rect":{"x":0,"y":0,"w":1440,"h":1625}}
+PASS | fix | d3.workbench-in-viewport | {"x":0,"y":0,"w":1440,"h":1625}
+PASS | fix | d3.viewport-center-hits-workbench | {"tag":"td","id":null,"chain":["td","tr","#wbs-body","#wbs-table","section","#workbench"]}
+PASS | fix | d3.rows-rendered=36 | {"rows":36}
+PASS | fix | d3.no-pageerror | []
+PASS | fix | d3.no-console-error | []
+PASS | fix | d3.workbench-interactive | {"interactive":true}
+PASS | fix | hidden-audit.in-workbench.no-missing-element | {"bad":[]}
+PASS | fix | hidden-audit.in-workbench.hidden-implies-display-none | {"violations":[],"data":{"#identity-layer":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}},"#workbench":{"display":"block","hidden":false,"rect":{"x":0,"y":0,"w":1440,"h":1625}},"#banner":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}},"#hint":{"display":"block","hidden":false,"rect":{"x":16,"y":196,"w":1408,"h":36}},"#empty-state":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}},"#add-row-btn":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}},"#identity-error":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}},"#banner-action":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}}}}
+PASS | fix | acc1.select-has-9-identities | {"opts":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江"]}
+PASS | fix | acc1.layer-list-matches-select | {"idNames":["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江"]}
+PASS | fix | acc1.refresh-keeps-identity | {"layerR":"none","wbR":"block","selR":"李欢","sessR":"身份：李欢 · 版本：0 · 已与服务器一致"}
+PASS | fix | acc1.switch.项目负责人 | {"layerDisplay":"none","wbDisplay":"block","rows":36,"addRowDisplay":"block","session":"身份：项目负责人 · 版本：0 · 已与服务器一致"}
+PASS | fix | acc1.switch.李欢 | {"layerDisplay":"none","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：李欢 · 版本：0 · 已与服务器一致"}
+PASS | fix | acc1.switch.王言 | {"layerDisplay":"none","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：王言 · 版本：0 · 已与服务器一致"}
+PASS | fix | acc1.switch.张航瑞 | {"layerDisplay":"none","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：张航瑞 · 版本：0 · 已与服务器一致"}
+PASS | fix | acc1.switch.郑述文 | {"layerDisplay":"none","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：郑述文 · 版本：0 · 已与服务器一致"}
+PASS | fix | acc1.switch.崔文建 | {"layerDisplay":"none","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：崔文建 · 版本：0 · 已与服务器一致"}
+PASS | fix | acc1.switch.余宇 | {"layerDisplay":"none","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：余宇 · 版本：0 · 已与服务器一致"}
+PASS | fix | acc1.switch.黄逸偲 | {"layerDisplay":"none","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：黄逸偲 · 版本：0 · 已与服务器一致"}
+PASS | fix | acc1.switch.陈江 | {"layerDisplay":"none","wbDisplay":"block","rows":36,"addRowDisplay":"none","session":"身份：陈江 · 版本：0 · 已与服务器一致"}
+PASS | fix | acc3.wangyan-own-struct-field-locked | {"cls":"cell cell-task locked"}
+PASS | fix | acc3.wangyan-own-struct-click-gives-hint-no-editor | {"editor":null,"hint":{"hidden":false,"display":"block","text":"当前身份「王言」对第 T002 行的「任务项」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"}}
+PASS | fix | acc3.wangyan-other-row-locked-no-editor | {"cls":"cell cell-date locked","editor":null,"hint":{"hidden":false,"display":"block","text":"当前身份「王言」对第 T001 行的「开发」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"}}
+PASS | fix | acc3.wangyan-own-date-editable | {"text":"","cls":"cell cell-date editable editing","editing":true,"editor":"INPUT","rect":{"x":598,"y":321,"w":132,"h":41}}
+PASS | fix | acc3.edit-marks-dirty-and-hint | {"hintEdit":{"hidden":false,"display":"block","text":"已修改第 T002 行的「设计」，点击“保存”提交到服务器。"},"saveDisabled":false}
+PASS | fix | acc3.save-banner-ok | {"hidden":false,"display":"flex","cls":"banner ok","text":"保存成功，服务器版本号已更新为 1（页面、API、磁盘三端一致）。\n    重新加载"}
+PASS | fix | hidden-audit.after-save.no-missing-element | {"bad":[]}
+PASS | fix | hidden-audit.after-save.hidden-implies-display-none | {"violations":[],"data":{"#identity-layer":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}},"#workbench":{"display":"block","hidden":false,"rect":{"x":0,"y":0,"w":1440,"h":1677}},"#banner":{"display":"flex","hidden":false,"rect":{"x":16,"y":200,"w":1408,"h":40}},"#hint":{"display":"block","hidden":false,"rect":{"x":16,"y":248,"w":1408,"h":36}},"#empty-state":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}},"#add-row-btn":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}},"#identity-error":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}},"#banner-action":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}}}}
+PASS | fix | acc3.triple-consistency-api | {"api":"2026-12-31"}
+PASS | fix | acc3.triple-consistency-disk | {"disk":"2026-12-31"}
+PASS | fix | acc3.triple-consistency-page | {"page":"2026-12-31"}
+PASS | fix | acc3.revision-advanced | {"before":0,"after":1}
+PASS | fix | acc3.restore-value-api | {"v":""}
+PASS | fix | acc3.restore-tasks-array-identical-to-pre-save | {"eq":true}
+PASS | fix | acc3.restore-disk-equals-api | {}
+PASS | fix | acc4.add-row-visible-for-pm | {"display":"block","hidden":false,"rect":{"x":963,"y":143,"w":72,"h":32}}
+PASS | fix | acc4.pm-can-edit-any-row | {"row":"T001","editor":"INPUT"}
+PASS | fix | acc4.add-row-adds-row-and-hints | {"beforeAdd":36,"afterAdd":37,"hint":"已新增第 T037 行，请补充一级 / 二级 / 任务项后保存。"}
+PASS | fix | acc4.delete-asks-confirm | {"dialogMsgs":["确认删除任务 T037（未命名）？该操作需保存后生效。"]}
+PASS | fix | acc4.delete-cancel-keeps-row | {"afterCancel":37,"afterAdd":37,"hint":"已取消删除 T037。"}
+PASS | fix | acc4.delete-confirm-removes-row | {"afterDelete":36,"expected":36,"hint":"已删除第 T037 行，点击“保存”提交到服务器。"}
+PASS | fix | acc4.empty-new-row-blocked-by-validation | {"ban":{"hidden":false,"display":"flex","cls":"banner error","text":"前置校验未通过，未向服务器提交（共 3 项）：[T037] 一级：一级不能为空；[T037] 二级：二级不能为空；[T037] 任务项：任务项不能为空\n    重新加载"}}
+PASS | fix | acc4.empty-new-row-not-persisted | {"rev":2}
+PASS | fix | acc4.unsaved-changes-discarded-on-reload | {"rowsAfterReload":36,"rev":2}
+PASS | fix | ux.readonly-id-cell-click-shows-hint | {"cls":"cell cell-id locked","hint":{"hidden":false,"display":"block","text":"当前身份「李欢」对第 T001 行的「序号」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"}}
+PASS | fix | d3.final-state-still-good | {"finalLayer":{"display":"none","hidden":true,"rect":{"x":0,"y":0,"w":0,"h":0}},"finalWb":{"display":"block","hidden":false,"rect":{"x":0,"y":0,"w":1440,"h":1625}}}
+PASS | fix | final.no-pageerror | []
+PASS | fix | final.no-console-error | []
+PASS | fix | final.all-console-errors-are-benign-favicon-404 | {"all":[{"text":"Failed to load resource: the server responded with a status of 404 (Not Found)","url":"http://127.0.0.1:4180/favicon.ico"}]}
+PASS | fix | final.no-http-error-except-favicon | {"nonFaviconHttp":[],"all":[]}
+# SUMMARY mode=fix total=58 pass=58 fail=0

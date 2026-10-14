@@ -1,0 +1,32 @@
+# Stage6 复验 —— 运行态与数据现场记录
+记录时间（+08）：2026-10-14T19:21:54+0800
+
+## 运行容器（复验期间未被重建 / 替换 / 重启）
+image=wbs-rongcheng:20261014190527  image_id=sha256:2c515ab5f75c8c207a7734a5b6b67a9f3e18b66509bb2c8a677599470617afd6
+container=wbs-rongcheng  id=21aebd36c0f6…  health=healthy  started=2026-10-14T11:05:28Z
+mounts=/opt/wbs-rongcheng/data -> /app/data
+
+## 健康探针
+- 复验开始前：GET /api/health => {"ok":true,"service":"wbs-rongcheng","revision":0}
+- 复验结束时：GET /api/health => {"ok":true,"service":"wbs-rongcheng","revision":0}（数据已回滚，故 revision 回到 0）
+
+## data/wbs.json 现场一致性（复验前 / 复验后）
+复验前备份 sha256：a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5  （results/wbs.json.pre-stage6.bak）
+复验后现场 sha256：a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5  （/opt/wbs-rongcheng/data/wbs.json）
+=> 逐字节一致：收尾已把运行数据回滚到复验前现场，tasks / identities / meta 内容未被留在改动后状态。
+
+## 复验期间对运行数据的写副作用（如实记录，不隐藏）
+- 验收 3 明确要求"保存后 GET /api/wbs 与磁盘 JSON 与该行显示三端一致"，因此在运行中服务（4180）上执行了真实保存往返：
+  改 T002「设计」→ 保存 → 读页面/API/磁盘三端 → 还原原值 → 再保存。
+- 共发生 7 次真实 PUT 落盘（来自 4 次脚本执行，其中 1 次脚本因缺少数据挂载而中止），每次执行前均已把 wbs.json 回滚到复验前字节，故每次 revision 均从 1 起。
+- data/audit.log 因此追加 7 条审计记录（identity=王言，changed=[T002 dates.*]，revision 1/2），audit.log 由 9896 → 13100 字节；审计文件为追加型运行记录，本轮未删除、未改写其中任何既有条目。
+- audit.log 尾部 2 条：
+{"ts":"2026-10-14T11:17:51.978Z","identity":"王言","revision":1,"changed":[{"id":"T002","fields":["dates.*"]}],"added":0,"removed":0}
+{"ts":"2026-10-14T11:17:52.476Z","identity":"王言","revision":2,"changed":[{"id":"T002","fields":["dates.*"]}],"added":0,"removed":0}
+
+## 复验期间未改动的内容
+- /opt/wbs-rongcheng/ 下实现代码（server.js / public/* / Dockerfile / deploy/*）：未改动（served-vs-snapshot.txt 三链逐字节一致）
+- 容器与镜像：未重建、未替换、未重启
+- artifacts/YUNZ-20/ 既有产物（含 SHA256SUMS、selftest/、verification/stage3/）：未改动，本轮仅新增 verification/stage6/
+- /opt/wbs-rongcheng/data/*.bak 既有备份：未改动
+- AI-QV 自建对照实例 qv-baseline-4181（修复前镜像）已销毁，未触碰 Multica 三容器

@@ -1,0 +1,376 @@
+{
+  "mode": "baseline",
+  "base": "http://127.0.0.1:4181",
+  "chromium": "140.0.7339.16",
+  "results": [
+    {
+      "name": "initial.identity-layer-visible",
+      "pass": true,
+      "detail": {
+        "display": "flex",
+        "hidden": false,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "w": 1440,
+          "h": 900
+        }
+      }
+    },
+    {
+      "name": "initial.workbench-hidden",
+      "pass": true,
+      "detail": {
+        "display": "none",
+        "hidden": true,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        }
+      }
+    },
+    {
+      "name": "initial.identity-count=9",
+      "pass": true,
+      "detail": {
+        "idBtns": 9
+      }
+    },
+    {
+      "name": "d3.pre-click-overlay-covers-viewport",
+      "pass": true,
+      "detail": {
+        "preRect": {
+          "x": 0,
+          "y": 0,
+          "w": 1440,
+          "h": 900
+        },
+        "preHit": {
+          "tag": "div",
+          "id": "identity-list",
+          "chain": [
+            "#identity-list",
+            "div",
+            "#identity-layer",
+            "body",
+            "html"
+          ]
+        }
+      }
+    },
+    {
+      "name": "d3.BASELINE-identity-layer-still-flex",
+      "pass": true,
+      "detail": {
+        "display": "flex",
+        "hidden": true,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "w": 1440,
+          "h": 900
+        }
+      }
+    },
+    {
+      "name": "d3.BASELINE-overlay-still-covers-center",
+      "pass": true,
+      "detail": {
+        "tag": "div",
+        "id": "identity-list",
+        "chain": [
+          "#identity-list",
+          "div",
+          "#identity-layer",
+          "body",
+          "html"
+        ]
+      }
+    },
+    {
+      "name": "d3.BASELINE-workbench-pushed-below-viewport",
+      "pass": true,
+      "detail": {
+        "wb": {
+          "x": 0,
+          "y": 900,
+          "w": 1440,
+          "h": 1677
+        }
+      }
+    },
+    {
+      "name": "d3.BASELINE-user-blocked",
+      "pass": true,
+      "detail": {
+        "layer1": "flex",
+        "centerHit": [
+          "#identity-list",
+          "div",
+          "#identity-layer",
+          "body",
+          "html"
+        ]
+      }
+    },
+    {
+      "name": "hidden-audit.in-workbench.no-missing-element",
+      "pass": true,
+      "detail": {
+        "bad": []
+      }
+    },
+    {
+      "name": "hidden-audit.in-workbench.hidden-implies-display-none",
+      "pass": false,
+      "detail": {
+        "violations": [
+          {
+            "sel": "#identity-layer",
+            "display": "flex"
+          },
+          {
+            "sel": "#banner",
+            "display": "flex"
+          }
+        ],
+        "data": {
+          "#identity-layer": {
+            "display": "flex",
+            "hidden": true,
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "w": 1440,
+              "h": 900
+            }
+          },
+          "#workbench": {
+            "display": "block",
+            "hidden": false,
+            "rect": {
+              "x": 0,
+              "y": 900,
+              "w": 1440,
+              "h": 1677
+            }
+          },
+          "#banner": {
+            "display": "flex",
+            "hidden": true,
+            "rect": {
+              "x": 16,
+              "y": 1100,
+              "w": 1408,
+              "h": 40
+            }
+          },
+          "#hint": {
+            "display": "block",
+            "hidden": false,
+            "rect": {
+              "x": 16,
+              "y": 1148,
+              "w": 1408,
+              "h": 36
+            }
+          },
+          "#empty-state": {
+            "display": "none",
+            "hidden": true,
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "w": 0,
+              "h": 0
+            }
+          },
+          "#add-row-btn": {
+            "display": "none",
+            "hidden": true,
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "w": 0,
+              "h": 0
+            }
+          },
+          "#identity-error": {
+            "display": "none",
+            "hidden": true,
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "w": 0,
+              "h": 0
+            }
+          },
+          "#banner-action": {
+            "display": "none",
+            "hidden": true,
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "w": 0,
+              "h": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "acc1.select-has-9-identities",
+      "pass": true,
+      "detail": {
+        "opts": [
+          "项目负责人",
+          "李欢",
+          "王言",
+          "张航瑞",
+          "郑述文",
+          "崔文建",
+          "余宇",
+          "黄逸偲",
+          "陈江"
+        ]
+      }
+    },
+    {
+      "name": "acc1.layer-list-matches-select",
+      "pass": true,
+      "detail": {
+        "idNames": [
+          "项目负责人",
+          "李欢",
+          "王言",
+          "张航瑞",
+          "郑述文",
+          "崔文建",
+          "余宇",
+          "黄逸偲",
+          "陈江"
+        ]
+      }
+    },
+    {
+      "name": "acc1.refresh-keeps-identity",
+      "pass": false,
+      "detail": {
+        "layerR": "flex",
+        "wbR": "block",
+        "selR": "李欢",
+        "sessR": "身份：李欢 · 版本：0 · 已与服务器一致"
+      }
+    },
+    {
+      "name": "acc1.switch.项目负责人",
+      "pass": false,
+      "detail": {
+        "layerDisplay": "flex",
+        "wbDisplay": "block",
+        "rows": 36,
+        "addRowDisplay": "block",
+        "session": "身份：项目负责人 · 版本：0 · 已与服务器一致"
+      }
+    },
+    {
+      "name": "acc1.switch.李欢",
+      "pass": false,
+      "detail": {
+        "layerDisplay": "flex",
+        "wbDisplay": "block",
+        "rows": 36,
+        "addRowDisplay": "none",
+        "session": "身份：李欢 · 版本：0 · 已与服务器一致"
+      }
+    },
+    {
+      "name": "acc1.switch.王言",
+      "pass": false,
+      "detail": {
+        "layerDisplay": "flex",
+        "wbDisplay": "block",
+        "rows": 36,
+        "addRowDisplay": "none",
+        "session": "身份：王言 · 版本：0 · 已与服务器一致"
+      }
+    },
+    {
+      "name": "acc1.switch.张航瑞",
+      "pass": false,
+      "detail": {
+        "layerDisplay": "flex",
+        "wbDisplay": "block",
+        "rows": 36,
+        "addRowDisplay": "none",
+        "session": "身份：张航瑞 · 版本：0 · 已与服务器一致"
+      }
+    },
+    {
+      "name": "acc1.switch.郑述文",
+      "pass": false,
+      "detail": {
+        "layerDisplay": "flex",
+        "wbDisplay": "block",
+        "rows": 36,
+        "addRowDisplay": "none",
+        "session": "身份：郑述文 · 版本：0 · 已与服务器一致"
+      }
+    },
+    {
+      "name": "acc1.switch.崔文建",
+      "pass": false,
+      "detail": {
+        "layerDisplay": "flex",
+        "wbDisplay": "block",
+        "rows": 36,
+        "addRowDisplay": "none",
+        "session": "身份：崔文建 · 版本：0 · 已与服务器一致"
+      }
+    },
+    {
+      "name": "acc1.switch.余宇",
+      "pass": false,
+      "detail": {
+        "layerDisplay": "flex",
+        "wbDisplay": "block",
+        "rows": 36,
+        "addRowDisplay": "none",
+        "session": "身份：余宇 · 版本：0 · 已与服务器一致"
+      }
+    },
+    {
+      "name": "acc1.switch.黄逸偲",
+      "pass": false,
+      "detail": {
+        "layerDisplay": "flex",
+        "wbDisplay": "block",
+        "rows": 36,
+        "addRowDisplay": "none",
+        "session": "身份：黄逸偲 · 版本：0 · 已与服务器一致"
+      }
+    },
+    {
+      "name": "acc1.switch.陈江",
+      "pass": false,
+      "detail": {
+        "layerDisplay": "flex",
+        "wbDisplay": "block",
+        "rows": 36,
+        "addRowDisplay": "none",
+        "session": "身份：陈江 · 版本：0 · 已与服务器一致"
+      }
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    {
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "url": "http://127.0.0.1:4181/favicon.ico"
+    }
+  ],
+  "httpErrors": []
+}

@@ -1,0 +1,12 @@
+# Stage6 复验 —— 运行中服务静态资源 served vs 源码快照 vs 运行目录 逐字节一致性
+# 抓取时间(+08): 2026-10-14T19:20:58+0800
+# 方式: curl http://127.0.0.1:4180/<asset> 落盘后 sha256 比对（served/ 目录为落盘副本）
+
+ASSET                  SHA256                                                           RESULT
+index.html             f137a68defc53f2b51c24422b39dd3ed6df969f77065db0f386e0bf3d89b7387 MATCH(served=snapshot=runtime)
+app.js                 53cc2bd3e60e0a948712484dd61903c093a7b1c394ffb48c2079a55b74f18f5e MATCH(served=snapshot=runtime)
+styles.css             53afd03fdf138010247be7f26e2b6092fed920762eb684e010b01c9228f82941 MATCH(served=snapshot=runtime)
+template.xlsx          e01c269699adad8df3c28c05cff0634c7a1fbe4a62bb5ef2a3baf51490317483 MATCH(served=snapshot=runtime)
+xlsx.full.min.js       c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99 MATCH(served=snapshot=runtime)
+
+# 结论: 运行中服务返回的全部静态资源与 artifacts/YUNZ-20/wbs-rongcheng/ 源码快照、/opt/wbs-rongcheng/ 运行目录逐字节一致 —— D-3 修复确已部署到位。

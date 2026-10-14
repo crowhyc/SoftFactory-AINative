@@ -1,0 +1,174 @@
+{
+  "results": [
+    {
+      "name": "state0.identity-layer-visible-when-not-hidden",
+      "pass": true,
+      "detail": {
+        "hidden": false,
+        "display": "flex",
+        "vw": 1440,
+        "vh": 900
+      }
+    },
+    {
+      "name": "state0.workbench-display-none-when-hidden",
+      "pass": true,
+      "detail": {
+        "hidden": true,
+        "display": "none",
+        "vw": 0,
+        "vh": 0
+      }
+    },
+    {
+      "name": "state0.banner-display-none-when-hidden",
+      "pass": true,
+      "detail": {
+        "hidden": true,
+        "display": "none",
+        "vw": 0,
+        "vh": 0
+      }
+    },
+    {
+      "name": "state0.empty-state-display-none-when-hidden",
+      "pass": true,
+      "detail": {
+        "hidden": true,
+        "display": "none",
+        "vw": 0,
+        "vh": 0
+      }
+    },
+    {
+      "name": "state0.add-row-btn-display-none-when-hidden",
+      "pass": true,
+      "detail": {
+        "hidden": true,
+        "display": "none",
+        "vw": 0,
+        "vh": 0
+      }
+    },
+    {
+      "name": "state0.identity-error-display-none-when-hidden",
+      "pass": true,
+      "detail": {
+        "hidden": true,
+        "display": "none",
+        "vw": 0,
+        "vh": 0
+      }
+    },
+    {
+      "name": "state1.identity-layer-none",
+      "pass": true,
+      "detail": {
+        "hidden": true,
+        "display": "none",
+        "vw": 0,
+        "vh": 0
+      }
+    },
+    {
+      "name": "state1.workbench-visible-when-not-hidden",
+      "pass": true,
+      "detail": {
+        "hidden": false,
+        "display": "block",
+        "vw": 1440,
+        "vh": 1625
+      }
+    },
+    {
+      "name": "state1.hint-visible-when-not-hidden",
+      "pass": true,
+      "detail": {
+        "hidden": false,
+        "display": "block",
+        "vw": 1408,
+        "vh": 36
+      }
+    },
+    {
+      "name": "state2.empty-state-visible-when-not-hidden",
+      "pass": true,
+      "detail": {
+        "hidden": false,
+        "display": "block",
+        "vw": 1382,
+        "vh": 21
+      }
+    },
+    {
+      "name": "state2.no-rows",
+      "pass": true,
+      "detail": {
+        "rows2": 0
+      }
+    },
+    {
+      "name": "state3.empty-state-hidden-again",
+      "pass": true,
+      "detail": {
+        "hidden": true,
+        "display": "none",
+        "vw": 0,
+        "vh": 0
+      }
+    },
+    {
+      "name": "state3.rows-restored",
+      "pass": true,
+      "detail": {
+        "rows3": 36
+      }
+    },
+    {
+      "name": "state4.add-row-btn-visible-for-pm",
+      "pass": true,
+      "detail": {
+        "hidden": false,
+        "display": "block",
+        "vw": 72,
+        "vh": 32
+      }
+    },
+    {
+      "name": "state4.delete-button-visible-for-pm",
+      "pass": true,
+      "detail": {
+        "hidden": false,
+        "display": "inline-block",
+        "vw": 46,
+        "vh": 24
+      }
+    },
+    {
+      "name": "state5.add-row-btn-hidden-for-non-pm",
+      "pass": true,
+      "detail": {
+        "hidden": true,
+        "display": "none",
+        "vw": 0,
+        "vh": 0
+      }
+    },
+    {
+      "name": "state5.identity-layer-still-none",
+      "pass": true,
+      "detail": {
+        "hidden": true,
+        "display": "none",
+        "vw": 0,
+        "vh": 0
+      }
+    },
+    {
+      "name": "no-pageerror",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "pageErrors": []
+}

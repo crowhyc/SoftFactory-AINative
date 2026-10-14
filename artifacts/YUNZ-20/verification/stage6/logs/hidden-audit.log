@@ -1,0 +1,24 @@
+# state0(身份选择层) {"#identity-layer":{"hidden":false,"display":"flex","vw":1440,"vh":900},"#workbench":{"hidden":true,"display":"none","vw":0,"vh":0},"#banner":{"hidden":true,"display":"none","vw":0,"vh":0},"#hint":{"hidden":true,"display":"none","vw":0,"vh":0},"#empty-state":{"hidden":true,"display":"none","vw":0,"vh":0},"#add-row-btn":{"hidden":true,"display":"none","vw":0,"vh":0},"#identity-error":{"hidden":true,"display":"none","vw":0,"vh":0},"#banner-action":{"hidden":true,"display":"none","vw":0,"vh":0}}
+PASS | hidden-audit | state0.identity-layer-visible-when-not-hidden | {"hidden":false,"display":"flex","vw":1440,"vh":900}
+PASS | hidden-audit | state0.workbench-display-none-when-hidden | {"hidden":true,"display":"none","vw":0,"vh":0}
+PASS | hidden-audit | state0.banner-display-none-when-hidden | {"hidden":true,"display":"none","vw":0,"vh":0}
+PASS | hidden-audit | state0.empty-state-display-none-when-hidden | {"hidden":true,"display":"none","vw":0,"vh":0}
+PASS | hidden-audit | state0.add-row-btn-display-none-when-hidden | {"hidden":true,"display":"none","vw":0,"vh":0}
+PASS | hidden-audit | state0.identity-error-display-none-when-hidden | {"hidden":true,"display":"none","vw":0,"vh":0}
+# state1(李欢工作台) {"#identity-layer":{"hidden":true,"display":"none","vw":0,"vh":0},"#workbench":{"hidden":false,"display":"block","vw":1440,"vh":1625},"#banner":{"hidden":true,"display":"none","vw":0,"vh":0},"#hint":{"hidden":false,"display":"block","vw":1408,"vh":36},"#empty-state":{"hidden":true,"display":"none","vw":0,"vh":0},"#add-row-btn":{"hidden":true,"display":"none","vw":0,"vh":0},"#identity-error":{"hidden":true,"display":"none","vw":0,"vh":0},"#banner-action":{"hidden":true,"display":"none","vw":0,"vh":0}}
+PASS | hidden-audit | state1.identity-layer-none | {"hidden":true,"display":"none","vw":0,"vh":0}
+PASS | hidden-audit | state1.workbench-visible-when-not-hidden | {"hidden":false,"display":"block","vw":1440,"vh":1625}
+PASS | hidden-audit | state1.hint-visible-when-not-hidden | {"hidden":false,"display":"block","vw":1408,"vh":36}
+# state2(筛选 0 行) {"#identity-layer":{"hidden":true,"display":"none","vw":0,"vh":0},"#workbench":{"hidden":false,"display":"block","vw":1440,"vh":410},"#banner":{"hidden":true,"display":"none","vw":0,"vh":0},"#hint":{"hidden":false,"display":"block","vw":1408,"vh":36},"#empty-state":{"hidden":false,"display":"block","vw":1382,"vh":21},"#add-row-btn":{"hidden":true,"display":"none","vw":0,"vh":0},"#identity-error":{"hidden":true,"display":"none","vw":0,"vh":0},"#banner-action":{"hidden":true,"display":"none","vw":0,"vh":0}} rows=0
+PASS | hidden-audit | state2.empty-state-visible-when-not-hidden | {"hidden":false,"display":"block","vw":1382,"vh":21}
+PASS | hidden-audit | state2.no-rows | {"rows2":0}
+PASS | hidden-audit | state3.empty-state-hidden-again | {"hidden":true,"display":"none","vw":0,"vh":0}
+PASS | hidden-audit | state3.rows-restored | {"rows3":36}
+# state4(项目负责人) {"#identity-layer":{"hidden":true,"display":"none","vw":0,"vh":0},"#workbench":{"hidden":false,"display":"block","vw":1440,"vh":1697},"#banner":{"hidden":true,"display":"none","vw":0,"vh":0},"#hint":{"hidden":false,"display":"block","vw":1408,"vh":36},"#empty-state":{"hidden":true,"display":"none","vw":0,"vh":0},"#add-row-btn":{"hidden":false,"display":"block","vw":72,"vh":32},"#identity-error":{"hidden":true,"display":"none","vw":0,"vh":0},"#banner-action":{"hidden":true,"display":"none","vw":0,"vh":0},"#wbs-body tr:first-child button[data-delete]":{"hidden":false,"display":"inline-block","vw":46,"vh":24}}
+PASS | hidden-audit | state4.add-row-btn-visible-for-pm | {"hidden":false,"display":"block","vw":72,"vh":32}
+PASS | hidden-audit | state4.delete-button-visible-for-pm | {"hidden":false,"display":"inline-block","vw":46,"vh":24}
+# state5(王言) {"#identity-layer":{"hidden":true,"display":"none","vw":0,"vh":0},"#workbench":{"hidden":false,"display":"block","vw":1440,"vh":1625},"#banner":{"hidden":true,"display":"none","vw":0,"vh":0},"#hint":{"hidden":false,"display":"block","vw":1408,"vh":36},"#empty-state":{"hidden":true,"display":"none","vw":0,"vh":0},"#add-row-btn":{"hidden":true,"display":"none","vw":0,"vh":0},"#identity-error":{"hidden":true,"display":"none","vw":0,"vh":0},"#banner-action":{"hidden":true,"display":"none","vw":0,"vh":0},"#wbs-body tr:first-child button[data-delete]":null}
+PASS | hidden-audit | state5.add-row-btn-hidden-for-non-pm | {"hidden":true,"display":"none","vw":0,"vh":0}
+PASS | hidden-audit | state5.identity-layer-still-none | {"hidden":true,"display":"none","vw":0,"vh":0}
+PASS | hidden-audit | no-pageerror | []
+# SUMMARY hidden-audit total=18 pass=18 fail=0

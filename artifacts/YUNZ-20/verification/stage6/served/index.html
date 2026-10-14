@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>蓉城战役 WBS 工作系统</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="identity-layer" class="identity-layer">
+  <div class="identity-card">
+    <h1>蓉城战役 WBS 工作系统</h1>
+    <p class="identity-sub">请选择你的工作身份后进入工作台（身份声明制，不是登录认证）</p>
+    <div id="identity-list" class="identity-list"></div>
+    <p id="identity-error" class="identity-error" hidden></p>
+    <p class="identity-note">项目负责人可维护全表结构与增删行；普通负责人只能编辑「负责人」为自己的行。</p>
+  </div>
+</div>
+
+<div id="workbench" class="workbench" hidden>
+  <header class="topbar">
+    <div class="brand">
+      <h1>蓉城战役 WBS</h1>
+      <span class="brand-sub">1023 蓉城战役 WBS 清单 · 网页工作系统</span>
+    </div>
+    <div class="topbar-right">
+      <label class="field-inline" for="identity-select">当前身份
+        <select id="identity-select"></select>
+      </label>
+      <span id="session-status" class="session-status" title="会话与保存状态">未加载</span>
+    </div>
+  </header>
+
+  <section class="toolbar">
+    <label class="field-inline" for="search-input">搜索
+      <input id="search-input" type="search" placeholder="一级 / 二级 / 任务项 / 负责人 / 进展" autocomplete="off">
+    </label>
+    <label class="field-inline" for="owner-filter">负责人
+      <select id="owner-filter"></select>
+    </label>
+    <label class="field-inline" for="status-filter">状态
+      <select id="status-filter"></select>
+    </label>
+    <div class="toolbar-actions">
+      <button id="add-row-btn" type="button" class="btn" hidden>新增行</button>
+      <button id="export-btn" type="button" class="btn">导出 Excel</button>
+      <button id="save-btn" type="button" class="btn btn-primary" disabled>保存</button>
+    </div>
+    <span id="health-probe" class="health-probe" title="服务健康探针">探针：检测中…</span>
+  </section>
+
+  <div id="banner" class="banner" hidden>
+    <span id="banner-text"></span>
+    <button id="banner-action" type="button" class="btn btn-mini" hidden>重新加载</button>
+  </div>
+  <div id="hint" class="hint" hidden></div>
+
+  <section class="table-wrap">
+    <table id="wbs-table" class="wbs-table">
+      <thead>
+        <tr>
+          <th class="col-id">序号</th>
+          <th class="col-l1">一级</th>
+          <th class="col-l2">二级</th>
+          <th class="col-task">任务项</th>
+          <th class="col-owner">负责人</th>
+          <th class="col-demo">是否演示范围</th>
+          <th class="col-date">设计</th>
+          <th class="col-date">开发</th>
+          <th class="col-date">测试</th>
+          <th class="col-date">产品</th>
+          <th class="col-date">演示准备</th>
+          <th class="col-note">进展说明</th>
+          <th class="col-status">状态</th>
+          <th class="col-op">操作</th>
+        </tr>
+      </thead>
+      <tbody id="wbs-body"></tbody>
+    </table>
+    <p id="empty-state" class="empty-state" hidden>没有符合筛选条件的任务。</p>
+  </section>
+
+  <footer class="footer">
+    <span id="task-count" class="task-count">0 条</span>
+    <span class="footer-legend">状态枚举：未开始 / 进行中 / 已完成 / 已延期 / 被阻塞</span>
+    <span class="footer-legend">导出仅写回原模板 A–K 数据区，第 1/2 行与其它单元格保持原样；status 不导出。</span>
+  </footer>
+</div>
+
+<script src="vendor/xlsx.full.min.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>
