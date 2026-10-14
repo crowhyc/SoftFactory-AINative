@@ -1,0 +1,10 @@
+[PASS] I1 SHA256SUMS 逐条自校验 :: 条目=45 OK=45
+[PASS] I2 运行产物 /opt/wbs-rongcheng 交付源码与快照 artifacts/YUNZ-20/wbs-rongcheng 逐字一致 :: snapshotFiles=19 mismatch=[] missingInLive=[] liveExtra(non-runtime)=[]
+   运行侧仅有的运行期产物 1911 个（不计入源码一致性），分组: {"data": 3, "state": 1, "tests/.tmp": 55, "tests/.tools": 1852}
+   其中具名项: ["data/audit.log", "data/wbs.json", "data/wbs.json.20261014135531.bak", "state/previous.env"]
+[PASS] I3 SHA256SUMS 记录的 sha256 = 磁盘实际 = git HEAD blob（三链一致） :: checked=45 mismatch=[] missingInGit=[]
+[PASS] I4 交付目录已提交且已推送（HEAD == origin/main，提交信息 task(YUNZ-20)） :: HEAD=5a0294a153f5 origin/main=5a0294a153f5 lastCommitForPath=5a0294a153f50cc9f9f161c9bb51c22c306f6570 task(YUNZ-20)：WC-001 实现与自测
+[PASS] I5 交付源码快照无凭据样式字符串（独立正则，排除 vendor/测试工具） :: hits=[]
+   [作者脚本复跑] tests/scan_secrets.sh 退出码=0 输出=bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8) | PASS  /opt/wbs-rongcheng 未发现凭据样式字符串 | PASS  /opt/SoftFactory-AINative/artifacts/YUNZ-20 未发现凭据样式字符串 | --- | PASS=1 FAIL=0
+[PASS] I6 复跑作者 tests/scan_secrets.sh 亦判定无凭据样式字符串 :: exit=0
+== 汇总: 全部通过 ==

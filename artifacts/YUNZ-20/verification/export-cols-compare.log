@@ -1,0 +1,18 @@
+== 导出列宽保真对比（同一模板、不同导出代码路径）==
+模板: /opt/wbs-rongcheng/public/template.xlsx
+  模板 <cols> 元素: 1 | <col> 声明: 7 | A/B/C 列宽: ['11.3333333333333', '13.7777777777778', '11.3333333333333']
+
+① 交付页面路径（app.js:611 默认 XLSX.read + 页面导出按钮，本报告证据文件）
+  文件: dom-out/exported.xlsx
+  sha256: 626b269a600fda39956907b60ccc6c51af2596fb386a33eaed74d52827aa0440
+  大小: 32762 字节 | zip 成员: 11 | <cols> 元素: 0 | <col> 声明: 0
+  A/B/C 列宽: 无（导出未写 <cols>，列宽信息丢失）
+
+② 作者自测路径（tests/exportcheck.mjs 用 {cellStyles:true}）
+  文件: dom-out/author-path-export.xlsx
+  sha256: 5ea26bf8d02862755eedf6a3b5d2bc32d1cb1afa14325bb19e467ab5556450a2
+  大小: 1172885 字节 | zip 成员: 11 | <cols> 元素: 1 | <col> 声明: 16384
+  A/B/C 列宽: ['11.3333333333333', '11.3333333333333', '13.7777777777778']
+
+结论: 交付页面的真实导出路径不写 <cols>（列宽丢失）；作者自测路径保留列宽。
+      自测 12.log 的“列宽设置保持原样”结论不对交付页面成立。

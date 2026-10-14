@@ -1,0 +1,5 @@
+exportXlsx -> {"ok":true,"name":"蓉城战役WBS-20261014.xlsx"}
+writeFile name = 蓉城战役WBS-20261014.xlsx
+rows in state = 36
+banner = 已按原模板导出 36 行 A–K 数据，文件名 蓉城战役WBS-20261014.xlsx（第 1/2 行与合并单元格保持原样，status 不导出）。
+saved = /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-22-ecbd6aa51a84/workdir/verify/dom-out/exported.xlsx 32762 bytes

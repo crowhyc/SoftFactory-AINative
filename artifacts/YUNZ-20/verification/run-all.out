@@ -1,0 +1,12 @@
+验证开始 2026-10-14T14:16:50+0800
+### 0. 输入只读输入复核（VPC 输入基线）
+### 1. 交付三链一致性 / 仓库状态
+### 2. DOM 交互级验证（jsdom，交付页面脚本 + 真实 /api）
+dom-verify.js 退出码=0 （日志 /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/dom-verify.log，共 35 条判定）
+### 3. 导出保真（页面导出入口 -> python 标准库读回）
+### 4. 服务/API/持久化/并发（验收 3,5,6,7,9,10）
+### 5. 隔离复跑 deploy/rollback.sh 语义（不动现场部署）
+### 6. 收尾：恢复初始数据并确认现场服务
+health: {"ok":true,"service":"wbs-rongcheng","revision":0}
+data/wbs.json sha256: a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5
+验证结束 2026-10-14T14:17:57+0800

@@ -1,0 +1,86 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+--- 隔离前置：APP_DIR=/opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-22-ecbd6aa51a84/workdir/verify/isolated/deploy/app（源码副本），容器=wbs-rongcheng-qv-dp，端口=4182，镜像名=wbs-rongcheng-qv ---
+Dockerfile
+data
+deploy
+package.json
+public
+server.js
+tests
+--- 执行交付脚本 deploy/deploy.sh ---
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+[deploy] 1/6 记录当前 running 容器与镜像
+[deploy]     当前镜像：（无容器） 
+[deploy] 2/6 备份当前 data/wbs.json
+[deploy]     已备份 -> /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-22-ecbd6aa51a84/workdir/verify/isolated/deploy/app/data/wbs.json.20261014141755.bak
+[deploy] 3/6 构建镜像（--network none，构建期不回外网）：wbs-rongcheng-qv:20261014141755
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 823B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.m.daocloud.io/library/node:24-slim
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.m.daocloud.io/library/node:24-slim
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 383B done
+#5 DONE 0.0s
+
+#6 [5/6] COPY data/wbs.seed.json ./data/wbs.seed.json
+#6 CACHED
+
+#7 [3/6] COPY package.json server.js ./
+#7 CACHED
+
+#8 [2/6] WORKDIR /app
+#8 CACHED
+
+#9 [4/6] COPY public ./public
+#9 CACHED
+
+#10 [6/6] RUN mkdir -p /app/data && chown -R node:node /app
+#10 CACHED
+
+#11 exporting to image
+#11 exporting layers done
+#11 writing image sha256:053180d90df237c78104bc5b970d2366ed2d25bb96cd4c94da5f1161595f5296 done
+#11 naming to docker.io/library/wbs-rongcheng-qv:20261014141755 done
+#11 DONE 0.0s
+[deploy] 4/6 记录回滚信息 -> /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-22-ecbd6aa51a84/workdir/verify/isolated/deploy/app/state/previous.env
+[deploy] 5/6 替换容器（host 网络 + 进程只绑定 127.0.0.1:4182，挂载 /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-22-ecbd6aa51a84/workdir/verify/isolated/deploy/app/data）
+[deploy] 6/6 自检 curl http://127.0.0.1:4182/api/health
+[deploy]     健康检查通过：{"ok":true,"service":"wbs-rongcheng","revision":0}
+[deploy] 完成：wbs-rongcheng-qv:20261014141755 运行中（上一镜像：无，data 备份：/opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-22-ecbd6aa51a84/workdir/verify/isolated/deploy/app/data/wbs.json.20261014141755.bak）
+deploy.sh 退出码=0
+4182/api/health = {"ok":true,"service":"wbs-rongcheng","revision":0}
+容器镜像=wbs-rongcheng-qv:20261014141755  网络模式=host
+data 备份=/opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-22-ecbd6aa51a84/workdir/verify/isolated/deploy/app/data/wbs.json.20261014141755.bak
+state/previous.env:
+   PREV_IMAGE=
+   PREV_IMAGE_ID=
+   NEW_IMAGE=wbs-rongcheng-qv:20261014141755
+   DATA_BAK=/opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-22-ecbd6aa51a84/workdir/verify/isolated/deploy/app/data/wbs.json.20261014141755.bak
+   DEPLOYED_AT=2026-10-14T14:17:55+0800
+   BIND_HOST=127.0.0.1
+   HOST_PORT=4182
+[PASS] DP1 :: deploy.sh 退出码 0（含自检 health）
+[PASS] DP2 :: 构建使用 --network none（构建期不回外网）
+[PASS] DP3 :: 新容器在隔离端口 4182 健康：{"ok":true,"service":"wbs-rongcheng","revision":0}
+[PASS] DP4 :: 运行镜像为本次新构建 tag：wbs-rongcheng-qv:20261014141755
+[PASS] DP5 :: 替换前备份 data/wbs.json -> wbs.json.20261014141755.bak
+[PASS] DP6 :: 写出回滚信息 state/previous.env（PREV_IMAGE/NEW_IMAGE/DATA_BAK）
+[PASS] DP7 :: 容器网络模式 host
+[PASS] DP8 :: 4182 仅回环监听
+[PASS] DP9 :: 脚本输出包含健康检查通过
+--- 清理隔离容器与镜像 ---
+[PASS] DP10 :: 隔离容器/镜像已清理
+[PASS] DP11 :: 现场 4180 服务未受影响：{"ok":true,"service":"wbs-rongcheng","revision":0}
+== deploy 汇总: pass=11 fail=0 ==

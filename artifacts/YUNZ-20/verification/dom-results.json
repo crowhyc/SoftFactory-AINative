@@ -1,0 +1,313 @@
+{
+ "results": [
+  {
+   "id": "C1a",
+   "name": "身份入口渲染九选",
+   "pass": true,
+   "detail": "buttons=9 => 项目负责人/李欢/王言/张航瑞/郑述文/崔文建/余宇/黄逸偲/陈江"
+  },
+  {
+   "id": "C1b",
+   "name": "选择身份后进入工作台",
+   "pass": true,
+   "detail": "workbench.hidden=false"
+  },
+  {
+   "id": "C1c",
+   "name": "身份写入 localStorage（刷新保持）",
+   "pass": true,
+   "detail": "localStorage=项目负责人"
+  },
+  {
+   "id": "C2a",
+   "name": "页面渲染 36 行",
+   "pass": true,
+   "detail": "rows=36"
+  },
+  {
+   "id": "C2b",
+   "name": "渲染顺序 == seed/JSON 顺序",
+   "pass": true,
+   "detail": "first3=T001,T002,T003 last3=T034,T035,T036"
+  },
+  {
+   "id": "C2c",
+   "name": "单元格文本与 JSON 一致抽样",
+   "pass": true,
+   "detail": "T001.task=业需导入 owner=李欢"
+  },
+  {
+   "id": "C2d",
+   "name": "底部计数显示 36 条",
+   "pass": true,
+   "detail": "text=36 条"
+  },
+  {
+   "id": "C1d",
+   "name": "刷新（新页面实例）后身份保持为 王言",
+   "pass": true,
+   "detail": "select=王言 hint=已按上次选择恢复身份「王言」。"
+  },
+  {
+   "id": "C1e",
+   "name": "切换身份即时生效（会话状态更新）",
+   "pass": true,
+   "detail": "session=身份：王言 · 版本：0 · 已与服务器一致"
+  },
+  {
+   "id": "C3a",
+   "name": "王言 本人行 T002 状态可编辑（进入编辑入口）",
+   "pass": true,
+   "detail": "opensEditor=true"
+  },
+  {
+   "id": "C3b",
+   "name": "王言 本人行结构字段（一级）不可编辑且给提示",
+   "pass": true,
+   "detail": "edit={\"ok\":false,\"why\":\"no editor opened (read-only?)\"} hint=当前身份「王言」对第 T002 行的「一级」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"
+  },
+  {
+   "id": "C3c",
+   "name": "王言 他人行 T001 不可编辑且给提示",
+   "pass": true,
+   "detail": "edit={\"ok\":false,\"why\":\"no editor opened (read-only?)\"} hint=当前身份「王言」对第 T001 行的「状态」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"
+  },
+  {
+   "id": "C3d",
+   "name": "李欢 本人行 T001 进展说明可编辑（编辑入口可打开）",
+   "pass": true,
+   "detail": "opensEditor=true"
+  },
+  {
+   "id": "C3e",
+   "name": "李欢 他人行 T002 只读且给提示",
+   "pass": true,
+   "detail": "edit={\"ok\":false,\"why\":\"no editor opened (read-only?)\"} hint=当前身份「李欢」对第 T002 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"
+  },
+  {
+   "id": "C3f",
+   "name": "项目负责人 可编辑他人行结构字段（编辑入口可打开）",
+   "pass": true,
+   "detail": "opensEditor=true"
+  },
+  {
+   "id": "C3g",
+   "name": "项目负责人 可见新增行按钮",
+   "pass": true,
+   "detail": "hidden=false"
+  },
+  {
+   "id": "C3h",
+   "name": "项目负责人 每行有删除按钮",
+   "pass": true,
+   "detail": "deleteBtns=36"
+  },
+  {
+   "id": "C3i",
+   "name": "普通负责人 不可见新增/删除入口",
+   "pass": true,
+   "detail": "addHidden=true deleteBtns=0"
+  },
+  {
+   "id": "C3j",
+   "name": "8 个可编辑字段经页面编辑入口修改后页面显示为期望值",
+   "pass": true,
+   "detail": "[{\"field\":\"status\",\"want\":\"进行中\",\"editor\":true,\"shown\":\"进行中\"},{\"field\":\"demo\",\"want\":\"是\",\"editor\":true,\"shown\":\"是\"},{\"field\":\"dates.design\",\"want\":\"2026-10-20\",\"editor\":true,\"shown\":\"2026-10-20\"},{\"field\":\"dates.dev\",\"want\":\"2026-10-21\",\"editor\":true,\"shown\":\"2026-10-21\"},{\"field\":\"dates.test\",\"want\":\"2026-10-22\",\"editor\":true,\"shown\":\"2026-10-22\"},{\"field\":\"dates.product\",\"want\":\"2026-10-23\",\"editor\":true,\"shown\":\"2026-10-23\"},{\"field\":\"dates.demo_prep\",\"want\":\"2026-10-24\",\"editor\":true,\"shown\":\"2026-10-24\"},{\"field\":\"note\",\"want\":\"QV 验证：进展说明已更新\",\"editor\":true,\"shown\":\"QV 验证：进展说明已更新\"}]"
+  },
+  {
+   "id": "C3k",
+   "name": "编辑后进入未保存态（保存按钮可用 + 会话提示）",
+   "pass": true,
+   "detail": "session=身份：王言 · 版本：0 · 有未保存修改"
+  },
+  {
+   "id": "C3l",
+   "name": "编辑中按 Escape 取消：页面值回退且无写入",
+   "pass": true,
+   "detail": "esc={\"ok\":true} noteShown=QV 验证：进展说明已更新 rev=0"
+  },
+  {
+   "id": "C3m",
+   "name": "保存成功且页面/API/磁盘三端一致（王言行）",
+   "pass": true,
+   "detail": "rev 0->1 puts=1 api.status=进行中 disk.note=QV 验证：进展说明已更新"
+  },
+  {
+   "id": "C3n",
+   "name": "李欢（第二位普通负责人）保存后三端一致",
+   "pass": true,
+   "detail": "api=李欢：QV 验证进展/已完成 disk=李欢：QV 验证进展 puts=1"
+  },
+  {
+   "id": "C3o",
+   "name": "项目负责人保存任意行（含他人行）后三端一致",
+   "pass": true,
+   "detail": "api=项目负责人：QV 验证任意行可改 puts=1"
+  },
+  {
+   "id": "C5a",
+   "name": "空输入（任务项置空）保存被前置校验拦下，无 PUT 调用",
+   "pass": true,
+   "detail": "banner=前置校验未通过，未向服务器提交（共 1 项）：[T001] 任务项：任务项不能为空 puts=0"
+  },
+  {
+   "id": "C5b",
+   "name": "非法输入（进展说明 2001 字符超长）被拦下，无 PUT 调用",
+   "pass": true,
+   "detail": "banner=前置校验未通过，未向服务器提交（共 1 项）：[T001] 进展说明：进展说明长度超过 2000 puts=0"
+  },
+  {
+   "id": "C4a",
+   "name": "项目负责人新增行（页面出现新行，未保存不落盘）",
+   "pass": true,
+   "detail": "rows=37 newId=T037 rev=3"
+  },
+  {
+   "id": "C4b",
+   "name": "新增行保存后 API/磁盘出现 37 行且新行内容一致",
+   "pass": true,
+   "detail": "apiRows=37 diskRows=37"
+  },
+  {
+   "id": "C4c",
+   "name": "删除确认框取消：行仍在且不落盘",
+   "pass": true,
+   "detail": "diskRows=37 hint=已取消删除 T037。"
+  },
+  {
+   "id": "C4d",
+   "name": "删除确认后（保存生效）API/磁盘回到 36 行且删掉的是新行",
+   "pass": true,
+   "detail": "pageRows=36 apiRows=36 diskRows=36"
+  },
+  {
+   "id": "C-ADV",
+   "name": "权限受限单元格（含展示徽标）点击均给出中文只读提示，无静默无反应",
+   "pass": true,
+   "detail": "gated=true silent=[\"序号列单元格（td.cell-id）\",\"操作列空单元格（普通负责人）\",\"页脚汇总计数\",\"页脚图例文字\",\"表头“序号”列标题\"]"
+  },
+  {
+   "id": "C-ADV2",
+   "name": "展示型元素（序号/操作列/页脚/表头）点击不进入编辑、不破坏页面结构",
+   "pass": true,
+   "detail": "rows=36 unexpectedEditors=0"
+  },
+  {
+   "id": "C8a",
+   "name": "导出由页面导出入口触发并生成文件（文件名规则 蓉城战役WBS-YYYYMMDD.xlsx）",
+   "pass": true,
+   "detail": "name=蓉城战役WBS-20261014.xlsx bytes=32890 banner=已按原模板导出 36 行 A–K 数据，文件名 蓉城战役WBS-20261014.xlsx（第 1/2 行与合并单元格保持原样，status 不导出）。"
+  },
+  {
+   "id": "C10a",
+   "name": "页面运行期无任何跨域请求（仅同源 /api 与本地静态资源）",
+   "pass": true,
+   "detail": "crossOrigin=[]"
+  },
+  {
+   "id": "C10b",
+   "name": "页面三件套源码无外部 http(s) 资源引用",
+   "pass": true,
+   "detail": "externalRefs=[]"
+  }
+ ],
+ "putCalls": 5,
+ "crossOrigin": [],
+ "exports": [
+  {
+   "name": "蓉城战役WBS-20261014.xlsx",
+   "bytes": 32890,
+   "path": "/opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-22-ecbd6aa51a84/workdir/verify/dom-out/export-captured.xlsx"
+  }
+ ],
+ "adv": [
+  {
+   "target": "他人行状态徽标（span.badge）",
+   "hintBefore": "已以「王言」身份进入工作台，仅“负责人 == 王言”的行可编辑。",
+   "hintAfter": "当前身份「王言」对第 T001 行的「状态」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "editorOpened": false,
+   "structureChanged": false,
+   "silent": false
+  },
+  {
+   "target": "他人行“是否演示范围”单元格",
+   "hintBefore": "当前身份「王言」对第 T001 行的「状态」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "hintAfter": "当前身份「王言」对第 T001 行的「是否演示范围」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "editorOpened": false,
+   "structureChanged": false,
+   "silent": false
+  },
+  {
+   "target": "本人行结构字段（一级）",
+   "hintBefore": "当前身份「王言」对第 T001 行的「是否演示范围」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "hintAfter": "当前身份「王言」对第 T002 行的「一级」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "editorOpened": false,
+   "structureChanged": false,
+   "silent": false
+  },
+  {
+   "target": "他人行进展说明单元格",
+   "hintBefore": "当前身份「王言」对第 T002 行的「一级」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "hintAfter": "当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "editorOpened": false,
+   "structureChanged": false,
+   "silent": false
+  },
+  {
+   "target": "序号列单元格（td.cell-id）",
+   "hintBefore": "当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "hintAfter": "当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "editorOpened": false,
+   "structureChanged": false,
+   "silent": true
+  },
+  {
+   "target": "操作列空单元格（普通负责人）",
+   "hintBefore": "当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "hintAfter": "当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "editorOpened": false,
+   "structureChanged": false,
+   "silent": true
+  },
+  {
+   "target": "页脚汇总计数",
+   "hintBefore": "当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "hintAfter": "当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "editorOpened": false,
+   "structureChanged": false,
+   "silent": true
+  },
+  {
+   "target": "页脚图例文字",
+   "hintBefore": "当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "hintAfter": "当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "editorOpened": false,
+   "structureChanged": false,
+   "silent": true
+  },
+  {
+   "target": "表头“序号”列标题",
+   "hintBefore": "当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "hintAfter": "当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "editorOpened": false,
+   "structureChanged": false,
+   "silent": true
+  },
+  {
+   "target": "普通负责人触发新增（隐藏入口）",
+   "hintBefore": "当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+   "hintAfter": "仅「项目负责人」可以新增行。",
+   "editorOpened": false,
+   "structureChanged": false,
+   "silent": false
+  },
+  {
+   "target": "普通负责人调用删除无权行",
+   "hintBefore": "仅「项目负责人」可以新增行。",
+   "hintAfter": "仅「项目负责人」可以删除行。",
+   "editorOpened": false,
+   "structureChanged": false,
+   "silent": false
+  }
+ ]
+}
