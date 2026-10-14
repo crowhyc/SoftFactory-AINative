@@ -1,0 +1,8 @@
+harness/intent.md: OK
+harness/plan.md: OK
+harness/spec.md: OK
+harness/design.md: OK
+dispatch.md: OK
+src/public/template.xlsx: OK
+src/public/vendor/xlsx.full.min.js: OK
+src/data/wbs.seed.json: OK

@@ -1,0 +1,17 @@
+{
+  "name": "wbs-rongcheng",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WC-001 蓉城战役 WBS 工作系统：九身份网页 + JSON 原子持久化 + 原模板保真导出（零运行时依赖）",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "bash tests/verify.sh"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "license": "UNLICENSED"
+}
