@@ -1,0 +1,13 @@
+=== 自测矩阵 11 · 三端一致 + 刷新持久 + 409 非覆盖 + 重启持久 + health ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage7/browser.log' 'PASS  矩阵11f 三端一致' 'PASS  矩阵11g 刷新持久' && require '/opt/wbs-rongcheng/tests/.tmp/stage7/server.log' 'PASS  矩阵11a GET /api/health' 'PASS  矩阵11b 保存成功（原子写，revision +1）' 'PASS  矩阵11c 并发旧版本保存 409 非覆盖' 'PASS  矩阵11d /api/history 参数校验与 405' 'PASS  矩阵11e 服务重启后数据与人员池仍在'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵11f 三端一致
+OK    PASS  矩阵11g 刷新持久
+PASS=2 FAIL=0
+OK    PASS  矩阵11a GET /api/health
+OK    PASS  矩阵11b 保存成功（原子写，revision +1）
+OK    PASS  矩阵11c 并发旧版本保存 409 非覆盖
+OK    PASS  矩阵11d /api/history 参数校验与 405
+OK    PASS  矩阵11e 服务重启后数据与人员池仍在
+PASS=5 FAIL=0

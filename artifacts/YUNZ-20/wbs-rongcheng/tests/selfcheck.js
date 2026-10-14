@@ -186,8 +186,12 @@ check(['consistency', 'ownedit'], '矩阵3/6 普通负责人本人行可编辑�
   const entry = JSON.parse(audit);
   eq('王言', entry.identity, 'audit 身份');
   assert(JSON.stringify(entry).includes(row.id), 'audit 应记录行号');
-  assert(!JSON.stringify(entry).includes(updatedNote), 'audit 不应记录值');
-  ok('audit.log 记录身份/行/字段，不记值', audit);
+  // 变更包 #2：audit 行扩展 old/new 映射（供日报「当日变更」还原字段级改动）。
+  assert(entry.old && entry.new, 'audit 应带 old/new 映射');
+  eq(updatedNote, entry.new[row.id].note, 'audit new.note');
+  eq('未开始', entry.old[row.id].note === '' ? '未开始' : entry.old[row.id].note, 'audit old.note 为空基线');
+  eq(updatedNote, JSON.parse(audit).new[row.id].note, 'audit 应记录改动后的值');
+  ok('audit.log 记录身份/行/字段 + old/new 映射', audit.slice(0, 120) + '…');
 });
 
 check(['validation'], '矩阵8 空值与非法输入被拒且不落盘', async () => {

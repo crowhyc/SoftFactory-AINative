@@ -1,0 +1,18 @@
+=== 矩阵 06 · 保存后页面/API/磁盘三端一致（含原子写） ===
+$ node tests/selfcheck.js --only consistency,atomic && node tests/domcheck.mjs --only ownedit
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+数据目录: /opt/wbs-rongcheng/tests/.tmp/api  端口: 4199
+PASS  王言行保存成功：页面草稿 -> API -> 磁盘 三端一致  :: T002 revision 1
+PASS  audit.log 记录身份/行/字段 + old/new 映射  :: {"ts":"2026-10-14T12:22:29.535Z","identity":"王言","revision":1,"changed":[{"id":"T002","fields":["demo","dates.design","d…
+PASS  15 次写盘期间 4 个并发读取始终拿到完整 JSON（无半写）  :: 最终 revision 15
+PASS  写盘后无 .tmp 残留，代码含 fsync + rename + 目录同步
+---
+PASS=4 FAIL=0
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  矩阵3 普通负责人本人行可编辑并保存（页面/API/磁盘三端一致）  :: T002 note + status，revision 1
+PASS  矩阵6b 保存后 API 与磁盘逐字段一致  :: {"note":"DOM 自测 2026-10-14T12:22:31.679Z","status":"进行中"}
+PASS  矩阵7 刷新持久：重新加载页面仍显示已保存内容  :: DOM 自测 2026-10-14T12:22:
+---
+PASS=3 FAIL=0

@@ -1,0 +1,18 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+数据目录: /opt/wbs-rongcheng/tests/.tmp/stage7-data  端口: 4222  tz: Asia/Shanghai  今天: 2026-10-14
+PASS  矩阵11a GET /api/health 返回 ok  :: {"ok":true,"service":"wbs-rongcheng","revision":0}
+PASS  矩阵11b 保存成功（原子写，revision +1）  :: T002 revision 1
+PASS  矩阵8a audit.log 每条记录带 old/new 映射与改动后快照  :: 字段 dates.design,dates.test,note,status；old.status=未开始
+PASS  矩阵8b GET /api/history 字段级记录（旧值→新值/时间/操作身份）  :: 4 条：dates.design,dates.test,note,status；2026-10-13T16:00:00.000Z → 2026-10-14T16:00:00.000Z
+PASS  矩阵8c 自然日口径 [00:00:00, 次日 00:00:00) 开区间（Asia/Shanghai）  :: 当日含 00:00:01 不含 23:59:59；2026-10-13 单独可取
+PASS  矩阵10a 旧格式（无 old/new）行与损坏行被跳过，接口不报错  :: records=5
+PASS  矩阵6a 人员池新增落盘（PUT /api/wbs，原子写 + revision 保护）  :: revision 2
+PASS  矩阵6b 服务端拒绝空白 / 重复 / 超长（>20）身份并给中文提示  :: dup400 / blank400 / len400
+PASS  矩阵11c 并发旧版本保存 409 非覆盖（API 与磁盘一致）  :: current=3
+PASS  矩阵10b 老 wbs.json（无新增字段）可读、可保存  :: revision 7 → 8
+PASS  矩阵11d /api/history 参数校验与 405  :: date/tz 400，POST 405
+PASS  矩阵11e 服务重启后数据与人员池仍在（含 /api/history）  :: identities=9 revision=8
+---
+ARTIFACT data_sha256=78f853d441a1bafa7b422deeaa16309e1c609e80356add0929d770e819b6a02b
+ARTIFACT audit_lines=8
+PASS=12 FAIL=0

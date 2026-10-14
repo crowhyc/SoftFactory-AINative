@@ -1,0 +1,12 @@
+=== 矩阵 02 · 九身份选择与切换保持（localStorage） ===
+$ node tests/domcheck.mjs --only identity
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  矩阵2 身份选择页展示九身份  :: 项目负责人 / 李欢 / 王言 / 张航瑞 / 郑述文 / 崔文建 / 余宇 / 黄逸偲 / 陈江
+PASS  矩阵2b 未选择身份时停留在入口页  :: workbench 隐藏
+PASS  矩阵2c 选择「王言」进入工作台并写入 localStorage  :: wbs.identity=王言
+PASS  矩阵2d 刷新（localStorage 记忆）后身份保持  :: 无需重选直接进入工作台：王言
+PASS  矩阵2e 切换身份即时生效（可编辑集合随之变化）  :: 李欢可见 T001 可编辑、T002 只读
+---
+PASS=5 FAIL=0

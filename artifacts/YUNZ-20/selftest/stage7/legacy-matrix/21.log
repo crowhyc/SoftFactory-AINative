@@ -1,0 +1,125 @@
+=== 矩阵 21 · rollback.sh 回滚语义（上一镜像 + 上一 data 备份 + health） ===
+$ bash tests/deploy_selftest.sh rollback
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+--- 准备：第二次部署（记录上一镜像与 data 备份） ---
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+[deploy] 1/6 记录当前 running 容器与镜像
+[deploy]     当前镜像：wbs-rongcheng:20261014202245 sha256:d103a098d830cd8e558e24e0ca4c2d08b064626765db27b79c20a98891a92a84
+[deploy] 2/6 备份当前 data/wbs.json
+[deploy]     已备份 -> /opt/wbs-rongcheng/data/wbs.json.20261014202301.bak
+[deploy] 3/6 构建镜像（--network none，构建期不回外网）：wbs-rongcheng:20261014202301
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 823B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.m.daocloud.io/library/node:24-slim
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.m.daocloud.io/library/node:24-slim
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 384B done
+#5 DONE 0.0s
+
+#6 [4/6] COPY public ./public
+#6 CACHED
+
+#7 [5/6] COPY data/wbs.seed.json ./data/wbs.seed.json
+#7 CACHED
+
+#8 [2/6] WORKDIR /app
+#8 CACHED
+
+#9 [3/6] COPY package.json server.js ./
+#9 CACHED
+
+#10 [6/6] RUN mkdir -p /app/data && chown -R node:node /app
+#10 CACHED
+
+#11 exporting to image
+#11 exporting layers done
+#11 writing image sha256:d103a098d830cd8e558e24e0ca4c2d08b064626765db27b79c20a98891a92a84 done
+#11 naming to docker.io/library/wbs-rongcheng:20261014202301 done
+#11 DONE 0.0s
+[deploy] 4/6 记录回滚信息 -> /opt/wbs-rongcheng/state/previous.env
+[deploy] 5/6 替换容器（host 网络 + 进程只绑定 127.0.0.1:4180，挂载 /opt/wbs-rongcheng/data）
+[deploy] 6/6 自检 curl http://127.0.0.1:4180/api/health
+[deploy]     健康检查通过：{"ok":true,"service":"wbs-rongcheng","revision":1}
+[deploy] 完成：wbs-rongcheng:20261014202301 运行中（上一镜像：wbs-rongcheng:20261014202245，data 备份：/opt/wbs-rongcheng/data/wbs.json.20261014202301.bak）
+state/previous.env: PREV_IMAGE=wbs-rongcheng:20261014202245 DATA_BAK=/opt/wbs-rongcheng/data/wbs.json.20261014202301.bak
+PASS  deploy.sh 生成当前镜像名与 data/wbs.json 时间戳备份：/opt/wbs-rongcheng/data/wbs.json.20261014202301.bak
+PASS  备份文件存在：/opt/wbs-rongcheng/data/wbs.json.20261014202301.bak
+--- 回滚（先停容器 -> 恢复上一 data -> 上一镜像起容器 -> health） ---
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+[rollback] 目标镜像：wbs-rongcheng:20261014202245
+[rollback] 当前数据已另存 -> /opt/wbs-rongcheng/data/wbs.json.20261014202303.rollback.bak
+[rollback] 已恢复数据 -> /opt/wbs-rongcheng/data/wbs.json.20261014202301.bak
+[rollback] 健康检查通过：{"ok":true,"service":"wbs-rongcheng","revision":1}
+回滚后容器镜像：wbs-rongcheng:20261014202245（期望 wbs-rongcheng:20261014202245）
+PASS  rollback.sh 恢复上一镜像
+PASS  rollback.sh 恢复上一 data/wbs.json 备份（sha256 一致）
+--- 收尾：重新部署最新镜像并把数据重置为 seed 初始态 ---
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+[deploy] 1/6 记录当前 running 容器与镜像
+[deploy]     当前镜像：wbs-rongcheng:20261014202245 sha256:d103a098d830cd8e558e24e0ca4c2d08b064626765db27b79c20a98891a92a84
+[deploy] 2/6 备份当前 data/wbs.json
+[deploy]     已备份 -> /opt/wbs-rongcheng/data/wbs.json.20261014202304.bak
+[deploy] 3/6 构建镜像（--network none，构建期不回外网）：wbs-rongcheng:20261014202304
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 823B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.m.daocloud.io/library/node:24-slim
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.m.daocloud.io/library/node:24-slim
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 384B done
+#5 DONE 0.0s
+
+#6 [2/6] WORKDIR /app
+#6 CACHED
+
+#7 [3/6] COPY package.json server.js ./
+#7 CACHED
+
+#8 [4/6] COPY public ./public
+#8 CACHED
+
+#9 [5/6] COPY data/wbs.seed.json ./data/wbs.seed.json
+#9 CACHED
+
+#10 [6/6] RUN mkdir -p /app/data && chown -R node:node /app
+#10 CACHED
+
+#11 exporting to image
+#11 exporting layers done
+#11 writing image sha256:d103a098d830cd8e558e24e0ca4c2d08b064626765db27b79c20a98891a92a84 done
+#11 naming to docker.io/library/wbs-rongcheng:20261014202304 done
+#11 DONE 0.0s
+[deploy] 4/6 记录回滚信息 -> /opt/wbs-rongcheng/state/previous.env
+[deploy] 5/6 替换容器（host 网络 + 进程只绑定 127.0.0.1:4180，挂载 /opt/wbs-rongcheng/data）
+[deploy] 6/6 自检 curl http://127.0.0.1:4180/api/health
+[deploy]     健康检查通过：{"ok":true,"service":"wbs-rongcheng","revision":1}
+[deploy] 完成：wbs-rongcheng:20261014202304 运行中（上一镜像：wbs-rongcheng:20261014202245，data 备份：/opt/wbs-rongcheng/data/wbs.json.20261014202304.bak）
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  交付态：容器运行中，data/wbs.json 由 wbs.seed.json 初始化为 36 行 revision 0
+---
+PASS=5 FAIL=0

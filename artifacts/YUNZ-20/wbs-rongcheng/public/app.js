@@ -17,6 +17,11 @@
   var DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
   var COL_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'];
   var EXPORT_COL_COUNT = 11;
+  var BLOCKED_STATUSES = ['被阻塞', '已延期'];
+  var HISTORY_TZ = 'Asia/Shanghai';
+  var IDENTITY_MAX_LEN = 20;
+  var DAILY_BLOCKED_HEADER = ['一级', '二级', '任务项', '负责人', '是否演示范围', '设计', '开发', '测试', '产品', '演示准备', '进展说明', '状态'];
+  var DAILY_CHANGE_HEADER = ['id', '一级', '二级', '任务项', '负责人', '改动字段', '旧值', '新值', '时间', '操作身份'];
 
   /* ------------------------------------------------------------ 纯逻辑 */
 
@@ -88,6 +93,79 @@
     });
   }
 
+  /* ------------------------------------------------------- 日报（导出） */
+
+  function blockedRows(tasks) {
+    var rows = [DAILY_BLOCKED_HEADER.slice()];
+    (tasks || []).forEach(function (task) {
+      if (BLOCKED_STATUSES.indexOf(task.status) === -1) return;
+      var row = exportRows([task])[0];
+      row = row.slice();
+      row.push(task.status == null ? '' : String(task.status));
+      rows.push(row);
+    });
+    return rows;
+  }
+
+  /* 时区下的「今天」YYYY-MM-DD。 */
+  function todayInTz(tz) {
+    try {
+      return new Intl.DateTimeFormat('en-CA', {
+        timeZone: tz || HISTORY_TZ, year: 'numeric', month: '2-digit', day: '2-digit'
+      }).format(new Date());
+    } catch (err) {
+      var offset = new Date(Date.now() + 8 * 3600000);
+      return offset.toISOString().slice(0, 10);
+    }
+  }
+
+  /* 时区下的 YYYY-MM-DD HH:mm:ss。 */
+  function formatInTz(iso, tz) {
+    var at = new Date(iso);
+    if (isNaN(at.getTime())) return iso == null ? '' : String(iso);
+    try {
+      return new Intl.DateTimeFormat('sv-SE', {
+        timeZone: tz || HISTORY_TZ,
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hourCycle: 'h23'
+      }).format(at);
+    } catch (err) {
+      return at.toISOString();
+    }
+  }
+
+  function cellText(value) {
+    if (value == null) return '';
+    if (typeof value === 'object') return JSON.stringify(value);
+    return String(value);
+  }
+
+  /* 每条变更记录（一个被改动的字段）→ 一行；按时间升序。 */
+  function changeRows(records) {
+    var rows = [DAILY_CHANGE_HEADER.slice()];
+    (records || []).slice().sort(function (a, b) {
+      var ta = Date.parse(a && a.at);
+      var tb = Date.parse(b && b.at);
+      if (isNaN(ta) || isNaN(tb)) return 0;
+      return ta - tb;
+    }).forEach(function (record) {
+      rows.push([
+        cellText(record.task_id),
+        cellText(record.level1),
+        cellText(record.level2),
+        cellText(record.task),
+        cellText(record.owner),
+        fieldLabel(record.field),
+        cellText(record.old),
+        cellText(record.new),
+        formatInTz(record.at),
+        cellText(record.identity)
+      ]);
+    });
+    return rows;
+  }
+
   function colName(index) {
     var name = '';
     var n = index;
@@ -150,6 +228,16 @@
     return workbook;
   }
 
+  /** 日报：单文件两个 sheet（阻塞与延期 / 当日变更），浏览器本地生成，不依赖模板。 */
+  function buildDailyWorkbook(tasks, records) {
+    var XLSX = global.XLSX;
+    if (!XLSX) throw new Error('XLSX 未加载');
+    var workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(blockedRows(tasks)), '阻塞与延期');
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(changeRows(records)), '当日变更');
+    return workbook;
+  }
+
   function validateDraft(doc, identities) {
     var errors = [];
     var push = function (id, field, message) { errors.push({ id: String(id), field: field, message: message }); };
@@ -209,6 +297,12 @@
     exportRows: exportRows,
     applyExportRows: applyExportRows,
     buildExportWorkbook: buildExportWorkbook,
+    blockedRows: blockedRows,
+    changeRows: changeRows,
+    buildDailyWorkbook: buildDailyWorkbook,
+    todayInTz: todayInTz,
+    formatInTz: formatInTz,
+    BLOCKED_STATUSES: BLOCKED_STATUSES,
     parseRange: parseRange,
     validateDraft: validateDraft,
     nextTaskId: nextTaskId
@@ -228,7 +322,8 @@
     dirty: false,
     filter: { q: '', owner: '', status: '' },
     errorCells: {},
-    health: null
+    health: null,
+    editingRows: {}
   };
 
   function $(id) { return document.getElementById(id); }
@@ -283,6 +378,16 @@
       button.addEventListener('click', function () { chooseIdentity(identity); });
       list.appendChild(button);
     });
+    $('identity-add').hidden = !canAddIdentity();
+  }
+
+  /* 身份选择页尚无「当前身份」，因此以最近一次选中的身份判断是否展示「新增人员」入口。 */
+  function rememberedIdentity() {
+    try { return global.localStorage.getItem(IDENTITY_KEY) || ''; } catch (e) { return ''; }
+  }
+
+  function canAddIdentity() {
+    return isPM(state.identity) || isPM(rememberedIdentity());
   }
 
   function chooseIdentity(identity) {
@@ -294,6 +399,7 @@
     }
     $('identity-error').hidden = true;
     state.identity = identity;
+    state.editingRows = {};
     try { global.localStorage.setItem(IDENTITY_KEY, identity); } catch (e) { /* 隐私模式忽略 */ }
     $('identity-layer').hidden = true;
     $('workbench').hidden = false;
@@ -356,8 +462,16 @@
     td.className = 'cell ' + className + ' ' + (editable ? 'editable' : 'locked');
     td.setAttribute('data-id', task.id);
     td.setAttribute('data-field', field);
-    td.textContent = readField(task, field);
     if (state.errorCells[cellKey(task.id, field)]) td.classList.add('cell-error');
+    // 行编辑态：可编辑的文本类字段常显编辑器（点击只读单元格仍给中文提示）。
+    if (editable && state.editingRows[task.id]) {
+      td.classList.add('editing');
+      var editor = buildEditor(field, readField(task, field));
+      bindEditorChange(editor, task, field);
+      td.appendChild(editor);
+      return td;
+    }
+    td.textContent = readField(task, field);
     td.addEventListener('click', function () {
       if (td.classList.contains('editing')) return;
       if (!canEditField(state.identity, task, field)) {
@@ -369,8 +483,8 @@
     return td;
   }
 
-  function startEdit(td, task, field, className) {
-    var value = readField(task, field);
+  /* 编辑器构件：与既有 startEdit 共用，行编辑态与单元格编辑态外观一致。 */
+  function buildEditor(field, value) {
     var editor;
     if (field === 'status') {
       editor = document.createElement('select');
@@ -415,6 +529,122 @@
       editor.value = value;
     }
     editor.setAttribute('data-edit-field', field);
+    return editor;
+  }
+
+  /* 常显控件（日期 / 状态 / 负责人）与行编辑态共用的提交逻辑：change 即写入草稿。 */
+  function bindEditorChange(editor, task, field) {
+    editor.addEventListener('change', function () {
+      var next = editor.value;
+      var previous = readField(task, field);
+      if (next === previous) return;
+      writeField(task, field, next);
+      state.dirty = true;
+      state.errorCells = {};
+      task.__dirty = true;
+      showHint('已修改第 ' + task.id + ' 行的「' + fieldLabel(field) + '」，点击“保存”提交到服务器。');
+      render();
+    });
+    editor.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' && field !== 'note') { event.preventDefault(); editor.blur(); }
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        var previous = readField(task, field);
+        editor.value = previous;
+        editor.blur();
+      }
+    });
+  }
+
+  function markErrorCell(td, task, field) {
+    if (state.errorCells[cellKey(task.id, field)]) td.classList.add('cell-error');
+  }
+
+  /* 日期列：常显 <input type=date>；无权限行 disabled 且点击仍给中文提示。 */
+  function buildDateCell(task, key) {
+    var field = 'dates.' + key;
+    var td = document.createElement('td');
+    var editable = canEditField(state.identity, task, field);
+    td.className = 'cell cell-date ' + (editable ? 'editable' : 'locked');
+    td.setAttribute('data-id', task.id);
+    td.setAttribute('data-field', field);
+    var input = document.createElement('input');
+    input.type = 'date';
+    input.className = 'date-input';
+    input.value = readField(task, field);
+    input.setAttribute('data-edit-field', field);
+    if (editable) bindEditorChange(input, task, field);
+    else input.disabled = true;
+    td.appendChild(input);
+    markErrorCell(td, task, field);
+    if (!editable) td.addEventListener('click', function () { showReadOnlyHint(task, field); });
+    return td;
+  }
+
+  /* 状态列：常显五枚举下拉 + 当前状态徽标；无权限行 disabled。 */
+  function buildStatusCell(task) {
+    var td = document.createElement('td');
+    var editable = canEditField(state.identity, task, 'status');
+    td.className = 'cell cell-status ' + (editable ? 'editable' : 'locked');
+    td.setAttribute('data-id', task.id);
+    td.setAttribute('data-field', 'status');
+    var select = document.createElement('select');
+    select.className = 'status-select status-' + task.status;
+    select.setAttribute('data-edit-field', 'status');
+    STATUSES.forEach(function (status) {
+      var option = document.createElement('option');
+      option.value = status;
+      option.textContent = status;
+      select.appendChild(option);
+    });
+    select.value = STATUSES.indexOf(task.status) === -1 ? STATUSES[0] : task.status;
+    if (editable) bindEditorChange(select, task, 'status');
+    else select.disabled = true;
+    td.appendChild(select);
+    var badge = document.createElement('span');
+    badge.className = 'badge status-' + task.status;
+    badge.textContent = task.status;
+    td.appendChild(badge);
+    markErrorCell(td, task, 'status');
+    if (!editable) td.addEventListener('click', function () { showReadOnlyHint(task, 'status'); });
+    return td;
+  }
+
+  /* 负责人列：项目负责人下拉＝人员池；普通负责人只读（文本 + 点击提示）。 */
+  function buildOwnerCell(task) {
+    var td = document.createElement('td');
+    var editable = canEditField(state.identity, task, 'owner');
+    td.className = 'cell cell-owner ' + (editable ? 'editable' : 'locked');
+    td.setAttribute('data-id', task.id);
+    td.setAttribute('data-field', 'owner');
+    if (editable) {
+      var select = createOwnerSelect(task);
+      td.appendChild(select);
+    } else {
+      td.textContent = readField(task, 'owner');
+      td.addEventListener('click', function () { showReadOnlyHint(task, 'owner'); });
+    }
+    markErrorCell(td, task, 'owner');
+    return td;
+  }
+
+  function createOwnerSelect(task) {
+    var select = document.createElement('select');
+    select.className = 'owner-select';
+    select.setAttribute('data-edit-field', 'owner');
+    state.doc.identities.forEach(function (identity) {
+      var option = document.createElement('option');
+      option.value = identity;
+      option.textContent = identity;
+      select.appendChild(option);
+    });
+    select.value = readField(task, 'owner');
+    bindEditorChange(select, task, 'owner');
+    return select;
+  }
+
+  function startEdit(td, task, field, className) {
+    var editor = buildEditor(field, readField(task, field));
 
     var done = false;
     function commit(save) {
@@ -454,6 +684,7 @@
     if (flags.l2Start) tr.classList.add('l2-start');
     if (!flags.l1Start && !flags.l2Start) tr.classList.add('continuation');
     if (task.__dirty) tr.classList.add('row-dirty');
+    if (state.editingRows[task.id]) tr.classList.add('row-editing');
 
     var idCell = document.createElement('td');
     idCell.className = 'cell cell-id locked';
@@ -466,22 +697,22 @@
     ['level1', 'level2'].forEach(function (field, index) {
       tr.appendChild(buildCell(task, field, index === 0 ? 'cell-l1' : 'cell-l2'));
     });
-    ['task', 'owner', 'demo'].forEach(function (field) {
-      tr.appendChild(buildCell(task, field, 'cell-' + field));
-    });
-    DATE_KEYS.forEach(function (key) { tr.appendChild(buildCell(task, 'dates.' + key, 'cell-date')); });
+    tr.appendChild(buildCell(task, 'task', 'cell-task'));
+    tr.appendChild(buildOwnerCell(task));
+    tr.appendChild(buildCell(task, 'demo', 'cell-demo'));
+    DATE_KEYS.forEach(function (key) { tr.appendChild(buildDateCell(task, key)); });
     tr.appendChild(buildCell(task, 'note', 'cell-note'));
-
-    var statusCell = buildCell(task, 'status', 'cell-status');
-    statusCell.textContent = '';
-    var badge = document.createElement('span');
-    badge.className = 'badge status-' + task.status;
-    badge.textContent = task.status;
-    statusCell.appendChild(badge);
-    tr.appendChild(statusCell);
+    tr.appendChild(buildStatusCell(task));
 
     var opCell = document.createElement('td');
     opCell.className = 'cell cell-op';
+    var editButton = document.createElement('button');
+    editButton.type = 'button';
+    editButton.className = 'btn btn-mini';
+    editButton.setAttribute('data-edit-row', task.id);
+    editButton.textContent = state.editingRows[task.id] ? '完成' : '编辑';
+    editButton.addEventListener('click', function () { toggleRowEdit(task); });
+    opCell.appendChild(editButton);
     if (isPM(state.identity)) {
       var remove = document.createElement('button');
       remove.type = 'button';
@@ -508,6 +739,7 @@
       ? state.doc.tasks.length + ' 条'
       : tasks.length + ' / ' + state.doc.tasks.length + ' 条';
     $('add-row-btn').hidden = !isPM(state.identity);
+    $('add-person-btn').hidden = !isPM(state.identity);
     updateSession();
   }
 
@@ -521,6 +753,7 @@
     state.doc.tasks.push(task);
     state.dirty = true;
     state.errorCells = {};
+    state.editingRows[task.id] = true;
     state.filter = { q: '', owner: '', status: '' };
     $('search-input').value = '';
     render();
@@ -539,6 +772,29 @@
     state.errorCells = {};
     render();
     showHint('已删除第 ' + id + ' 行，点击“保存”提交到服务器。');
+  }
+
+  /* 该行对当前身份是否存在可编辑字段（普通负责人：仅「负责人 == 自己」的行）。 */
+  function rowEditable(task) {
+    return canEditField(state.identity, task, 'note') || canEditField(state.identity, task, 'status') ||
+      canEditField(state.identity, task, 'level1');
+  }
+
+  /* 操作列「编辑」：进入 / 退出该行行编辑态（可编辑文本字段常显编辑器）。 */
+  function toggleRowEdit(task) {
+    if (!rowEditable(task)) {
+      showHint('当前身份「' + state.identity + '」对第 ' + task.id + ' 行只读（仅“负责人 == 自己”的行可编辑）。');
+      return { ok: false, readOnly: true };
+    }
+    if (state.editingRows[task.id]) {
+      delete state.editingRows[task.id];
+      showHint('第 ' + task.id + ' 行已退出行编辑态（改动仍在草稿中，点击“保存”提交）。');
+    } else {
+      state.editingRows[task.id] = true;
+      showHint('第 ' + task.id + ' 行已进入行编辑态：可直接修改各列，改完点击“保存”提交。');
+    }
+    render();
+    return { ok: true, editing: !!state.editingRows[task.id] };
   }
 
   function markErrorCells(errors) {
@@ -625,6 +881,146 @@
     return '蓉城战役WBS-' + stamp + '.xlsx';
   }
 
+  /* ------------------------------------------------------------ 日报导出 */
+
+  function dailyReportFileName(dateStr) {
+    return '蓉城战役日报-' + String(dateStr || '').replace(/-/g, '') + '.xlsx';
+  }
+
+  async function fetchHistory(dateStr) {
+    var url = '/api/history?tz=' + encodeURIComponent(HISTORY_TZ) + '&date=' + encodeURIComponent(dateStr);
+    var response = await fetch(url, { cache: 'no-store' });
+    if (!response.ok) throw new Error('变更历史读取失败 HTTP ' + response.status);
+    return response.json();
+  }
+
+  async function exportDailyReport() {
+    var dateStr = todayInTz(HISTORY_TZ);
+    try {
+      var history = await fetchHistory(dateStr);
+      var records = (history && history.records) || [];
+      var workbook = Core.buildDailyWorkbook(state.doc.tasks, records);
+      var name = dailyReportFileName(dateStr);
+      global.XLSX.writeFile(workbook, name);
+      var blocked = state.doc.tasks.filter(function (task) { return BLOCKED_STATUSES.indexOf(task.status) !== -1; }).length;
+      showBanner('ok', '已导出日报 ' + name + '：sheet「阻塞与延期」' + blocked + ' 行、sheet「当日变更」' + records.length +
+        ' 行（' + dateStr + ' ' + HISTORY_TZ + ' 自然日口径；原 WBS 导出仍不含 status）。');
+      return { ok: true, name: name, date: dateStr, blocked: blocked, changes: records.length, records: records };
+    } catch (err) {
+      showBanner('error', '日报导出失败：' + err.message);
+      return { ok: false, error: err.message };
+    }
+  }
+
+  /* ------------------------------------------------------------ 新增人员 */
+
+  function openAddPersonPanel() {
+    if (!canAddIdentity()) { showHint('仅「项目负责人」可以新增人员。'); return { ok: false }; }
+    $('new-person-msg').hidden = true;
+    $('new-person-name').value = '';
+    $('add-person-panel').hidden = false;
+    try { $('new-person-name').focus(); } catch (e) { /* 忽略 */ }
+    return { ok: true };
+  }
+
+  function closeAddPersonPanel() { $('add-person-panel').hidden = true; }
+
+  /* 校验：非空、去重、长度 1–20；返回错误文案或 null。 */
+  function identityInputError(rawName, identities) {
+    var name = String(rawName == null ? '' : rawName).trim();
+    if (name === '') return '姓名不能为空。';
+    if (name.length > IDENTITY_MAX_LEN) return '姓名长度需为 1–' + IDENTITY_MAX_LEN + ' 个字符（当前 ' + name.length + ' 个）。';
+    if ((identities || []).indexOf(name) !== -1) return '「' + name + '」已在人员池中，请勿重复添加。';
+    return null;
+  }
+
+  /* 人员池落盘：复用既有 PUT /api/wbs（原子写 + If-Match 版本保护），不携带未保存的任务草稿。 */
+  async function persistIdentities() {
+    for (var attempt = 0; attempt < 3; attempt += 1) {
+      var current;
+      try {
+        current = await fetch('/api/wbs', { cache: 'no-store' });
+      } catch (err) {
+        return { ok: false, message: '无法连接服务（' + err.message + '）' };
+      }
+      if (!current.ok) return { ok: false, message: 'HTTP ' + current.status };
+      var doc = await current.json();
+      var payload = {
+        meta: { name: doc.meta && doc.meta.name },
+        identities: state.doc.identities.slice(),
+        tasks: doc.tasks
+      };
+      var put;
+      try {
+        put = await fetch('/api/wbs', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'If-Match': String(doc.meta.revision),
+            'X-Identity': encodeURIComponent(String(state.identity || rememberedIdentity() || ''))
+          },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        return { ok: false, message: '无法连接服务（' + err.message + '）' };
+      }
+      if (put.status === 200) {
+        var result = await put.json();
+        state.revision = result.revision;
+        if (state.doc && state.doc.meta) state.doc.meta.revision = result.revision;
+        updateSession();
+        return { ok: true, revision: result.revision };
+      }
+      if (put.status !== 409) {
+        var body = await put.json().catch(function () { return null; });
+        var detail = body && body.errors && body.errors.length ? body.errors[0].message : 'HTTP ' + put.status;
+        return { ok: false, message: detail };
+      }
+    }
+    return { ok: false, message: '版本冲突重试 3 次仍失败，请重新加载后再试' };
+  }
+
+  async function confirmAddPerson() {
+    var message = $('new-person-msg');
+    message.hidden = true;
+    var fail = function (text) {
+      message.textContent = text;
+      message.hidden = false;
+      showHint('新增人员未通过：' + text);
+      return { ok: false, error: text };
+    };
+    if (!canAddIdentity()) return fail('仅「项目负责人」可以新增人员。');
+    var name = String($('new-person-name').value == null ? '' : $('new-person-name').value).trim();
+    var invalid = identityInputError(name, state.doc.identities);
+    if (invalid) return fail(invalid);
+
+    state.doc.identities.push(name);
+    state.editingRows = {};
+    renderIdentityLayer();
+    render();
+    closeAddPersonPanel();
+    var saved = await persistIdentities();
+    if (saved.ok) {
+      showBanner('ok', '已新增人员「' + name + '」，人员池已保存到服务器（版本 ' + saved.revision + '）；身份切换、负责人下拉、筛选下拉已同步。');
+    } else {
+      showBanner('warn', '已在本页加入「' + name + '」，但保存到服务器失败：' + saved.message + '。');
+    }
+    showHint('人员池现有 ' + state.doc.identities.length + ' 人：' + state.doc.identities.join(' / '));
+    return { ok: saved.ok, name: name, revision: saved.revision, message: saved.message };
+  }
+
+  /* 返回首页：保留当前身份，回到身份选择页（列表随人员池同步）。 */
+  function backHome() {
+    hideBanner();
+    state.editingRows = {};
+    closeAddPersonPanel();
+    $('identity-error').hidden = true;
+    if (state.doc) renderIdentityLayer();
+    $('workbench').hidden = true;
+    $('identity-layer').hidden = false;
+    return { ok: true, identities: state.doc ? state.doc.identities.slice() : [] };
+  }
+
   async function loadExportWorkbook() {
     var response = await fetch('template.xlsx', { cache: 'no-store' });
     if (!response.ok) throw new Error('模板读取失败 HTTP ' + response.status);
@@ -679,6 +1075,16 @@
     $('save-btn').addEventListener('click', function () { save(); });
     $('add-row-btn').addEventListener('click', function () { addRow(); });
     $('export-btn').addEventListener('click', function () { exportXlsx(); });
+    $('daily-btn').addEventListener('click', function () { exportDailyReport(); });
+    $('add-person-btn').addEventListener('click', function () { openAddPersonPanel(); });
+    $('identity-add-btn').addEventListener('click', function () { openAddPersonPanel(); });
+    $('new-person-confirm').addEventListener('click', function () { confirmAddPerson(); });
+    $('new-person-cancel').addEventListener('click', function () { closeAddPersonPanel(); });
+    $('new-person-name').addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') { event.preventDefault(); confirmAddPerson(); }
+      if (event.key === 'Escape') { event.preventDefault(); closeAddPersonPanel(); }
+    });
+    $('home-btn').addEventListener('click', function () { backHome(); });
     $('banner-action').addEventListener('click', function () { reload(); });
   }
 
@@ -714,9 +1120,21 @@
     chooseIdentity: chooseIdentity,
     addRow: addRow,
     deleteRow: deleteRow,
+    toggleRowEdit: toggleRowEdit,
+    rowEditable: rowEditable,
     save: save,
     reload: reload,
     exportXlsx: exportXlsx,
+    exportDailyReport: exportDailyReport,
+    dailyReportFileName: dailyReportFileName,
+    fetchHistory: fetchHistory,
+    openAddPersonPanel: openAddPersonPanel,
+    closeAddPersonPanel: closeAddPersonPanel,
+    confirmAddPerson: confirmAddPerson,
+    identityInputError: identityInputError,
+    persistIdentities: persistIdentities,
+    canAddIdentity: canAddIdentity,
+    backHome: backHome,
     loadExportWorkbook: loadExportWorkbook,
     exportFileName: exportFileName,
     checkHealth: checkHealth

@@ -1,0 +1,10 @@
+=== 矩阵 10 · 纯标准库、零运行时依赖 ===
+$ node tests/selfcheck.js --only stdlib
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+数据目录: /opt/wbs-rongcheng/tests/.tmp/api  端口: 4199
+PASS  server.js require 仅标准库：http, fs, path
+PASS  package.json 无依赖，产物无 node_modules
+---
+PASS=2 FAIL=0

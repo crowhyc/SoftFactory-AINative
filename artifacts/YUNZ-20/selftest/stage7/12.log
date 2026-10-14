@@ -1,0 +1,13 @@
+=== 自测矩阵 12 · 回归子集：D-3 遮罩级联 / 验收1 / 验收3 / 验收4 / 无 pageerror ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage7/browser.log' 'PASS  回归(D-3) 进入工作台后身份遮罩 [hidden] 级联生效' 'PASS  回归(D-3) 工作台可见并渲染 36 行' 'PASS  验收1a 身份选择页渲染九身份' 'PASS  验收1b 刷新（localStorage 记忆）后身份保持' 'PASS  验收3 普通负责人本人行（行编辑态）可编辑并保存' 'PASS  验收4 他人行只读' 'PASS  全程无 pageerror' 'PASS  全程无 console error'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  回归(D-3) 进入工作台后身份遮罩 [hidden] 级联生效
+OK    PASS  回归(D-3) 工作台可见并渲染 36 行
+OK    PASS  验收1a 身份选择页渲染九身份
+OK    PASS  验收1b 刷新（localStorage 记忆）后身份保持
+OK    PASS  验收3 普通负责人本人行（行编辑态）可编辑并保存
+OK    PASS  验收4 他人行只读
+OK    PASS  全程无 pageerror
+OK    PASS  全程无 console error
+PASS=8 FAIL=0

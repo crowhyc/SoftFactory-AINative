@@ -1,0 +1,10 @@
+=== 矩阵 15 · /api/health 返回 ok（含页面探针） ===
+$ node tests/selfcheck.js --only health && grep -E '服务正常' /opt/wbs-rongcheng/tests/.tmp/outputs/01.log
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+数据目录: /opt/wbs-rongcheng/tests/.tmp/api  端口: 4199
+PASS  GET /api/health -> {"ok":true,"service":"wbs-rongcheng","revision":0}
+---
+PASS=1 FAIL=0
+PASS  矩阵15b 健康探针显示服务正常  :: 探针：服务正常 · v0

@@ -1,0 +1,8 @@
+=== 自测矩阵 05 · 负责人下拉＝人员池；项目负责人可改派、普通负责人只读 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage7/browser.log' 'PASS  矩阵5 负责人列为下拉、选项＝当前人员池' 'PASS  矩阵5b 项目负责人改派负责人' 'PASS  矩阵5d 普通负责人负责人列只读'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵5 负责人列为下拉、选项＝当前人员池
+OK    PASS  矩阵5b 项目负责人改派负责人
+OK    PASS  矩阵5d 普通负责人负责人列只读
+PASS=3 FAIL=0

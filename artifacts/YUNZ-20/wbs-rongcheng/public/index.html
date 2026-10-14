@@ -12,6 +12,10 @@
     <h1>蓉城战役 WBS 工作系统</h1>
     <p class="identity-sub">请选择你的工作身份后进入工作台（身份声明制，不是登录认证）</p>
     <div id="identity-list" class="identity-list"></div>
+    <div id="identity-add" class="identity-add" hidden>
+      <button id="identity-add-btn" type="button" class="btn">新增人员</button>
+      <span class="identity-add-note">项目负责人可把新成员加入人员池（身份切换 / 负责人下拉 / 筛选同步）。</span>
+    </div>
     <p id="identity-error" class="identity-error" hidden></p>
     <p class="identity-note">项目负责人可维护全表结构与增删行；普通负责人只能编辑「负责人」为自己的行。</p>
   </div>
@@ -27,6 +31,7 @@
       <label class="field-inline" for="identity-select">当前身份
         <select id="identity-select"></select>
       </label>
+      <button id="home-btn" type="button" class="btn btn-mini">返回首页</button>
       <span id="session-status" class="session-status" title="会话与保存状态">未加载</span>
     </div>
   </header>
@@ -42,8 +47,10 @@
       <select id="status-filter"></select>
     </label>
     <div class="toolbar-actions">
+      <button id="add-person-btn" type="button" class="btn" hidden>新增人员</button>
       <button id="add-row-btn" type="button" class="btn" hidden>新增行</button>
       <button id="export-btn" type="button" class="btn">导出 Excel</button>
+      <button id="daily-btn" type="button" class="btn">导出日报</button>
       <button id="save-btn" type="button" class="btn btn-primary" disabled>保存</button>
     </div>
     <span id="health-probe" class="health-probe" title="服务健康探针">探针：检测中…</span>
@@ -85,6 +92,19 @@
     <span class="footer-legend">状态枚举：未开始 / 进行中 / 已完成 / 已延期 / 被阻塞</span>
     <span class="footer-legend">导出仅写回原模板 A–K 数据区，第 1/2 行与其它单元格保持原样；status 不导出。</span>
   </footer>
+</div>
+
+<div id="add-person-panel" class="modal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="add-person-title">
+    <h2 id="add-person-title">新增人员</h2>
+    <p class="modal-sub">姓名将加入人员池并立即生效（仅项目负责人可操作）。</p>
+    <input id="new-person-name" type="text" placeholder="姓名（1–20 个字符）" autocomplete="off">
+    <p id="new-person-msg" class="modal-msg" hidden></p>
+    <div class="modal-actions">
+      <button id="new-person-cancel" type="button" class="btn">取消</button>
+      <button id="new-person-confirm" type="button" class="btn btn-primary">确认新增</button>
+    </div>
+  </div>
 </div>
 
 <script src="vendor/xlsx.full.min.js" defer></script>

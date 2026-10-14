@@ -1,0 +1,13 @@
+=== 矩阵 16b · 容器重启后数据仍在（docker restart） ===
+$ bash tests/deploy_selftest.sh restart
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+重启前：1 36 容器自测 2026-10-14T20:22:48+0800
+重启后：1 36 容器自测 2026-10-14T20:22:48+0800
+PASS  docker restart 后 revision/行数/内容完全一致（数据卷持久）
+PASS  docker restart 后 /api/health 通过
+---
+PASS=2 FAIL=0

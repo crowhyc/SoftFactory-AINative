@@ -1,0 +1,7 @@
+=== 自测矩阵 04 · 删除确认框「取消」不删除 / 「确认」删除 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage7/browser.log' 'PASS  矩阵4a 删除确认框「取消」路径' 'PASS  矩阵4b 删除确认框「确认」路径'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵4a 删除确认框「取消」路径
+OK    PASS  矩阵4b 删除确认框「确认」路径
+PASS=2 FAIL=0

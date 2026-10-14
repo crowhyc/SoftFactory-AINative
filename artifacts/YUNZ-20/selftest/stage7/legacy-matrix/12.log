@@ -1,0 +1,76 @@
+=== 矩阵 12 · 导出 A–K 共 11 列（含行数一致） ===
+$ node tests/exportcheck.mjs && python3 tests/export_verify.py "/opt/wbs-rongcheng/tests/.tmp/蓉城战役WBS-$(date +%Y%m%d).xlsx" public/template.xlsx tests/.tmp/wbs-from-api.json 36 && python3 tests/export_verify.py "/opt/wbs-rongcheng/tests/.tmp/蓉城战役WBS-$(date +%Y%m%d)-34row.xlsx" public/template.xlsx tests/.tmp/wbs-34rows.json 34
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  导出文件已生成  :: /opt/wbs-rongcheng/tests/.tmp/蓉城战役WBS-20261014.xlsx（数据 36 行，末行 38）
+ARTIFACT export_file=/opt/wbs-rongcheng/tests/.tmp/蓉城战役WBS-20261014.xlsx
+ARTIFACT export_json=/opt/wbs-rongcheng/tests/.tmp/wbs-from-api.json
+ARTIFACT export_rows=36
+PASS  导出文件含 <cols> 列宽定义（页面导出路径）  :: <col> 声明 16384 条
+PASS  导出 A–K 列宽与源模板逐列一致（含 K 进展说明列 47.2592592592593）  :: K=47.2592592592593，A–K=11.3333333333333,11.3333333333333,13.7777777777778,11.3333333333333,11.3333333333333,13.1111111111111,13.1111111111111,13.1111111111111,13.1111111111111,16.2222222222222,47.2592592592593
+PASS  页面导出与自测走同一实现（loadExportWorkbook → Core.buildExportWorkbook）  :: 页面侧无独立 XLSX.read 旁路
+INFO  D-1 修复前：页面路径导出 sha256=626b269a…（32762 字节、无 <cols>）；修复后见上方 <cols>/列宽断言。
+PASS  读回导出文件：A1:C1 合并仍在  :: [{"s":{"c":0,"r":0},"e":{"c":2,"r":0}}]
+PASS  读回导出文件：第 2 行表头仍在  :: 负责人/进展说明
+PASS  读回导出文件工作表范围与模板一致  :: A1:M38
+PASS  行数变少时原数据区残留被清空  :: 第 37/38 行 A–D/K 为空
+ARTIFACT export_file_34=/opt/wbs-rongcheng/tests/.tmp/蓉城战役WBS-20261014-34row.xlsx
+ARTIFACT export_json_34=/opt/wbs-rongcheng/tests/.tmp/wbs-34rows.json
+ARTIFACT export_rows_34=34
+---
+PASS=8 FAIL=0
+PASS  A1 逐字一致: '基础说明:各功能负责人需要每天 20 点前更新相关信息,填写备注和说明[进展与备注说明(例: 10-xx: 完成设计,完成 xx,延期(原因xxx,缓解手段 xxx)被阻塞(被 xxx 阻塞,缓解措施 xxx)]'
+PASS  D1 逐字一致: '未开始(直接填写完成时间)'
+PASS  E1 逐字一致: '进行中(填写计划完成时间)'
+PASS  F1 逐字一致: '已完成(填写完成时间)'
+PASS  G1 逐字一致: '已延期(填写延期完成的时间)'
+PASS  H1 逐字一致: '被阻塞(填写计划完成时间)'
+PASS  D2 逐字一致: '负责人'
+PASS  E2 逐字一致: '是否演示范围'
+PASS  F2 逐字一致: '计划设计完成时间'
+PASS  G2 逐字一致: '计划开发完成时间'
+PASS  H2 逐字一致: '计划测试完成时间'
+PASS  I2 逐字一致: '计划产品完成时间'
+PASS  J2 逐字一致: '计划演示准备完成时间'
+PASS  K2 逐字一致: '进展说明'
+PASS  合并单元格保持原样  :: ['A1:C1']
+PASS  导出文件含 <cols> 列宽定义  :: 页面导出路径修复前无 <cols>（缺陷 D-1），本条为回归断言
+PASS  列宽设置保持原样（A–K 11 列宽逐列一致，含 K 进展说明列 47.2592592592593 ≈ 47.26）  :: A–K=11.3333333333333,11.3333333333333,13.7777777777778,11.3333333333333,11.3333333333333,13.1111111111111,13.1111111111111,13.1111111111111,13.1111111111111,16.2222222222222,47.2592592592593
+PASS  K 进展说明列宽 = 47.2592592592593（与源模板一致）  :: 复现：node tests/exportcheck.mjs && python3 tests/export_verify.py "<导出文件>" public/template.xlsx tests/.tmp/wbs-from-api.json 36
+PASS  数据行数与 JSON 一致  :: 36 行（第 3 行起，末行 38）
+PASS  A–K 共 11 列逐行与 JSON 对账一致  :: 36 行 x 11 列
+PASS  导出文件不含字面量 'status'
+PASS  数据区不含任何 status 取值  :: （第 1 行 D1:H1 的模板原文颜色说明属于原表内容，未改动）
+PASS  JSON 存在 status 字段（仅网页使用），未进入导出  :: 示例 进行中
+PASS  数据区（A3:K38）之外的非数据单元格内容保持原样  :: 420 个模板单元格核对
+WARN  导出文件的单元格样式表被重写（社区版 SheetJS 限制）  -> styles.xml 26197 -> 1572 字节；文本/合并/列宽/非数据单元格值不受影响，验收条件 8 不涉及单元格样式
+---
+PASS=24 FAIL=0 WARN=1
+PASS  A1 逐字一致: '基础说明:各功能负责人需要每天 20 点前更新相关信息,填写备注和说明[进展与备注说明(例: 10-xx: 完成设计,完成 xx,延期(原因xxx,缓解手段 xxx)被阻塞(被 xxx 阻塞,缓解措施 xxx)]'
+PASS  D1 逐字一致: '未开始(直接填写完成时间)'
+PASS  E1 逐字一致: '进行中(填写计划完成时间)'
+PASS  F1 逐字一致: '已完成(填写完成时间)'
+PASS  G1 逐字一致: '已延期(填写延期完成的时间)'
+PASS  H1 逐字一致: '被阻塞(填写计划完成时间)'
+PASS  D2 逐字一致: '负责人'
+PASS  E2 逐字一致: '是否演示范围'
+PASS  F2 逐字一致: '计划设计完成时间'
+PASS  G2 逐字一致: '计划开发完成时间'
+PASS  H2 逐字一致: '计划测试完成时间'
+PASS  I2 逐字一致: '计划产品完成时间'
+PASS  J2 逐字一致: '计划演示准备完成时间'
+PASS  K2 逐字一致: '进展说明'
+PASS  合并单元格保持原样  :: ['A1:C1']
+PASS  导出文件含 <cols> 列宽定义  :: 页面导出路径修复前无 <cols>（缺陷 D-1），本条为回归断言
+PASS  列宽设置保持原样（A–K 11 列宽逐列一致，含 K 进展说明列 47.2592592592593 ≈ 47.26）  :: A–K=11.3333333333333,11.3333333333333,13.7777777777778,11.3333333333333,11.3333333333333,13.1111111111111,13.1111111111111,13.1111111111111,13.1111111111111,16.2222222222222,47.2592592592593
+PASS  K 进展说明列宽 = 47.2592592592593（与源模板一致）  :: 复现：node tests/exportcheck.mjs && python3 tests/export_verify.py "<导出文件>" public/template.xlsx tests/.tmp/wbs-from-api.json 36
+PASS  数据行数与 JSON 一致  :: 34 行（第 3 行起，末行 36）
+PASS  A–K 共 11 列逐行与 JSON 对账一致  :: 34 行 x 11 列
+PASS  导出文件不含字面量 'status'
+PASS  数据区不含任何 status 取值  :: （第 1 行 D1:H1 的模板原文颜色说明属于原表内容，未改动）
+PASS  JSON 存在 status 字段（仅网页使用），未进入导出  :: 示例 进行中
+PASS  数据区（A3:K38）之外的非数据单元格内容保持原样  :: 420 个模板单元格核对
+WARN  导出文件的单元格样式表被重写（社区版 SheetJS 限制）  -> styles.xml 26197 -> 1572 字节；文本/合并/列宽/非数据单元格值不受影响，验收条件 8 不涉及单元格样式
+---
+PASS=24 FAIL=0 WARN=1

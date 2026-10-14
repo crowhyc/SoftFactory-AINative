@@ -147,10 +147,16 @@ async function openPage(options) {
       const ids = page.rows().map((tr) => tr.getAttribute('data-id'));
       assert(JSON.stringify(ids) === JSON.stringify(seed.tasks.map((t) => t.id)), '渲染行序与 seed 不一致');
       const first = page.rowById('T001');
-      const firstText = page.cellsOf(first).map((td) => td.textContent);
-      assert(firstText[1] === '客户端' && firstText[3] === '业需导入' && firstText[4] === '李欢', '首行内容异常 ' + JSON.stringify(firstText));
-      const last = page.cellsOf(page.rowById('T036')).map((td) => td.textContent);
-      assert(last[1] === 'AI 能力引擎' && last[3] === '研发产物沉淀', '末行内容异常 ' + JSON.stringify(last));
+      // 变更包 #2 后：负责人 = 常显下拉、状态 = 常显下拉 + 徽标，取值统一按「控件 value 优先」读取。
+      const valueOf = (id, field) => {
+        const td = page.cellOf(id, field);
+        const control = td.querySelector('select, input, textarea');
+        return control ? control.value : td.textContent.trim();
+      };
+      const firstRow = ['level1', 'level2', 'task', 'owner'].map((field) => valueOf('T001', field));
+      assert(firstRow[0] === '客户端' && firstRow[2] === '业需导入' && firstRow[3] === '李欢', '首行内容异常 ' + JSON.stringify(firstRow));
+      const lastRow = ['level1', 'task'].map((field) => valueOf('T036', field));
+      assert(lastRow[0] === 'AI 能力引擎' && lastRow[1] === '研发产物沉淀', '末行内容异常 ' + JSON.stringify(lastRow));
       assert(page.$('task-count').textContent.includes('36 条'), '计数徽标异常 ' + page.$('task-count').textContent);
       const l1Start = page.rows().filter((tr) => tr.classList.contains('l1-start')).length;
       const l2Start = page.rows().filter((tr) => tr.classList.contains('l2-start')).length;

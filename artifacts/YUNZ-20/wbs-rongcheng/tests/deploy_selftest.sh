@@ -35,9 +35,12 @@ case "$STEP" in
 const fs=require('fs');
 const lines=fs.readFileSync('/proc/net/tcp','utf8').trim().split('\n').slice(1);
 const rows=lines.map(l=>l.trim().split(/\s+/)).filter(r=>parseInt(r[1].split(':')[1],16)===4180);
-console.log('  容器内监听：'+JSON.stringify(rows.map(r=>r[1])));
-const addr=rows.map(r=>r[1].split(':')[0]);
-process.exit(rows.length>0 && addr.every(a=>a==='0100007F') ? 0 : 1);
+// 只看 LISTEN（0A）：本机回环上的短连接会留下 TIME-WAIT(06) 等同端口记录，不是监听。
+const listen=rows.filter(r=>r[3]==='0A');
+console.log('  端口 4180 全部记录：'+JSON.stringify(rows.map(r=>({local:r[1],state:r[3]}))));
+console.log('  容器内监听（state=0A）：'+JSON.stringify(listen.map(r=>r[1])));
+const addr=listen.map(r=>r[1].split(':')[0]);
+process.exit(listen.length>0 && addr.every(a=>a==='0100007F') ? 0 : 1);
 " || { echo "FAIL  容器未仅绑定回环 127.0.0.1:$PORT"; echo "PASS=0 FAIL=1"; exit 1; }
     if ss -ltn 2>/dev/null | grep -E "0\.0\.0\.0:$PORT|\*:$PORT|\[::\]:$PORT" >/dev/null; then
       echo "FAIL  宿主上存在非回环监听 :$PORT"; echo "PASS=0 FAIL=1"; exit 1

@@ -1,0 +1,7 @@
+=== 自测矩阵 10 · 旧数据兼容：老 wbs.json 可读可保存；老/损坏 audit.log 不报错 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage7/server.log' 'PASS  矩阵10a 旧格式（无 old/new）行与损坏行被跳过' 'PASS  矩阵10b 老 wbs.json（无新增字段）可读、可保存'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵10a 旧格式（无 old/new）行与损坏行被跳过
+OK    PASS  矩阵10b 老 wbs.json（无新增字段）可读、可保存
+PASS=2 FAIL=0

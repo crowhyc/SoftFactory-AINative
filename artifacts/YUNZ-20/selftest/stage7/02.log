@@ -1,0 +1,9 @@
+=== 自测矩阵 02 · 无权限行日期/状态 disabled、选项不变、点击给中文提示 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage7/browser.log' 'PASS  矩阵2a 无权限行五列日期常显' 'PASS  矩阵2b 无权限行状态列常显下拉' 'PASS  矩阵2c 点击无权限行日期单元格仍给中文只读提示' 'PASS  矩阵2d 点击无权限行状态单元格仍给中文只读提示'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵2a 无权限行五列日期常显
+OK    PASS  矩阵2b 无权限行状态列常显下拉
+OK    PASS  矩阵2c 点击无权限行日期单元格仍给中文只读提示
+OK    PASS  矩阵2d 点击无权限行状态单元格仍给中文只读提示
+PASS=4 FAIL=0

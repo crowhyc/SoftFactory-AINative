@@ -1,0 +1,10 @@
+=== 自测矩阵 03 · 操作列：每行常显「编辑」进入行编辑态；「删除」仅项目负责人可见 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage7/browser.log' 'PASS  矩阵3a 操作列每行常显' 'PASS  矩阵3b 每行常显「编辑」按钮' 'PASS  矩阵3d 点「编辑」进入该行行编辑态' 'PASS  矩阵3e 再点「完成」退出行编辑态' 'PASS  矩阵3c 他人行点「编辑」只给中文只读提示'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵3a 操作列每行常显
+OK    PASS  矩阵3b 每行常显「编辑」按钮
+OK    PASS  矩阵3d 点「编辑」进入该行行编辑态
+OK    PASS  矩阵3e 再点「完成」退出行编辑态
+OK    PASS  矩阵3c 他人行点「编辑」只给中文只读提示
+PASS=5 FAIL=0

@@ -1,0 +1,18 @@
+=== 矩阵 08 · 空值与非法输入不写入 ===
+$ node tests/selfcheck.js --only validation && node tests/domcheck.mjs --only prevalidation
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+数据目录: /opt/wbs-rongcheng/tests/.tmp/api  端口: 4199
+PASS  非法 payload 返回 400 且逐字段报错  :: [{"id":"T001","field":"task","message":"任务项不能为空"},{"id":"T002","field":"status","message":"状态必须是 未开始 / 进行中 / 已完成 / 已延期 / 被阻塞 之一"},{"id":"T003","field":"dates.dev","message":"日期格式必须为 YYYY-MM-DD"},{"id":"T004","field":"owner","message":"负责人不能为空"}]
+PASS  400 后磁盘文件 sha256 未变化  :: a3632236d54731f2…
+PASS  空请求体返回 400  :: HTTP 400
+---
+PASS=3 FAIL=0
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  矩阵8 空值/非法输入在前端拦下：无 API 调用、无写入  :: PUT 次数 0，提示：前置校验未通过，未向服务器提交（共 3 项）：[T037] 一级：一级不能为空；
+PASS  矩阵8c 日期列由 <input type=date> 约束，非法格式无法录入，保存前 validateDraft 再兜底  :: type=date 拒绝 2026/11/01
+PASS  矩阵5f 项目负责人新增行保存成功（页面/API/磁盘 37 行）  :: T037 自测新增任务 2026-11-01
+PASS  矩阵5g 删除后保存，服务器与磁盘恢复 36 行  :: 现场已还原
+---
+PASS=4 FAIL=0

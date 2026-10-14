@@ -1,0 +1,12 @@
+=== 自测矩阵 08 · 日报「当日变更」sheet：字段级逐行、旧值→新值、时间、操作身份 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage7/browser.log' 'PASS  矩阵8a 当日变更表头正确' 'PASS  矩阵8b 当日变更每行 = 一个被改动的字段' 'PASS  矩阵8c 当日变更同一任务按时间升序' && require '/opt/wbs-rongcheng/tests/.tmp/stage7/server.log' 'PASS  矩阵8a audit.log 每条记录带 old/new 映射' 'PASS  矩阵8b GET /api/history 字段级记录' 'PASS  矩阵8c 自然日口径 [00:00:00, 次日 00:00:00) 开区间'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵8a 当日变更表头正确
+OK    PASS  矩阵8b 当日变更每行 = 一个被改动的字段
+OK    PASS  矩阵8c 当日变更同一任务按时间升序
+PASS=3 FAIL=0
+OK    PASS  矩阵8a audit.log 每条记录带 old/new 映射
+OK    PASS  矩阵8b GET /api/history 字段级记录
+OK    PASS  矩阵8c 自然日口径 [00:00:00, 次日 00:00:00) 开区间
+PASS=3 FAIL=0
