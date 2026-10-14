@@ -1,0 +1,8 @@
+# YUNZ-28 / Stage8 复验报告推送回执
+
+- 仓库：softfactory-github:crowhyc/SoftFactory-AINative.git（分支 main）
+- 提交：1407af9 `task(YUNZ-20)：复验报告 变更包 #2`
+- 提交范围：仅 `artifacts/YUNZ-20/verification/stage8/`（未触碰 `artifacts/INDEX.md` 与其他任务目录）
+- 推送：`2b6ffd3..1407af9  main -> main`（+08 2026-10-14 20:5x）
+- 追加提交：`task(YUNZ-20)：复验报告 变更包 #2（推送回执与 SHA256SUMS 更新）`
+2026-10-14 20:56:35 +0800

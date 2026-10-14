@@ -27,6 +27,7 @@ ed13123e36803c1c255b92d92de0e4899749c850304767c5c453a5890ab5c1c6  ./logs/07-rest
 2fa2530e340ee8cb2902c790cded7b8634f5bf32eadad8ee3df362f74395d597  ./logs/12-constraints.txt
 1947bf1ee62cadca0dc994ccdb4394e39414ac8b214e8d9ede070159157b3424  ./logs/live-browser.log
 a72951bb7ca03ede29cc04f88ed6c2572f327e94456341a4ddac9e4c7c57d2a1  ./logs/qv-start.txt
+f5ee63730816cb0906243a54d8b4ec322f59218770a98faf94509f249d98e7fa  ./push-receipt.txt
 acbbf997b18ba47d1d7e9d9bad9c00e718ab0ad1481aeab24e167d9051910794  ./results/daily-at-export.json
 4df732ef7a0ebf5c45b4d03f03ecc21588773b193794e29ea481d4cb43e3bd8c  ./results/during-run/audit.log
 d15a8164026363c313cffc66b0141f7356da49ed578195bf5ae08c09c820e889  ./results/during-run/wbs.json
