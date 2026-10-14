@@ -1,0 +1,27 @@
+# Stage6 复验报告 提交与推送回执
+时间（+08）：2026-10-14T19:23:20+0800
+
+## 提交范围（仅 artifacts/YUNZ-20/）
+4ca4116 task(YUNZ-20)：复验报告 D-3
+ artifacts/YUNZ-20/verification/stage6/SHA256SUMS   |  35 +
+ .../YUNZ-20/verification/stage6/input-receipt.txt  |  38 +
+
+## 提交内容
+36
+个文件（全部位于 artifacts/YUNZ-20/verification/stage6/）
+
+## 分支与远端一致性
+branch=main
+HEAD=4ca41160c7a6dc50815bb27c407bc7c94cc023de
+origin/main=4ca41160c7a6dc50815bb27c407bc7c94cc023de
+
+## 推送输出
+remote: To softfactory-github:crowhyc/SoftFactory-AINative.git
+       984b2ab..4ca4116  main -> main
+
+## 确认未提交其它内容
+?? artifacts/YUNZ-20/verification/stage6/push-receipt.txt
+?? node_modules/
+?? package-lock.json
+?? package.json
+（仅仓库根目录既有未跟踪文件 node_modules/ package.json package-lock.json，非本任务产物，未提交）
