@@ -1,0 +1,13 @@
+=== selfcheck --only stdlib,localonly ===
+PASS  package.json 无依赖，产物无 node_modules
+PASS  本地资源 template.xlsx 由本服务提供  :: HTTP 200
+PASS  本地资源 vendor/xlsx.full.min.js 由本服务提供  :: HTTP 200
+PASS  index.html/app.js/styles.css 无外部引用，全部相对本地加载  :: CSP: default-src 'self'
+---
+PASS=5 FAIL=0
+=== selfcheck --only health ===
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+数据目录: /opt/wbs-rongcheng/tests/.tmp/api  端口: 4199
+PASS  GET /api/health -> {"ok":true,"service":"wbs-rongcheng","revision":0}
+---
+PASS=1 FAIL=0

@@ -22,6 +22,8 @@ body {
     "Hiragino Sans GB", "Microsoft YaHei", Roboto, Helvetica, Arial, sans-serif;
 }
 button, input, select { font: inherit; color: inherit; }
+/* 基础层：hidden 属性必须胜过类选择器的 display（否则 .identity-layer/.workbench 等遮罩无法隐藏） */
+[hidden] { display: none !important; }
 
 /* ---------------- 身份选择层 ---------------- */
 .identity-layer {

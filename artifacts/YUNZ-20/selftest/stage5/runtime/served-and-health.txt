@@ -1,0 +1,27 @@
+采集时间: 2026-10-14T19:07:00+0800
+
+## 容器
+name=wbs-rongcheng image=wbs-rongcheng:20261014190527 status=Up About a minute (healthy)
+
+## /api/health
+{"ok":true,"service":"wbs-rongcheng","revision":0}
+
+## 服务端实际返回的静态资源 sha256（curl -> sha256sum）
+index.html   f137a68defc53f2b51c24422b39dd3ed6df969f77065db0f386e0bf3d89b7387
+styles.css   53afd03fdf138010247be7f26e2b6092fed920762eb684e010b01c9228f82941
+app.js       53cc2bd3e60e0a948712484dd61903c093a7b1c394ffb48c2079a55b74f18f5e
+
+## 磁盘源文件 sha256
+public/index.html      f137a68defc53f2b51c24422b39dd3ed6df969f77065db0f386e0bf3d89b7387
+public/styles.css      53afd03fdf138010247be7f26e2b6092fed920762eb684e010b01c9228f82941
+public/app.js          53cc2bd3e60e0a948712484dd61903c093a7b1c394ffb48c2079a55b74f18f5e
+
+## 源码快照 sha256（artifacts/YUNZ-20/wbs-rongcheng/public/styles.css）
+53afd03fdf138010247be7f26e2b6092fed920762eb684e010b01c9228f82941  /opt/SoftFactory-AINative/artifacts/YUNZ-20/wbs-rongcheng/public/styles.css
+
+## API /api/wbs 内容 sha256（修复前后数据未变更）
+603299f6f30a8b7a5cbe42bece054180fc6ef1e0c7a1e73c8df8283b396af4e3  -
+
+## data/wbs.json sha256（回归子集运行前后一致）
+a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5  data/wbs.json
+a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5  data/wbs.json

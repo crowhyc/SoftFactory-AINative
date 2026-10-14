@@ -1,0 +1,28 @@
+=== domcheck --only render36 ===
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  矩阵1 页面渲染 36 行，顺序与 seed 一致  :: 首行 客户端/业需导入/李欢，末行 AI 能力引擎/研发产物沉淀
+PASS  矩阵1b 一级/二级分组视觉按连续段标记（未改行序）  :: l1-start 3 处 / l2-start 9 处
+PASS  矩阵15b 健康探针显示服务正常  :: 探针：服务正常 · v0
+---
+PASS=3 FAIL=0
+=== domcheck --only identity ===
+PASS  矩阵2b 未选择身份时停留在入口页  :: workbench 隐藏
+PASS  矩阵2c 选择「王言」进入工作台并写入 localStorage  :: wbs.identity=王言
+PASS  矩阵2d 刷新（localStorage 记忆）后身份保持  :: 无需重选直接进入工作台：王言
+PASS  矩阵2e 切换身份即时生效（可编辑集合随之变化）  :: 李欢可见 T001 可编辑、T002 只读
+---
+PASS=5 FAIL=0
+=== domcheck --only others ===
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  矩阵4 他人行只读且点击有提示  :: 当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）
+PASS  矩阵4b 本人行结构性字段（任务项）仍只读  :: 当前身份「王言」对第 T001 行的「任务项」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）
+PASS  矩阵4c 负责人字段对普通负责人只读  :: 当前身份「王言」对第 T002 行的「负责人」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）
+---
+PASS=3 FAIL=0
+=== domcheck --only idcell ===
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  矩阵4d 序号列点击给出中文只读提示  :: 当前身份「王言」对第 T001 行的「序号」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）
+PASS  矩阵4d 与相邻只读单元格行为一致（同文案模板，仅列名不同）  :: 当前身份「王言」对第 T001 行的「进展说明」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）
+PASS  矩阵4d 序号列重复点击仍有提示  :: 当前身份「王言」对第 T001 行的「序号」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）
+---
+PASS=3 FAIL=0

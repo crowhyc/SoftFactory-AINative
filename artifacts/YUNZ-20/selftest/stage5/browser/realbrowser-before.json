@@ -1,0 +1,532 @@
+{
+  "phase": "before",
+  "base": "http://127.0.0.1:4180",
+  "started_at": "2026-10-14T11:05:01.964Z",
+  "checks": [
+    {
+      "id": "1.1 身份选择层渲染 9 个身份按钮",
+      "ok": true,
+      "detail": 9
+    },
+    {
+      "id": "1.2 点击前身份选择层可见（display != none）",
+      "ok": true,
+      "detail": {
+        "display": "flex",
+        "hidden": false,
+        "visibility": "visible",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "w": 1440,
+          "h": 900
+        }
+      }
+    },
+    {
+      "id": "1.3 点击前工作台隐藏（display == none）",
+      "ok": true,
+      "detail": {
+        "display": "none",
+        "hidden": true,
+        "visibility": "visible",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "w": 0,
+          "h": 0
+        }
+      }
+    },
+    {
+      "id": "2.1 点击「李欢」后 #identity-layer 的 computed display === flex",
+      "ok": true,
+      "detail": {
+        "actual_display": "flex",
+        "hidden_attr": true,
+        "expected": "flex"
+      }
+    },
+    {
+      "id": "2.2 遮罩不再占据整屏（高度为 0 或不可见）",
+      "ok": true,
+      "detail": {
+        "x": 0,
+        "y": 0,
+        "w": 1440,
+        "h": 900
+      }
+    },
+    {
+      "id": "2.3 #workbench 可见（display != none 且有实际尺寸）",
+      "ok": true,
+      "detail": {
+        "display": "block",
+        "hidden": false,
+        "visibility": "visible",
+        "rect": {
+          "x": 0,
+          "y": 900,
+          "w": 1440,
+          "h": 1677
+        }
+      }
+    },
+    {
+      "id": "2.3b #workbench 进入视口可见区域（rect.y < 视口高度）",
+      "ok": false,
+      "detail": {
+        "y": 900,
+        "viewport_h": 900
+      }
+    },
+    {
+      "id": "2.4 视口中心命中元素属于工作台（修复前应命中遮罩，此处断言遮罩覆盖）",
+      "ok": true,
+      "detail": {
+        "tag": "DIV",
+        "id": "identity-list",
+        "cls": "identity-list",
+        "inLayer": true,
+        "inWorkbench": false
+      }
+    },
+    {
+      "id": "2.5 工作台渲染 36 行任务",
+      "ok": true,
+      "detail": 36
+    },
+    {
+      "id": "2.6 会话状态已切换为「李欢」",
+      "ok": true,
+      "detail": "身份：李欢 · 版本：0 · 已与服务器一致"
+    },
+    {
+      "id": "3.1 九个身份依次切换：遮罩始终隐藏、工作台可见、36 行、会话状态跟随",
+      "ok": false,
+      "detail": [
+        {
+          "identity": "项目负责人",
+          "layer_display": "flex",
+          "layer_hidden": true,
+          "workbench_display": "block",
+          "rows": 36,
+          "session": "身份：项目负责人 · 版本：0 · 已与服务器一致",
+          "select": "项目负责人",
+          "add_row_display": "block"
+        },
+        {
+          "identity": "李欢",
+          "layer_display": "flex",
+          "layer_hidden": true,
+          "workbench_display": "block",
+          "rows": 36,
+          "session": "身份：李欢 · 版本：0 · 已与服务器一致",
+          "select": "李欢",
+          "add_row_display": "none"
+        },
+        {
+          "identity": "王言",
+          "layer_display": "flex",
+          "layer_hidden": true,
+          "workbench_display": "block",
+          "rows": 36,
+          "session": "身份：王言 · 版本：0 · 已与服务器一致",
+          "select": "王言",
+          "add_row_display": "none"
+        },
+        {
+          "identity": "张航瑞",
+          "layer_display": "flex",
+          "layer_hidden": true,
+          "workbench_display": "block",
+          "rows": 36,
+          "session": "身份：张航瑞 · 版本：0 · 已与服务器一致",
+          "select": "张航瑞",
+          "add_row_display": "none"
+        },
+        {
+          "identity": "郑述文",
+          "layer_display": "flex",
+          "layer_hidden": true,
+          "workbench_display": "block",
+          "rows": 36,
+          "session": "身份：郑述文 · 版本：0 · 已与服务器一致",
+          "select": "郑述文",
+          "add_row_display": "none"
+        },
+        {
+          "identity": "崔文建",
+          "layer_display": "flex",
+          "layer_hidden": true,
+          "workbench_display": "block",
+          "rows": 36,
+          "session": "身份：崔文建 · 版本：0 · 已与服务器一致",
+          "select": "崔文建",
+          "add_row_display": "none"
+        },
+        {
+          "identity": "余宇",
+          "layer_display": "flex",
+          "layer_hidden": true,
+          "workbench_display": "block",
+          "rows": 36,
+          "session": "身份：余宇 · 版本：0 · 已与服务器一致",
+          "select": "余宇",
+          "add_row_display": "none"
+        },
+        {
+          "identity": "黄逸偲",
+          "layer_display": "flex",
+          "layer_hidden": true,
+          "workbench_display": "block",
+          "rows": 36,
+          "session": "身份：黄逸偲 · 版本：0 · 已与服务器一致",
+          "select": "黄逸偲",
+          "add_row_display": "none"
+        },
+        {
+          "identity": "陈江",
+          "layer_display": "flex",
+          "layer_hidden": true,
+          "workbench_display": "block",
+          "rows": 36,
+          "session": "身份：陈江 · 版本：0 · 已与服务器一致",
+          "select": "陈江",
+          "add_row_display": "none"
+        }
+      ]
+    },
+    {
+      "id": "3.2 「新增行」按钮仅项目负责人可见",
+      "ok": true,
+      "detail": {
+        "pm": "block",
+        "others": [
+          "李欢=none",
+          "王言=none",
+          "张航瑞=none",
+          "郑述文=none",
+          "崔文建=none",
+          "余宇=none",
+          "黄逸偲=none",
+          "陈江=none"
+        ]
+      }
+    },
+    {
+      "id": "4.1 普通负责人本人行的日期列可编辑（class 含 editable）",
+      "ok": true,
+      "detail": {
+        "mine_id": "T001",
+        "mine_date_class": "cell cell-date editable",
+        "mine_struct_class": "cell cell-l1 locked",
+        "other_id": "T002",
+        "other_owner": "王言",
+        "other_date_class": "cell cell-date locked"
+      }
+    },
+    {
+      "id": "4.2 普通负责人本人行的结构性字段（一级）只读",
+      "ok": true,
+      "detail": "cell cell-l1 locked"
+    },
+    {
+      "id": "4.3 普通负责人他人行的日期列只读（class 含 locked）",
+      "ok": true,
+      "detail": "cell cell-date locked"
+    },
+    {
+      "id": "4.4 点击本人行日期单元格进入编辑态（出现 input）",
+      "ok": true,
+      "detail": {
+        "editing": true,
+        "editor": true
+      }
+    },
+    {
+      "id": "4.5 点击他人行日期单元格只读：不进入编辑态且给出中文只读提示",
+      "ok": true,
+      "detail": {
+        "editing": false,
+        "editor": false,
+        "hint": "当前身份「李欢」对第 T002 行的「设计」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"
+      }
+    },
+    {
+      "id": "4.6 项目负责人可编辑他人行的结构性字段（一级 class 含 editable）",
+      "ok": true,
+      "detail": {
+        "other_row_struct_class": "cell cell-l1 editable",
+        "owner_name": "王言"
+      }
+    },
+    {
+      "id": "4.7 项目负责人点击他人行一级单元格进入编辑态",
+      "ok": true,
+      "detail": {
+        "editing": true,
+        "editor": true
+      }
+    },
+    {
+      "id": "5.1 全程无 pageerror",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "id": "5.2 全程无 console error",
+      "ok": true,
+      "detail": []
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "browser_version": "140.0.7339.16",
+  "step1_before_click": {
+    "layer": {
+      "display": "flex",
+      "hidden": false,
+      "visibility": "visible",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 1440,
+        "h": 900
+      }
+    },
+    "workbench": {
+      "display": "none",
+      "hidden": true,
+      "visibility": "visible",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      }
+    },
+    "atPoint": {
+      "tag": "DIV",
+      "id": "identity-list",
+      "cls": "identity-list",
+      "inLayer": true,
+      "inWorkbench": false
+    },
+    "rows": 0,
+    "identity_buttons": 9,
+    "add_row_btn": {
+      "display": "none",
+      "hidden": true
+    },
+    "session_status": "未加载",
+    "identity_select_value": "",
+    "hint": "",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    }
+  },
+  "step2_after_click": {
+    "layer": {
+      "display": "flex",
+      "hidden": true,
+      "visibility": "visible",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 1440,
+        "h": 900
+      }
+    },
+    "workbench": {
+      "display": "block",
+      "hidden": false,
+      "visibility": "visible",
+      "rect": {
+        "x": 0,
+        "y": 900,
+        "w": 1440,
+        "h": 1677
+      }
+    },
+    "atPoint": {
+      "tag": "DIV",
+      "id": "identity-list",
+      "cls": "identity-list",
+      "inLayer": true,
+      "inWorkbench": false
+    },
+    "rows": 36,
+    "identity_buttons": 9,
+    "add_row_btn": {
+      "display": "none",
+      "hidden": true
+    },
+    "session_status": "身份：李欢 · 版本：0 · 已与服务器一致",
+    "identity_select_value": "李欢",
+    "hint": "已以「李欢」身份进入工作台，仅“负责人 == 李欢”的行可编辑。",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    }
+  },
+  "step3_switching": [
+    {
+      "identity": "项目负责人",
+      "layer_display": "flex",
+      "layer_hidden": true,
+      "workbench_display": "block",
+      "rows": 36,
+      "session": "身份：项目负责人 · 版本：0 · 已与服务器一致",
+      "select": "项目负责人",
+      "add_row_display": "block"
+    },
+    {
+      "identity": "李欢",
+      "layer_display": "flex",
+      "layer_hidden": true,
+      "workbench_display": "block",
+      "rows": 36,
+      "session": "身份：李欢 · 版本：0 · 已与服务器一致",
+      "select": "李欢",
+      "add_row_display": "none"
+    },
+    {
+      "identity": "王言",
+      "layer_display": "flex",
+      "layer_hidden": true,
+      "workbench_display": "block",
+      "rows": 36,
+      "session": "身份：王言 · 版本：0 · 已与服务器一致",
+      "select": "王言",
+      "add_row_display": "none"
+    },
+    {
+      "identity": "张航瑞",
+      "layer_display": "flex",
+      "layer_hidden": true,
+      "workbench_display": "block",
+      "rows": 36,
+      "session": "身份：张航瑞 · 版本：0 · 已与服务器一致",
+      "select": "张航瑞",
+      "add_row_display": "none"
+    },
+    {
+      "identity": "郑述文",
+      "layer_display": "flex",
+      "layer_hidden": true,
+      "workbench_display": "block",
+      "rows": 36,
+      "session": "身份：郑述文 · 版本：0 · 已与服务器一致",
+      "select": "郑述文",
+      "add_row_display": "none"
+    },
+    {
+      "identity": "崔文建",
+      "layer_display": "flex",
+      "layer_hidden": true,
+      "workbench_display": "block",
+      "rows": 36,
+      "session": "身份：崔文建 · 版本：0 · 已与服务器一致",
+      "select": "崔文建",
+      "add_row_display": "none"
+    },
+    {
+      "identity": "余宇",
+      "layer_display": "flex",
+      "layer_hidden": true,
+      "workbench_display": "block",
+      "rows": 36,
+      "session": "身份：余宇 · 版本：0 · 已与服务器一致",
+      "select": "余宇",
+      "add_row_display": "none"
+    },
+    {
+      "identity": "黄逸偲",
+      "layer_display": "flex",
+      "layer_hidden": true,
+      "workbench_display": "block",
+      "rows": 36,
+      "session": "身份：黄逸偲 · 版本：0 · 已与服务器一致",
+      "select": "黄逸偲",
+      "add_row_display": "none"
+    },
+    {
+      "identity": "陈江",
+      "layer_display": "flex",
+      "layer_hidden": true,
+      "workbench_display": "block",
+      "rows": 36,
+      "session": "身份：陈江 · 版本：0 · 已与服务器一致",
+      "select": "陈江",
+      "add_row_display": "none"
+    }
+  ],
+  "step4_owner_perms": {
+    "mine_id": "T001",
+    "mine_date_class": "cell cell-date editable",
+    "mine_struct_class": "cell cell-l1 locked",
+    "other_id": "T002",
+    "other_owner": "王言",
+    "other_date_class": "cell cell-date locked"
+  },
+  "step4_dirty_after_escape": "身份：李欢 · 版本：0 · 已与服务器一致",
+  "step4_locked_click": {
+    "editing": false,
+    "editor": false,
+    "hint": "当前身份「李欢」对第 T002 行的「设计」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"
+  },
+  "step4_pm_perms": {
+    "other_row_struct_class": "cell cell-l1 editable",
+    "owner_name": "王言"
+  },
+  "step5_final": {
+    "layer": {
+      "display": "flex",
+      "hidden": true,
+      "visibility": "visible",
+      "rect": {
+        "x": 0,
+        "y": -805,
+        "w": 1440,
+        "h": 900
+      }
+    },
+    "workbench": {
+      "display": "block",
+      "hidden": false,
+      "visibility": "visible",
+      "rect": {
+        "x": 0,
+        "y": 95,
+        "w": 1440,
+        "h": 1749
+      }
+    },
+    "atPoint": {
+      "tag": "TD",
+      "id": "",
+      "cls": "cell cell-date editable",
+      "inLayer": false,
+      "inWorkbench": true
+    },
+    "rows": 36,
+    "identity_buttons": 9,
+    "add_row_btn": {
+      "display": "block",
+      "hidden": false
+    },
+    "session_status": "身份：项目负责人 · 版本：0 · 已与服务器一致",
+    "identity_select_value": "项目负责人",
+    "hint": "已以「项目负责人」身份进入工作台，可编辑全部行并增删行。",
+    "viewport": {
+      "w": 1440,
+      "h": 900
+    }
+  },
+  "finished_at": "2026-10-14T11:05:08.321Z",
+  "pass": 19,
+  "fail": 2,
+  "expect_fixed": false
+}
