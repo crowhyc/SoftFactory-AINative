@@ -3,7 +3,7 @@ $ node tests/selfcheck.js --only validation && node tests/domcheck.mjs --only pr
 
 bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
 /bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
-数据目录: /opt/wbs-rongcheng/tests/.tmp/api  端口: 4199
+数据目录: /opt/wbs-rongcheng/tests/.tmp/iso-app/tests/.tmp/api  端口: 4199
 PASS  非法 payload 返回 400 且逐字段报错  :: [{"id":"T001","field":"task","message":"任务项不能为空"},{"id":"T002","field":"status","message":"状态必须是 未开始 / 进行中 / 已完成 / 已延期 / 被阻塞 之一"},{"id":"T003","field":"dates.dev","message":"日期格式必须为 YYYY-MM-DD"},{"id":"T004","field":"owner","message":"负责人不能为空"}]
 PASS  400 后磁盘文件 sha256 未变化  :: a3632236d54731f2…
 PASS  空请求体返回 400  :: HTTP 400

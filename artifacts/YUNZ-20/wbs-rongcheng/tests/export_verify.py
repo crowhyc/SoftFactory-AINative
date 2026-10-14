@@ -121,14 +121,25 @@ def main():
     else:
         bad('合并单元格变化', '模板 %s 导出 %s' % (tmpl['merges'], out['merges']))
 
-    tpl_w = dict(enumerate(tmpl['widths']))
-    out_w = dict(enumerate(out['widths']))
+    # 列宽（缺陷 D-1 回归）：导出必须含 <cols>，且 A–K 逐列与源模板一致；K 进展说明列 47.2592592592593（≈47.26）
+    if '<cols>' in out['raw']:
+        ok('导出文件含 <cols> 列宽定义', '页面导出路径修复前无 <cols>（缺陷 D-1），本条为回归断言')
+    else:
+        bad('导出文件缺少 <cols>（列宽丢失，缺陷 D-1）', 'sheet1.xml 无 <cols> 元素')
+    tpl_w = {i: tmpl['widths'][i] for i in range(11) if i < len(tmpl['widths'])}
+    out_w = {i: out['widths'][i] for i in range(11) if i < len(out['widths'])}
     width_diff = [i for i in range(11) if tpl_w.get(i) != out_w.get(i)]
     if not width_diff:
-        ok('列宽设置保持原样（A–K 11 列宽一致，含 K 进展说明列 46.5）',
-           '模板 %d 个 col 声明 / 导出 %d 个（社区版按列展开，宽度值一致）' % (len(tmpl['widths']), len(out['widths'])))
+        ok('列宽设置保持原样（A–K 11 列宽逐列一致，含 K 进展说明列 %s ≈ 47.26）' % out_w.get(10),
+           'A–K=%s' % ','.join(str(out_w.get(i)) for i in range(11)))
     else:
         bad('列宽变化', '列索引 %s: 模板 %s 导出 %s' % (width_diff, [tpl_w.get(i) for i in width_diff], [out_w.get(i) for i in width_diff]))
+    k_value = out_w.get(10)
+    if k_value is not None and abs(float(k_value) - 47.2592592592593) < 1e-9:
+        ok('K 进展说明列宽 = 47.2592592592593（与源模板一致）',
+           '复现：node tests/exportcheck.mjs && python3 tests/export_verify.py "<导出文件>" public/template.xlsx tests/.tmp/wbs-from-api.json 36')
+    else:
+        bad('K 进展说明列宽异常', '实际 %s，期望 47.2592592592593' % k_value)
 
     # 2) 数据行数
     data_rows = []

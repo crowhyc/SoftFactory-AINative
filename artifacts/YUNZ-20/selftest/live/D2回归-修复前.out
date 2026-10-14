@@ -1,0 +1,4 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+FAIL  DOM 自测执行  -> Error: 序号列点击无任何反馈（缺陷 D-2 复现：提示未变化，silent=true） |     at assert (file:///opt/wbs-rongcheng/tests/domcheck.mjs:48:51) |     at file:///opt/wbs-rongcheng/tests/domcheck.mjs:268:7
+---
+PASS=0 FAIL=1

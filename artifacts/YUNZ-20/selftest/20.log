@@ -6,7 +6,7 @@ bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
 bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
 PASS  容器内 GET /api/health  :: {"ok":true,"service":"wbs-rongcheng","revision":0}
 PASS  容器内静态资源 /  :: 200 3758 bytes
-PASS  容器内静态资源 /app.js  :: 200 27746 bytes
+PASS  容器内静态资源 /app.js  :: 200 28589 bytes
 PASS  容器内静态资源 /styles.css  :: 200 7858 bytes
 PASS  容器内静态资源 /template.xlsx  :: 200 14730 bytes
 PASS  容器内静态资源 /vendor/xlsx.full.min.js  :: 200 881727 bytes
@@ -17,7 +17,7 @@ PASS  容器内 GET /api/wbs 返回 36 行  :: revision 0
 /bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
 PASS  容器内 PUT /api/wbs（If-Match=0）  :: {"ok":true,"revision":1}
 /bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
-PASS  容器内保存后 API 与挂载磁盘一致（三端一致）  :: revision 1，磁盘 /opt/wbs-rongcheng/data/wbs.json，note=容器自测 2026-10-14T13:55:15+0800
+PASS  容器内保存后 API 与挂载磁盘一致（三端一致）  :: revision 1，磁盘 /opt/wbs-rongcheng/tests/.tmp/iso-app/data/wbs.json，note=容器自测 2026-10-14T14:42:54+0800
 PASS  容器内过期版本收到 409 conflict  :: {"ok":false,"reason":"conflict","current":1}
 ---
 PASS=10 FAIL=0

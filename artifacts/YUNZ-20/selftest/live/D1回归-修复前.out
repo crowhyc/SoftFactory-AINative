@@ -1,0 +1,18 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  导出文件已生成  :: /opt/wbs-rongcheng/tests/.tmp/prefix-tree/tests/.tmp/蓉城战役WBS-20261014.xlsx（数据 36 行，末行 38）
+ARTIFACT export_file=/opt/wbs-rongcheng/tests/.tmp/prefix-tree/tests/.tmp/蓉城战役WBS-20261014.xlsx
+ARTIFACT export_json=/opt/wbs-rongcheng/tests/.tmp/prefix-tree/tests/.tmp/wbs-from-api.json
+ARTIFACT export_rows=36
+FAIL  导出文件缺少 <cols>（列宽丢失，缺陷 D-1 未修）  -> sheet1.xml 无 <cols> 元素
+FAIL  导出 A–K 列宽与模板不一致  -> A 模板11.3333333333333 导出undefined; B 模板11.3333333333333 导出undefined; C 模板13.7777777777778 导出undefined; D 模板11.3333333333333 导出undefined; E 模板11.3333333333333 导出undefined; F 模板13.1111111111111 导出undefined; G 模板13.1111111111111 导出undefined; H 模板13.1111111111111 导出undefined; I 模板13.1111111111111 导出undefined; J 模板16.2222222222222 导出undefined; K 模板47.2592592592593 导出undefined
+PASS  页面导出与自测走同一实现（loadExportWorkbook → Core.buildExportWorkbook）  :: 页面侧无独立 XLSX.read 旁路
+INFO  D-1 修复前：页面路径导出 sha256=626b269a…（32762 字节、无 <cols>）；修复后见上方 <cols>/列宽断言。
+PASS  读回导出文件：A1:C1 合并仍在  :: [{"s":{"c":0,"r":0},"e":{"c":2,"r":0}}]
+PASS  读回导出文件：第 2 行表头仍在  :: 负责人/进展说明
+PASS  读回导出文件工作表范围与模板一致  :: A1:M38
+PASS  行数变少时原数据区残留被清空  :: 第 37/38 行 A–D/K 为空
+ARTIFACT export_file_34=/opt/wbs-rongcheng/tests/.tmp/prefix-tree/tests/.tmp/蓉城战役WBS-20261014-34row.xlsx
+ARTIFACT export_json_34=/opt/wbs-rongcheng/tests/.tmp/prefix-tree/tests/.tmp/wbs-34rows.json
+ARTIFACT export_rows_34=34
+---
+PASS=6 FAIL=2

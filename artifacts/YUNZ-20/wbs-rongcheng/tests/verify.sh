@@ -46,6 +46,8 @@ run_item 03 "普通负责人本人行可编辑并保存" \
   "node tests/selfcheck.js --only ownedit && node tests/domcheck.mjs --only ownedit"
 run_item 04 "他人行只读" \
   "node tests/domcheck.mjs --only others"
+run_item 04b "序号列只读提示一致性（D-2 回归）" \
+  "node tests/domcheck.mjs --only idcell"
 run_item 05 "新增/删除仅项目负责人（带确认）" \
   "node tests/domcheck.mjs --only adddelete"
 run_item 06 "保存后页面/API/磁盘三端一致（含原子写）" \
@@ -62,6 +64,8 @@ run_item 11 "页面资源全本地（无外部请求）" \
   "node tests/selfcheck.js --only localonly"
 run_item 12 "导出 A–K 共 11 列（含行数一致）" \
   "node tests/exportcheck.mjs && python3 tests/export_verify.py \"$APP_DIR/tests/.tmp/蓉城战役WBS-\$(date +%Y%m%d).xlsx\" public/template.xlsx tests/.tmp/wbs-from-api.json 36 && python3 tests/export_verify.py \"$APP_DIR/tests/.tmp/蓉城战役WBS-\$(date +%Y%m%d)-34row.xlsx\" public/template.xlsx tests/.tmp/wbs-34rows.json 34"
+run_item 12b "页面导出入口保留模板列宽（D-1 回归）" \
+  "node tests/domcheck.mjs --only exportpage"
 run_item 13 "导出第 1/2 行逐字一致 / 非数据单元格不变" \
   "grep -E '逐字一致' $OUT/12.log >/dev/null && grep -E '非数据单元格内容保持原样' $OUT/12.log && echo 'PASS=2 FAIL=0'"
 run_item 14 "导出不含 status" \

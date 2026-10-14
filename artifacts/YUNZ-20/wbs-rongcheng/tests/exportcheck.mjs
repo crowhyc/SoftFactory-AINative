@@ -5,6 +5,7 @@ import { spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
+import { readCols } from './xlsxcols.mjs';
 import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
@@ -24,6 +25,10 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const XLSX = require(path.join(PUBLIC, 'vendor', 'xlsx.full.min.js'));
 const Core = require(path.join(PUBLIC, 'app.js'));
+// 页面由 vendor bundle 提供全局 XLSX；node 侧同样挂上，才能调用页面同一份 Core.buildExportWorkbook。
+global.XLSX = XLSX;
+
+const COL_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'];
 
 let server = null;
 async function startServer() {
@@ -53,13 +58,15 @@ function stopServer() {
   });
 }
 
+// 与页面「导出 Excel」走完全同一实现：Core.buildExportWorkbook 就是页面 loadExportWorkbook 所调用的那一个。
 function writeExport(tasks, fileName) {
   const template = fs.readFileSync(path.join(PUBLIC, 'template.xlsx'));
-  const workbook = XLSX.read(new Uint8Array(template), { type: 'array', cellStyles: true });
-  const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const rows = Core.exportRows(tasks);
-  const lastRow = Core.applyExportRows(sheet, rows);
-  const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer', cellStyles: true });
+  const workbook = Core.buildExportWorkbook(new Uint8Array(template), tasks);
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const lastRow = Core.parseRange(sheet['!ref']).e.r + 1;
+  // 写出选项与页面 XLSX.writeFile(workbook, name) 的默认值一致：<cols> 是否写出只取决于读取选项。
+  const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' });
   const file = path.join(TMP, fileName);
   fs.writeFileSync(file, buffer);
   return { file, rows, lastRow };
@@ -96,6 +103,29 @@ function writeExport(tasks, fileName) {
     console.log('ARTIFACT export_file=' + full.file);
     console.log('ARTIFACT export_json=' + jsonFile);
     console.log('ARTIFACT export_rows=36');
+
+    // ---- 缺陷 D-1 回归：页面导出路径必须保留模板 <cols>（A–K 逐列一致，K 列 47.2592592592593） ----
+    const tplCols = readCols(path.join(PUBLIC, 'template.xlsx'));
+    const outCols = readCols(full.file);
+    if (outCols.hasCols) ok('导出文件含 <cols> 列宽定义（页面导出路径）', '<col> 声明 ' + outCols.count + ' 条');
+    else bad('导出文件缺少 <cols>（列宽丢失，缺陷 D-1 未修）', 'sheet1.xml 无 <cols> 元素');
+    const widthDiff = [];
+    for (let i = 0; i < 11; i += 1) {
+      if (tplCols.widths[i] !== outCols.widths[i]) widthDiff.push(COL_LETTERS[i] + ' 模板' + tplCols.widths[i] + ' 导出' + outCols.widths[i]);
+    }
+    if (tplCols.hasCols && outCols.hasCols && widthDiff.length === 0) {
+      ok('导出 A–K 列宽与源模板逐列一致（含 K 进展说明列 47.2592592592593）',
+        'K=' + outCols.widths[10] + '，A–K=' + outCols.widths.slice(0, 11).join(','));
+    } else {
+      bad('导出 A–K 列宽与模板不一致', widthDiff.join('; ') || '模板/导出缺 <cols>');
+    }
+    // 路径统一留证：页面 loadExportWorkbook 与自测脚本调用同一个 Core.buildExportWorkbook。
+    const appSrc = fs.readFileSync(path.join(PUBLIC, 'app.js'), 'utf8');
+    const pageShared = /loadExportWorkbook[\s\S]{0,600}Core\.buildExportWorkbook\(/.test(appSrc);
+    const pageBypass = /global\.XLSX\.read\(new Uint8Array\(buffer\)/.test(appSrc);
+    if (pageShared && !pageBypass) ok('页面导出与自测走同一实现（loadExportWorkbook → Core.buildExportWorkbook）', '页面侧无独立 XLSX.read 旁路');
+    else bad('导出实现未统一（D-1 双路径差异仍在）', 'pageShared=' + pageShared + ' pageBypass=' + pageBypass);
+    console.log('INFO  D-1 修复前：页面路径导出 sha256=626b269a…（32762 字节、无 <cols>）；修复后见上方 <cols>/列宽断言。');
 
     const readBack = XLSX.read(fs.readFileSync(full.file), { type: 'buffer' });
     const sheet = readBack.Sheets[readBack.SheetNames[0]];

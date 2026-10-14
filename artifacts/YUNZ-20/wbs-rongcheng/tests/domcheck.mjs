@@ -7,6 +7,8 @@ import { createRequire } from 'node:module';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readCols } from './xlsxcols.mjs';
+import crypto from 'node:crypto';
 
 // WBS_JSDOM_DIR 指向安装 jsdom 的测试工具目录（产物之外），默认 /opt/wbs-testharness
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -253,6 +255,34 @@ async function openPage(options) {
       page.close();
     }
 
+    // ---------- 矩阵4d：序号列点击给出与相邻只读单元格一致的提示（缺陷 D-2 回归） ----------
+    if (want('idcell')) {
+      const page = await openPage({ identity: '王言' });
+      assert(await page.waitFor(() => page.rows().length === 36), '页面未就绪');
+      const idCell = page.rowById('T001').querySelector('td.cell-id');
+      assert(idCell, '序号列单元格不存在');
+      assert(idCell.classList.contains('locked'), '序号列应为只读样式');
+      const hintBefore = page.hint();
+      page.click(idCell);
+      const idHint = page.hint();
+      assert(idHint !== hintBefore, '序号列点击无任何反馈（缺陷 D-2 复现：提示未变化，silent=true）');
+      assert(idHint.includes('只读'), '序号列提示未包含「只读」：' + idHint);
+      assert(idHint.includes('序号'), '序号列提示未点明「序号」列：' + idHint);
+      assert(!idCell.querySelector('input,textarea,select'), '序号列不应进入编辑态');
+      ok('矩阵4d 序号列点击给出中文只读提示', idHint);
+
+      page.click(page.cellOf('T001', 'note'));
+      const noteHint = page.hint();
+      assert(idHint.replace('序号', '进展说明') === noteHint,
+        '序号列提示与相邻只读单元格不一致：' + idHint + ' vs ' + noteHint);
+      ok('矩阵4d 与相邻只读单元格行为一致（同文案模板，仅列名不同）', noteHint);
+
+      page.click(idCell);
+      assert(page.hint().includes('序号'), '序号列重复点击无提示');
+      ok('矩阵4d 序号列重复点击仍有提示', page.hint());
+      page.close();
+    }
+
     // ---------- 矩阵5：新增/删除仅项目负责人（带确认） ----------
     if (want('adddelete')) {
       const normal = await openPage({ identity: '王言' });
@@ -341,6 +371,39 @@ async function openPage(options) {
       assert(await page.waitFor(() => page.banner().includes('保存成功'), 8000), '删除保存失败：' + page.banner());
       assert((await getDoc()).tasks.length === 36 && disk().tasks.length === 36, '删除未落盘');
       ok('矩阵5g 删除后保存，服务器与磁盘恢复 36 行', '现场已还原');
+      page.close();
+    }
+
+    // ---------- 矩阵12b：页面「导出 Excel」入口真实产物保留模板 <cols>（缺陷 D-1 回归，页面路径） ----------
+    if (want('exportpage')) {
+      const page = await openPage({ identity: '项目负责人' });
+      assert(await page.waitFor(() => page.rows().length === 36), '页面未就绪');
+      let captured = null;
+      let capturedName = null;
+      page.window.XLSX.writeFile = (workbook, name) => {
+        captured = Buffer.from(page.window.XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' }));
+        capturedName = name;
+      };
+      page.click(page.$('export-btn'));
+      assert(await page.waitFor(() => captured !== null, 8000), '页面导出未捕获到文件（XLSX.writeFile 未被调用）');
+      const file = path.join(TMP, 'page-export.xlsx');
+      fs.writeFileSync(file, captured);
+      assert(/^蓉城战役WBS-\d{8}\.xlsx$/.test(String(capturedName)), '导出文件名异常：' + capturedName);
+      const outCols = readCols(file);
+      const tplCols = readCols(path.join(ROOT, 'public', 'template.xlsx'));
+      assert(outCols.hasCols, '页面导出文件缺少 <cols>，列宽丢失（缺陷 D-1 未修）');
+      const diff = [];
+      for (let i = 0; i < 11; i += 1) {
+        if (tplCols.widths[i] !== outCols.widths[i]) {
+          diff.push(String.fromCharCode(65 + i) + ' 模板' + tplCols.widths[i] + ' 导出' + outCols.widths[i]);
+        }
+      }
+      assert(diff.length === 0, '页面导出 A–K 列宽与模板不一致：' + diff.join('; '));
+      const sha = crypto.createHash('sha256').update(captured).digest('hex');
+      console.log('ARTIFACT page_export_file=' + file);
+      console.log('ARTIFACT page_export_sha256=' + sha);
+      ok('矩阵12b 页面「导出 Excel」入口产物含 <cols> 且 A–K 列宽与模板逐列一致',
+        capturedName + ' · K=' + outCols.widths[10] + ' · ' + captured.length + ' 字节 · <col> ' + outCols.count + ' 条 · sha256 ' + sha.slice(0, 16) + '…');
       page.close();
     }
   } catch (err) {

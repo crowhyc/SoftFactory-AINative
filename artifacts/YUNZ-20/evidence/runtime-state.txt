@@ -1,56 +1,61 @@
-WC-001 运行态证据（采集时间 2026-10-14T13:56:28+0800）
+WC-001 运行态证据（修复后采集时间 2026-10-14T14:47:26+0800）
 
 == docker ps ==
-wbs-rongcheng | wbs-rongcheng:20261014135531 | Up 55 seconds (healthy) | 
+wbs-rongcheng | wbs-rongcheng:20261014144403 | Up 3 minutes (healthy) | 
 multica-frontend-1 | ghcr.io/multica-ai/multica-web:v0.5.3 | Up 2 weeks | 127.0.0.1:3000->3000/tcp
 multica-backend-1 | ghcr.io/multica-ai/multica-backend:v0.5.3 | Up 2 weeks | 127.0.0.1:8080->8080/tcp
 multica-postgres-1 | pgvector/pgvector:pg17 | Up 2 weeks (healthy) | 5432/tcp
 
 == docker inspect wbs-rongcheng ==
-Image=wbs-rongcheng:20261014135531 ImageId=sha256:053180d90df237c78104bc5b970d2366ed2d25bb96cd4c94da5f1161595f5296 NetworkMode=host Mounts=/opt/wbs-rongcheng/data->/app/data RestartPolicy=unless-stopped Env=["WBS_HOST=127.0.0.1","WBS_PORT=4180","PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","NODE_VERSION=24.21.0","YARN_VERSION=1.22.22","NODE_ENV=production","WBS_DATA_DIR=/app/data"]
+Image=wbs-rongcheng:20261014144403 ImageId=sha256:50e6ed48ab394315f1366249109e93dee54d9e36199dd2ea61ac87af125cb0ba NetworkMode=host Mounts=/opt/wbs-rongcheng/data->/app/data RestartPolicy=unless-stopped Env=["WBS_HOST=127.0.0.1","WBS_PORT=4180","PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","NODE_VERSION=24.21.0","YARN_VERSION=1.22.22","NODE_ENV=production","WBS_DATA_DIR=/app/data"]
 
 == 宿主监听（仅回环 4180）==
-State      Recv-Q Send-Q Local Address:Port               Peer Address:Port              
-LISTEN     0      128    127.0.0.1:4180                     *:*                   users:(("MainThread",pid=3365,fd=18))
+LISTEN     0      128    127.0.0.1:4180                     *:*                   users:(("MainThread",pid=4515,fd=18))
 
 == GET /api/health ==
 {"ok":true,"service":"wbs-rongcheng","revision":0}
 == GET /api/wbs 摘要 ==
-/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
 tasks=36 revision=0 identities=9 name=1023 蓉城战役 WBS 清单
 
 == 运行数据 ==
-total 60
-drwxr-xr-x 2 1000  1000  4096 Oct 14 13:56 .
-drwxr-xr-x 7 root root   4096 Oct 14 13:56 ..
--rw-r--r-- 1 1000  1000   444 Oct 14 13:55 audit.log
--rw-r--r-- 1 1000  1000 13172 Oct 14 13:55 wbs.json
+total 72
+-rw-r--r-- 1 1000  1000  6088 Oct 14 14:17 audit.log
+-rw-r--r-- 1 1000  1000 13172 Oct 14 14:17 wbs.json
 -rw-r--r-- 1 1000  1000 13209 Oct 14 13:55 wbs.json.20261014135531.bak
+-rw-r--r-- 1 1000  1000 13172 Oct 14 14:17 wbs.json.20261014144403.bak
 -rw-r--r-- 1  501 games 13172 Oct 14 13:28 wbs.seed.json
 
-== data/wbs.json sha256 ==
-a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5  /opt/wbs-rongcheng/data/wbs.json
+== data/wbs.json sha256（与修复前一致，未被重置）==
+a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5  data/wbs.json
 
-== 镜像 tags ==
-wbs-rongcheng:20261014134925 053180d90df2 7 minutes ago
-wbs-rongcheng:20261014135038 053180d90df2 7 minutes ago
-wbs-rongcheng:20261014135157 053180d90df2 7 minutes ago
-wbs-rongcheng:20261014135232 053180d90df2 7 minutes ago
-wbs-rongcheng:20261014135247 053180d90df2 7 minutes ago
-wbs-rongcheng:20261014135250 053180d90df2 7 minutes ago
-wbs-rongcheng:20261014135415 053180d90df2 7 minutes ago
-wbs-rongcheng:20261014135431 053180d90df2 7 minutes ago
-wbs-rongcheng:20261014135432 053180d90df2 7 minutes ago
-wbs-rongcheng:20261014135512 053180d90df2 7 minutes ago
-wbs-rongcheng:20261014135528 053180d90df2 7 minutes ago
-wbs-rongcheng:20261014135531 053180d90df2 7 minutes ago
-wbs-rongcheng:selftest-build 053180d90df2 7 minutes ago
+== 镜像 tags（本轮新增 wbs-rongcheng:20261014144403）==
+wbs-rongcheng:20261014144403 50e6ed48ab39 13 minutes ago
+wbs-rongcheng:selftest-build 50e6ed48ab39 13 minutes ago
+wbs-rongcheng:20261014134925 053180d90df2 58 minutes ago
+wbs-rongcheng:20261014135038 053180d90df2 58 minutes ago
+wbs-rongcheng:20261014135157 053180d90df2 58 minutes ago
+wbs-rongcheng:20261014135232 053180d90df2 58 minutes ago
+wbs-rongcheng:20261014135247 053180d90df2 58 minutes ago
+wbs-rongcheng:20261014135250 053180d90df2 58 minutes ago
+wbs-rongcheng:20261014135415 053180d90df2 58 minutes ago
+wbs-rongcheng:20261014135431 053180d90df2 58 minutes ago
+wbs-rongcheng:20261014135432 053180d90df2 58 minutes ago
+wbs-rongcheng:20261014135512 053180d90df2 58 minutes ago
+wbs-rongcheng:20261014135528 053180d90df2 58 minutes ago
+wbs-rongcheng:20261014135531 053180d90df2 58 minutes ago
 
 == state/previous.env ==
-PREV_IMAGE=wbs-rongcheng:20261014135512
+PREV_IMAGE=wbs-rongcheng:20261014135531
 PREV_IMAGE_ID=sha256:053180d90df237c78104bc5b970d2366ed2d25bb96cd4c94da5f1161595f5296
-NEW_IMAGE=wbs-rongcheng:20261014135531
-DATA_BAK=/opt/wbs-rongcheng/data/wbs.json.20261014135531.bak
-DEPLOYED_AT=2026-10-14T13:55:32+0800
+NEW_IMAGE=wbs-rongcheng:20261014144403
+DATA_BAK=/opt/wbs-rongcheng/data/wbs.json.20261014144403.bak
+DEPLOYED_AT=2026-10-14T14:44:03+0800
 BIND_HOST=127.0.0.1
 HOST_PORT=4180
+
+== 容器内 served 资源 sha256 vs 磁盘 ==
+app.js served=53cc2bd3e60e0a948712484dd61903c093a7b1c394ffb48c2079a55b74f18f5e disk=53cc2bd3e60e0a948712484dd61903c093a7b1c394ffb48c2079a55b74f18f5e MATCH
+template.xlsx served=e01c269699adad8df3c28c05cff0634c7a1fbe4a62bb5ef2a3baf51490317483 disk=e01c269699adad8df3c28c05cff0634c7a1fbe4a62bb5ef2a3baf51490317483 MATCH
+styles.css served=e6b61b37a61da8ca59a96c630a684ae30b2b972a045948b3f357543a6e367644 disk=e6b61b37a61da8ca59a96c630a684ae30b2b972a045948b3f357543a6e367644 MATCH
+index.html served=f137a68defc53f2b51c24422b39dd3ed6df969f77065db0f386e0bf3d89b7387 disk=f137a68defc53f2b51c24422b39dd3ed6df969f77065db0f386e0bf3d89b7387 MATCH
+vendor/xlsx.full.min.js served=c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99 disk=c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99 MATCH

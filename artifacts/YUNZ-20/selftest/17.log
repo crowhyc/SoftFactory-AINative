@@ -3,7 +3,7 @@ $ node tests/selfcheck.js --only tensaves
 
 bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
 /bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
-数据目录: /opt/wbs-rongcheng/tests/.tmp/api  端口: 4199
+数据目录: /opt/wbs-rongcheng/tests/.tmp/iso-app/tests/.tmp/api  端口: 4199
 PASS  10 次保存后 A–K 无丢失、id 无重复、行序不变、未知字段保留  :: 末次 note=第 10 次保存 by 项目负责人
 ---
 PASS=1 FAIL=0

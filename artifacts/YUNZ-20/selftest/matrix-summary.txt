@@ -1,10 +1,11 @@
-WC-001 作者自测开始 2026-10-14T13:54:45+0800
+WC-001 作者自测开始 2026-10-14T14:42:20+0800
 node: v24.21.0  python3: Python 3.6.8  docker: Docker version 26.1.4, build 5650f9b
 
 01   读取/渲染 36 行                           通过（PASS=3 FAIL=0）
 02   九身份选择与切换保持（localStorage） 通过（PASS=5 FAIL=0）
 03   普通负责人本人行可编辑并保存     通过（PASS=3 FAIL=0）
 04   他人行只读                                通过（PASS=3 FAIL=0）
+04b  序号列只读提示一致性（D-2 回归） 通过（PASS=3 FAIL=0）
 05   新增/删除仅项目负责人（带确认） 通过（PASS=5 FAIL=0）
 06   保存后页面/API/磁盘三端一致（含原子写） 通过（PASS=3 FAIL=0）
 07   刷新持久                                   通过（PASS=3 FAIL=0）
@@ -12,7 +13,8 @@ node: v24.21.0  python3: Python 3.6.8  docker: Docker version 26.1.4, build 5650
 09   并发保存 409 不覆盖                     通过（PASS=2 FAIL=0）
 10   纯标准库、零运行时依赖              通过（PASS=2 FAIL=0）
 11   页面资源全本地（无外部请求）     通过（PASS=3 FAIL=0）
-12   导出 A–K 共 11 列（含行数一致）   通过（PASS=22 FAIL=0）
+12   导出 A–K 共 11 列（含行数一致）   通过（PASS=24 FAIL=0）
+12b  页面导出入口保留模板列宽（D-1 回归） 通过（PASS=1 FAIL=0）
 13   导出第 1/2 行逐字一致 / 非数据单元格不变 通过（PASS=2 FAIL=0）
 14   导出不含 status                            通过（PASS=2 FAIL=0）
 15   /api/health 返回 ok（含页面探针）     通过（PASS=1 FAIL=0）
@@ -27,4 +29,4 @@ node: v24.21.0  python3: Python 3.6.8  docker: Docker version 26.1.4, build 5650
 21   rollback.sh 回滚语义（上一镜像 + 上一 data 备份 + health） 通过（PASS=5 FAIL=0）
 
 结论：全部矩阵项通过
-输出目录：/opt/wbs-rongcheng/tests/.tmp/outputs
+输出目录：/opt/wbs-rongcheng/tests/.tmp/iso-app/tests/.tmp/outputs

@@ -22,18 +22,18 @@ bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
 
 #5 [internal] load build context
 #5 transferring context: 383B done
-#5 DONE 0.0s
+#5 DONE 0.1s
 
-#6 [4/6] COPY public ./public
+#6 [2/6] WORKDIR /app
 #6 CACHED
 
-#7 [5/6] COPY data/wbs.seed.json ./data/wbs.seed.json
+#7 [3/6] COPY package.json server.js ./
 #7 CACHED
 
-#8 [2/6] WORKDIR /app
+#8 [4/6] COPY public ./public
 #8 CACHED
 
-#9 [3/6] COPY package.json server.js ./
+#9 [5/6] COPY data/wbs.seed.json ./data/wbs.seed.json
 #9 CACHED
 
 #10 [6/6] RUN mkdir -p /app/data && chown -R node:node /app
@@ -41,17 +41,17 @@ bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
 
 #11 exporting to image
 #11 exporting layers done
-#11 writing image sha256:053180d90df237c78104bc5b970d2366ed2d25bb96cd4c94da5f1161595f5296 done
+#11 writing image sha256:50e6ed48ab394315f1366249109e93dee54d9e36199dd2ea61ac87af125cb0ba done
 #11 naming to docker.io/library/wbs-rongcheng:selftest-build done
 #11 DONE 0.0s
 PASS  docker build --network none 成功（构建期不能回外网）
 --- deploy/deploy.sh ---
 bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
 [deploy] 1/6 记录当前 running 容器与镜像
-[deploy]     当前镜像：wbs-rongcheng:20261014135432 sha256:053180d90df237c78104bc5b970d2366ed2d25bb96cd4c94da5f1161595f5296
+[deploy]     当前镜像：（无容器） 
 [deploy] 2/6 备份当前 data/wbs.json
-[deploy]     已备份 -> /opt/wbs-rongcheng/data/wbs.json.20261014135512.bak
-[deploy] 3/6 构建镜像（--network none，构建期不回外网）：wbs-rongcheng:20261014135512
+[deploy]     已备份 -> /opt/wbs-rongcheng/tests/.tmp/iso-app/data/wbs.json.20261014144251.bak
+[deploy] 3/6 构建镜像（--network none，构建期不回外网）：wbs-rongcheng-iso:20261014144251
 #0 building with "default" instance using docker driver
 
 #1 [internal] load build definition from Dockerfile
@@ -89,21 +89,21 @@ bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
 
 #11 exporting to image
 #11 exporting layers done
-#11 writing image sha256:053180d90df237c78104bc5b970d2366ed2d25bb96cd4c94da5f1161595f5296 done
-#11 naming to docker.io/library/wbs-rongcheng:20261014135512 done
+#11 writing image sha256:50e6ed48ab394315f1366249109e93dee54d9e36199dd2ea61ac87af125cb0ba done
+#11 naming to docker.io/library/wbs-rongcheng-iso:20261014144251 done
 #11 DONE 0.0s
-[deploy] 4/6 记录回滚信息 -> /opt/wbs-rongcheng/state/previous.env
-[deploy] 5/6 替换容器（host 网络 + 进程只绑定 127.0.0.1:4180，挂载 /opt/wbs-rongcheng/data）
-[deploy] 6/6 自检 curl http://127.0.0.1:4180/api/health
+[deploy] 4/6 记录回滚信息 -> /opt/wbs-rongcheng/tests/.tmp/iso-app/state/previous.env
+[deploy] 5/6 替换容器（host 网络 + 进程只绑定 127.0.0.1:4181，挂载 /opt/wbs-rongcheng/tests/.tmp/iso-app/data）
+[deploy] 6/6 自检 curl http://127.0.0.1:4181/api/health
 [deploy]     健康检查通过：{"ok":true,"service":"wbs-rongcheng","revision":0}
-[deploy] 完成：wbs-rongcheng:20261014135512 运行中（上一镜像：wbs-rongcheng:20261014135432，data 备份：/opt/wbs-rongcheng/data/wbs.json.20261014135512.bak）
+[deploy] 完成：wbs-rongcheng-iso:20261014144251 运行中（上一镜像：无，data 备份：/opt/wbs-rongcheng/tests/.tmp/iso-app/data/wbs.json.20261014144251.bak）
 PASS  deploy.sh 自检通过：{"ok":true,"service":"wbs-rongcheng","revision":0}
 --- 回环绑定与挂载 ---
-  Image=wbs-rongcheng:20261014135512  NetworkMode=host  Mounts=/opt/wbs-rongcheng/data->/app/data  RestartPolicy=unless-stopped
+  Image=wbs-rongcheng-iso:20261014144251  NetworkMode=host  Mounts=/opt/wbs-rongcheng/tests/.tmp/iso-app/data->/app/data  RestartPolicy=unless-stopped
 --- 容器内监听套接字（应只有 127.0.0.1:4180，无 0.0.0.0） ---
   容器内监听：["0100007F:1054"]
-PASS  仅监听回环 127.0.0.1:4180（容器进程绑定回环 + host 网络，未对公网暴露）
-PASS  运行数据挂载 /opt/wbs-rongcheng/data
-PASS  当前镜像 wbs-rongcheng:20261014135512（state/previous.env 记录上一镜像用于回滚）
+PASS  仅监听回环 127.0.0.1:4181（容器进程绑定回环 + host 网络，未对公网暴露）
+PASS  运行数据挂载 /opt/wbs-rongcheng/tests/.tmp/iso-app/data
+PASS  当前镜像 wbs-rongcheng-iso:20261014144251（state/previous.env 记录上一镜像用于回滚）
 ---
 PASS=5 FAIL=0

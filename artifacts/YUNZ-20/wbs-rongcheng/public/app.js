@@ -6,6 +6,7 @@
   var DATE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
   var DATE_LABELS = { design: '设计', dev: '开发', test: '测试', product: '产品', demo_prep: '演示准备' };
   var FIELD_LABELS = {
+    id: '序号',
     level1: '一级', level2: '二级', task: '任务项', owner: '负责人', demo: '是否演示范围',
     note: '进展说明', status: '状态',
     'dates.design': '设计', 'dates.dev': '开发', 'dates.test': '测试', 'dates.product': '产品', 'dates.demo_prep': '演示准备'
@@ -137,6 +138,18 @@
     return Math.max(originalLastRow, first + rows.length - 1);
   }
 
+  /** 导出构建：页面导出与作者自测走同一实现，消除缺陷 D-1 的双路径差异。
+   *  必须用 cellStyles:true 读模板：SheetJS 社区版仅在该选项下解析模板 !cols，
+   *  否则 XLSX.write 不写 <cols>，A–K 列宽（尤其 K 列 47.259...）在导出文件中丢失。 */
+  function buildExportWorkbook(templateBytes, tasks) {
+    var XLSX = global.XLSX;
+    if (!XLSX) throw new Error('XLSX 未加载');
+    var workbook = XLSX.read(templateBytes, { type: 'array', cellStyles: true });
+    var sheet = workbook.Sheets[workbook.SheetNames[0]];
+    applyExportRows(sheet, exportRows(tasks));
+    return workbook;
+  }
+
   function validateDraft(doc, identities) {
     var errors = [];
     var push = function (id, field, message) { errors.push({ id: String(id), field: field, message: message }); };
@@ -195,6 +208,7 @@
     groupFlags: groupFlags,
     exportRows: exportRows,
     applyExportRows: applyExportRows,
+    buildExportWorkbook: buildExportWorkbook,
     parseRange: parseRange,
     validateDraft: validateDraft,
     nextTaskId: nextTaskId
@@ -331,6 +345,11 @@
 
   function cellKey(id, field) { return id + '|' + field; }
 
+  function showReadOnlyHint(task, field) {
+    showHint('当前身份「' + state.identity + '」对第 ' + task.id + ' 行的「' + fieldLabel(field) + '」只读' +
+      (isPM(state.identity) ? '' : '（仅“负责人 == 自己”的行、且仅非结构性字段可改）'));
+  }
+
   function buildCell(task, field, className) {
     var td = document.createElement('td');
     var editable = canEditField(state.identity, task, field);
@@ -342,8 +361,7 @@
     td.addEventListener('click', function () {
       if (td.classList.contains('editing')) return;
       if (!canEditField(state.identity, task, field)) {
-        showHint('当前身份「' + state.identity + '」对第 ' + task.id + ' 行的「' + fieldLabel(field) + '」只读' +
-          (isPM(state.identity) ? '' : '（仅“负责人 == 自己”的行、且仅非结构性字段可改）'));
+        showReadOnlyHint(task, field);
         return;
       }
       startEdit(td, task, field, className);
@@ -439,7 +457,10 @@
 
     var idCell = document.createElement('td');
     idCell.className = 'cell cell-id locked';
+    idCell.setAttribute('data-id', task.id);
+    idCell.setAttribute('data-field', 'id');
     idCell.textContent = task.id;
+    idCell.addEventListener('click', function () { showReadOnlyHint(task, 'id'); });
     tr.appendChild(idCell);
 
     ['level1', 'level2'].forEach(function (field, index) {
@@ -608,10 +629,7 @@
     var response = await fetch('template.xlsx', { cache: 'no-store' });
     if (!response.ok) throw new Error('模板读取失败 HTTP ' + response.status);
     var buffer = await response.arrayBuffer();
-    var workbook = global.XLSX.read(new Uint8Array(buffer), { type: 'array' });
-    var sheet = workbook.Sheets[workbook.SheetNames[0]];
-    applyExportRows(sheet, exportRows(state.doc.tasks));
-    return workbook;
+    return Core.buildExportWorkbook(new Uint8Array(buffer), state.doc.tasks);
   }
 
   async function exportXlsx() {
