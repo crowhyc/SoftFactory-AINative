@@ -97,4 +97,5 @@
 | `export-readback.log` | python 标准库读回（验收 8 / 验收 2 Excel 侧 + 列宽观察 + 样式量化） |
 | `selftest-path-cols.log`、`exported-selftest-path-stage3.xlsx`、`export-cols-compare.log` | 自测共用函数路径产物与两路径 sha256 逐字节对照 |
 | `svc-verify.log` | 服务/API/持久化/并发/部署（S1–S14） |
+| `push-receipt.txt` | 本报告提交推送回执（HEAD / origin/main / 提交序列） |
 | `scripts/` | 本轮全部复跑脚本（可复现：`run-all-stage3.sh` 为一键入口） |
