@@ -63,7 +63,7 @@
 
 ## 5. 交付三链核验
 
-`integrity.log`（7/7 PASS）：I1 `SHA256SUMS` 60/60 自校验；I2 快照 20 文件与 `/opt/wbs-rongcheng` 运行态源码逐字一致（mismatch=0，无 live 侧多余源码）；I3 `SHA256SUMS` 记录 = 磁盘实际 = git HEAD blob（60/60）；I4 HEAD == `origin/main` == `e9e844e24b0a9f26e49f3060d9a1493772fdb91e`（提交信息 `task(YUNZ-20)：缺陷修复`）；I5 修复提交仅改动 `artifacts/YUNZ-20/`（未触及 `server.js`/`deploy/`，回归面收窄）；I6 独立正则扫描无凭据样式字符串；I7 复跑作者 `tests/scan_secrets.sh` 退出码 0。
+`integrity.log`（7/7 PASS）：I1 `SHA256SUMS` 60/60 自校验；I2 快照 20 文件与 `/opt/wbs-rongcheng` 运行态源码逐字一致（mismatch=0，无 live 侧多余源码）；I3 `SHA256SUMS` 记录 = 磁盘实际 = git HEAD blob（60/60）；I4 HEAD == `origin/main`，提交信息含 `task(YUNZ-20)`（采集时 HEAD=`e9e844e` 修复提交 → 本轮报告提交 `0554262` / `7c3b059` 依次推送，`origin/main` 始终同步；见 `push-receipt.txt`）；I5 修复提交仅改动 `artifacts/YUNZ-20/`（未触及 `server.js`/`deploy/`，回归面收窄）；I6 独立正则扫描无凭据样式字符串；I7 复跑作者 `tests/scan_secrets.sh` 退出码 0。
 运行态资源一致性（`served-integrity.log`）：`index.html f137a68d…`、`app.js 53cc2bd3e60e0a948712484dd61903c093a7b1c394ffb48c2079a55b74f18f5e`、`styles.css e6b61b37…`、`template.xlsx e01c2696…`、`vendor/xlsx.full.min.js c9506197…` —— HTTP 抓取字节与磁盘交付源码 **5/5 SAME**（证明现场容器运行的就是被验证的修复版）。
 
 ## 6. 口径复核（Stage1 待决事项 #1 / selftest/12.log）

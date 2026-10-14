@@ -1,7 +1,10 @@
-push 2026-10-14T15:06:38+0800
-git push origin HEAD:main -> e9e844e..0554262
-HEAD=055426294ce0d315b00802e9a321aabad101f53d
-origin/main=055426294ce0d315b00802e9a321aabad101f53d
+push-series 2026-10-14T15:07:06+0800
+e9e844e..0554262  (第一批：报告+证据)
+0554262..7c3b059  (第二批：push-receipt + 完整性日志刷新)
+HEAD=7c3b059bb96360fe7ee1fa2e21c49cfcccee8c12
+origin/main=7c3b059bb96360fe7ee1fa2e21c49cfcccee8c12
+7c3b059 task(YUNZ-20)：复验报告
 0554262 task(YUNZ-20)：复验报告
 e9e844e task(YUNZ-20)：缺陷修复
 3551f78 task(YUNZ-20)：验证报告
+说明：integrity.log 的 I4 快照采集于 HEAD=0554262（当时 HEAD==origin/main）；其后为同一推送序列的后续提交，末尾提交见本文件与最终平台评论。
