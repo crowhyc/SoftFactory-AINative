@@ -1,0 +1,8 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+[stage10-live-export] 2026-10-15 11:11:04+0800 现场 http://127.0.0.1:4180（只读下载）
+PASS  现场 K1：现场页面「导出 Excel」真实下载成功，中文横幅说明 A–K / 第 1-2 行 / status 不导出  :: {"file":"蓉城战役WBS-20261015.xlsx","banner":"已按原模板导出 36 行 A–K 数据，文件名 蓉城战役WBS-20261015.xlsx（第 1/2 行与合并单元格保持原样，status 不导出）。"}
+PASS  现场 K2：现场页面「导出日报」真实下载成功，横幅给出双 sheet 行数与当日口径  :: {"file":"蓉城战役日报-20261015.xlsx","banner":"已导出日报 蓉城战役日报-20261015.xlsx：sheet「阻塞与延期」0 行、sheet「当日变更」233 行（2026-10-15 Asia/Shanghai 自然日口径；原 WBS 导出仍不含 status）。"}
+PASS  现场 K3（关键）：导出过程未发出任何写请求，现场数据未被改动  :: {"writes":[],"pageErrors":[]}
+---
+PASS=3 FAIL=0
+[stage10-live-export] 容器退出码 0

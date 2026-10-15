@@ -1,0 +1,33 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+# Stage10 复验后现场确认 2026-10-15 11:12:26+0800
+
+## 1. 现场数据字节级未变（对比复验前记录 logs/02a-pre-live-data-sha256.txt）
+5766b0ad595f710e4e539b2d6fe8555403a88465609f19004ff3aa3e886f371f  /opt/wbs-rongcheng/data/wbs.json
+6aa8cfe5cff084911ae26790325d08fc53005f14e8bfde14db1275fde8beef41  /opt/wbs-rongcheng/data/audit.log
+RESULT: 需要人工比对（格式差异，见上）
+revision={"ok":true,"service":"wbs-rongcheng","revision":6}
+
+## 2. 部署到位复核（served vs 运行目录 vs 源码快照）
+index.html     MATCH
+app.js         MATCH
+styles.css     MATCH
+server.js(MD dir/run) MATCH
+
+## 3. 运行态与约束
+image=wbs-rongcheng:20261015104003 imageId=sha256:189ae1c4cb60c36153c2ef2f3ec1214c1a996f1377f185d39c91c8953ca3fec8 host=host
+health 127.0.0.1: {"ok":true,"service":"wbs-rongcheng","revision":6}
+health 0.0.0.0:   {"ok":true,"service":"wbs-rongcheng","revision":6}
+health 公网:      {"ok":true,"service":"wbs-rongcheng","revision":6} (rc=0)
+绑定: LISTEN     0      128          *:4180                     *:*                  
+镜像内无 node_modules
+
+## 4. 未触碰项（Multica 三容器）
+multica-frontend-1 | Up 2 weeks
+multica-backend-1 | Up 2 weeks
+multica-postgres-1 | Up 2 weeks (healthy)
+
+## 5. 隔离实例清理（不触碰现场容器）
+qv-stage10-4181 | wbs-rongcheng:20261015104003 | Up About a minute (healthy)
+qv-stage10-4181
+0
+隔离实例已删除

@@ -1,0 +1,39 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+[stage10-write] 2026-10-15 11:10:38+0800 隔离实例 http://127.0.0.1:4181
+PASS  隔离 A1：面板打开时编辑区初值 = 该行 note（保存前页面/API 一致），字符计数 = 当前长度 / 20000  :: {"count":"204 / 20000 字符"}
+PASS  隔离 A2：仅点「保存」即提交成功，中文成功提示 + revision 正常递增（+1）  :: {"msg":"第 T001 行进展说明已保存，服务器版本号已更新为 7。（页面、API、磁盘三端一致）","revBefore":6,"revAfter":7}
+PASS  隔离 A3：保存后页面 / API / 磁盘三端一致（note 原文 = 输入内容，Markdown 原样持久化）  :: {"apiLen":204,"diskLen":204}
+PASS  隔离 A4：K 列摘要为去 Markdown 单行文本并按 80 字符截断（精确等于 120 个 A 截断为 80 + 省略号）  :: {"summary":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA…","len":81}
+PASS  隔离 A5：摘要单行省略样式生效（nowrap/ellipsis 且实际溢出被裁剪）  :: {"clipped":true}
+PASS  隔离 A6：有权限行显示「点击打开编辑」提示（note-action）且整格可点（note-editable、cursor:pointer）  :: {"cls":"cell cell-note editable note-editable","cursor":"pointer","dataNoteEmpty":"false","summary":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA…","sumCls":"note-summary","nowrap":"nowrap","overflow":"ellipsis","clipped":true,"action":"点击打开编辑","title":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA…"}
+PASS  隔离 B1：Ctrl+Enter 快捷保存生效（中文成功提示 + revision 递增）  :: {"msg":"第 T001 行进展说明已保存，服务器版本号已更新为 8。（页面、API、磁盘三端一致）","rev":8}
+PASS  隔离 B2：快捷保存后 API note = Markdown 原文  :: {"ok":true}
+PASS  隔离 B3：摘要去除全部 Markdown 标记（无 # / * / ` / ]( / http），保留纯文本要点  :: {"summary":"进展标题 评审完成，v1.2 已上线；见 设计稿。"}
+PASS  隔离 C1：草稿点关闭 → 确认框「继续退出」→ 面板关闭，且 revision 不变、API note 未变（未提交）  :: {"rev":8,"revBefore":8}
+PASS  隔离 C2：确认框「取消」路径 —— 面板保留、草稿内容不丢（DRAFT-KEEP）  :: {"input":"DRAFT-KEEP"}
+PASS  隔离 C3：有草稿时 Escape 先弹确认框（不直接丢弃），面板与草稿保留  :: {"panelHidden":false,"confirmHidden":false}
+PASS  隔离 C3b：确认框上再按 Escape = 取消关闭（确认框收起、面板与草稿仍保留）  :: {"panelHidden":false,"confirmHidden":true}
+PASS  隔离 C4：仍以「继续退出」丢弃草稿关闭；整个过程 revision 不变、note 仍为 MD2  :: {"rev":8}
+PASS  隔离 C5：刷新页面后 K 列摘要仍为已保存内容（草稿未落库）  :: {"summary":"进展标题 评审完成，v1.2 已上线；见 设计稿。"}
+PASS  隔离 D1：输入 20001 字符时实时提示超长（中文文案 + over-limit 样式）  :: {"count":"20001 / 20000 字符（超长，无法提交）","cls":"note-input over-limit"}
+PASS  隔离 D2：超长点保存被拒绝（中文错误提示含「长度超过 20000」），revision 不变  :: {"msg":"进展说明长度超过 20000 个字符（当前 20001 个），未提交。"}
+PASS  隔离 D3：服务端未落盘 —— 磁盘 wbs.json 与 API 的 T001 note 仍为 MD2，不含超长串  :: {"ok":true}
+PASS  隔离 E1：他人先写入后本次保存走既有错误横幅（中文「版本冲突」+ 面板错误提示，未提交）  :: {"competitor":200,"banner":"版本冲突：服务器当前版本为 9，你的保存基于版本 8，已拒绝覆盖。请重新加载后再改。","msg":"版本冲突，未提交（服务器版本 9）；请先关闭面板，再点横幅「重新加载」后重做修改。"}
+PASS  隔离 E2：409 不覆盖 —— 磁盘/API 保留他人写入（T036=COMPETING-WRITE），T001 未被草稿覆盖（仍 MD2）  :: {"rev":9}
+PASS  隔离 F1：普通负责人（王言）仅本人行 K 列可编辑（T002 note-editable），他人行（T004）只读（note-locked）  :: {"own":"cell cell-note editable note-editable","other":"cell cell-note locked note-locked","rows":36}
+PASS  隔离 F2：普通负责人打开他人行 = 只读预览（无保存按钮、说明中文只读）  :: {"meta":"只读预览（当前身份「王言」对第 T004 行无编辑权限）"}
+PASS  隔离 F3：普通负责人保存本人行成功（中文提示 + revision 递增）  :: {"msg":"第 T002 行进展说明已保存，服务器版本号已更新为 10。（页面、API、磁盘三端一致）"}
+PASS  隔离 F4：空 note 合法 —— 清空后保存成功、API note = 空串  :: {"msg":"第 T002 行进展说明已保存，服务器版本号已更新为 11。（页面、API、磁盘三端一致）"}
+PASS  隔离 F5：空 note 后 K 列回到占位样式（「点击打开编辑」、data-note-empty=true）  :: {"cls":"cell cell-note editable note-editable","cursor":"pointer","dataNoteEmpty":"true","summary":"点击打开编辑","sumCls":"note-summary note-placeholder","nowrap":"nowrap","overflow":"ellipsis","clipped":false,"action":null,"title":"点击打开编辑"}
+PASS  隔离 F6：项目负责人可编辑任意行（T004 note-editable）—— 权限语义不变  :: {"cls":"cell cell-note editable note-editable"}
+PASS  隔离 G1：note 保存写入审计字段级 old→new（Markdown 原文 + 时间 + 操作身份）  :: {"ts":"2026-10-15T03:10:40.475Z","identity":"李欢","oldLen":0,"newLen":204}
+PASS  隔离 G2：清空 note 的审计 old→new 正确（旧值=原内容、新值=空串）  :: {"identity":"王言"}
+PASS  隔离 G3：审计行无新增字段（字段集仍为 ts/identity/revision/changed/added/removed/old/new/snapshot + CH-7 事件字段）  :: {"auditKeys":["ts","identity","revision","changed","added","removed","old","new","snapshot"]}
+PASS  隔离 G4：GET /api/history 当日记录无新字段，且 note 记录旧值/新值为 Markdown 原文  :: {"record":{"id":"T001","field":"note","old":"","identity":"李欢"},"histKeys":["task_id","field","at","identity","level1","level2","task","owner","old","new"]}
+PASS  隔离 G5：数据契约未变 —— note 仍为单个字符串、任务键集未新增字段  :: {"taskKeys":["dates","demo","id","level1","level2","note","owner","status","task"]}
+PASS  隔离 H1：页面导出 Excel 与日报（真实浏览器下载）成功，中文横幅给出导出说明  :: {"wbs":"蓉城战役WBS-20261015.xlsx","daily":"蓉城战役日报-20261015.xlsx","banner":"已导出日报 蓉城战役日报-20261015.xlsx：sheet「阻塞与延期」0 行、sheet「当日变更」5 行（2026-10-15 Asia/Shanghai 自然日口径；原 WBS 导出仍不含 status）。"}
+PASS  隔离 I1：全程无 pageerror；除刻意构造的 409 外无 console error  :: {"pageErrors":[],"consoleErrors":["Failed to load resource: the server responded with a status of 409 (Conflict)"],"unexpectedConsole":[]}
+PASS  隔离 I2：写请求全部指向隔离实例（4181），未触碰现场 4180  :: {"writes":["PUT http://127.0.0.1:4181/api/wbs","PUT http://127.0.0.1:4181/api/wbs","PUT http://127.0.0.1:4181/api/wbs","PUT http://127.0.0.1:4181/api/wbs","PUT http://127.0.0.1:4181/api/wbs","PUT http://127.0.0.1:4181/api/wbs"]}
+---
+PASS=34 FAIL=0
+[stage10-write] 容器退出码 0

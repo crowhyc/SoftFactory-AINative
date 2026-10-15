@@ -1,0 +1,80 @@
+{
+  "base": "http://127.0.0.1:4181",
+  "pass": 6,
+  "fail": 0,
+  "results": [
+    {
+      "name": "服务端 S1：GET /api/wbs 文档契约不变（meta.revision/identities/tasks；note 仍为字符串）",
+      "ok": true,
+      "detail": {
+        "rev": 11,
+        "tasks": 36
+      }
+    },
+    {
+      "name": "服务端 S2：note 恰好 20000 字符被接受（200 + revision 递增 + 落盘长度 20000）",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "rev": 12,
+        "diskLen": 20000
+      }
+    },
+    {
+      "name": "服务端 S3：note 20001 字符被服务端拒绝（400 + 中文错误指向 note 上限，revision 不变、磁盘逐字节未变）",
+      "ok": true,
+      "detail": {
+        "status": 400,
+        "errors": [
+          {
+            "id": "T005",
+            "field": "note",
+            "message": "note 长度超过上限 20000"
+          }
+        ],
+        "rev": 12
+      }
+    },
+    {
+      "name": "服务端 S4：note 非字符串被拒绝（400，note 必须是字符串）—— 数据契约未放宽",
+      "ok": true,
+      "detail": {
+        "status": 400,
+        "errors": [
+          {
+            "id": "T005",
+            "field": "note",
+            "message": "note 必须是字符串"
+          }
+        ]
+      }
+    },
+    {
+      "name": "服务端 S5：过期 If-Match → 409 且不覆盖（磁盘 note 仍为 20000 字符边界值）",
+      "ok": true,
+      "detail": {
+        "status": 409,
+        "current": 12
+      }
+    },
+    {
+      "name": "服务端 S6：/api/history 无新字段（记录键集不变），且当日含 note 记录、旧值/新值为 Markdown 原文",
+      "ok": true,
+      "detail": {
+        "keys": [
+          "at",
+          "field",
+          "identity",
+          "level1",
+          "level2",
+          "new",
+          "old",
+          "owner",
+          "task",
+          "task_id"
+        ],
+        "count": 6
+      }
+    }
+  ]
+}

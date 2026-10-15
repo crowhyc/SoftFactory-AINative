@@ -1,0 +1,70 @@
+{
+  "ok": true,
+  "date": "2026-10-15",
+  "tz": "Asia/Shanghai",
+  "from": "2026-10-14T16:00:00.000Z",
+  "to": "2026-10-15T16:00:00.000Z",
+  "count": 5,
+  "records": [
+    {
+      "task_id": "T001",
+      "field": "note",
+      "at": "2026-10-15T03:10:40.475Z",
+      "identity": "李欢",
+      "level1": "客户端",
+      "level2": "业务工作台",
+      "task": "业需导入",
+      "owner": "李欢",
+      "old": "",
+      "new": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n\n# 进展标题\n\n**Steering** 已完成评审，`v1.2` 已上线；见 [设计稿](https://example.com/d)\n\n- 事项甲\n- 事项乙\n"
+    },
+    {
+      "task_id": "T001",
+      "field": "note",
+      "at": "2026-10-15T03:10:41.677Z",
+      "identity": "李欢",
+      "level1": "客户端",
+      "level2": "业务工作台",
+      "task": "业需导入",
+      "owner": "李欢",
+      "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n\n# 进展标题\n\n**Steering** 已完成评审，`v1.2` 已上线；见 [设计稿](https://example.com/d)\n\n- 事项甲\n- 事项乙\n",
+      "new": "# 进展标题\n\n**评审完成**，`v1.2` 已上线；见 [设计稿](https://example.com/d)。"
+    },
+    {
+      "task_id": "T036",
+      "field": "note",
+      "at": "2026-10-15T03:10:45.949Z",
+      "identity": "项目负责人",
+      "level1": "AI 能力引擎",
+      "level2": "资产管理",
+      "task": "研发产物沉淀",
+      "owner": "肖恒韵",
+      "old": "",
+      "new": "COMPETING-WRITE"
+    },
+    {
+      "task_id": "T002",
+      "field": "note",
+      "at": "2026-10-15T03:10:48.105Z",
+      "identity": "王言",
+      "level1": "客户端",
+      "level2": "业务工作台",
+      "task": "需求拆分",
+      "owner": "王言",
+      "old": "",
+      "new": "临时进展内容"
+    },
+    {
+      "task_id": "T002",
+      "field": "note",
+      "at": "2026-10-15T03:10:49.102Z",
+      "identity": "王言",
+      "level1": "客户端",
+      "level2": "业务工作台",
+      "task": "需求拆分",
+      "owner": "王言",
+      "old": "临时进展内容",
+      "new": ""
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+# YUNZ-30 / Stage10 独立复验：运行态、部署到位与现场只读性记录（+08 2026-10-15 10:59–11:13）
+
+## 一、运行容器与状态
+- 容器：wbs-rongcheng（Up healthy），镜像 wbs-rongcheng:20261015104003，image id sha256:189ae1c4cb60c36153c2ef2f3ec1214c1a996f1377f185d39c91c8953ca3fec8
+- 网络：HostConfig.NetworkMode=host；env WBS_HOST=0.0.0.0 / WBS_PORT=4180 / WBS_DATA_DIR=/app/data；挂载 /opt/wbs-rongcheng/data → /app/data
+- 宿主绑定：ss -ltn → `*:4180` LISTEN（非回环绑定，0.0.0.0 生效）
+- 三方 health（复验前 10:59 / 复验后 11:12 均一致）：127.0.0.1:4180、0.0.0.0:4180 均 {"ok":true,...}
+- 公网 health：http://47.108.129.157:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":6}（返回 200；公网可达，阿里云安全组放行已在 Sponsor 侧完成，属 Sponsor 控制台操作，不在本轮验证范围）
+
+## 二、部署到位核验（变更确在 4180 对外提供，非仅落盘）
+- 运行态 HTTP 返回 vs 运行目录 vs 源码快照 sha256 三端逐字节一致：
+  index.html dad8722de63f35db… / app.js daca670bbedb09fc… / styles.css 7ca05a0481840062… / template.xlsx e01c269699adad8d… / vendor/xlsx.full.min.js c9506197caf809a0…
+- 容器内 /app 源码 vs 运行目录：server.js 96363df49c12d496…、public/{index.html,app.js,styles.css} 全部 MATCH
+- 镜像内无 node_modules（docker exec ls 报不存在）；package.json dependencies 为空（JSON 解析注意事项：本机 python3.6 需 PYTHONIOENCODING，见下「环境偏差」）
+
+## 三、现场只读性（关键）
+- 复验前（10:59:01）现场 sha256：wbs.json ef74c4c0d4a105d8…（revision 5）、audit.log a40175a4f4c8bc0a…（logs/02a-pre-live-data-sha256.txt）
+- 复验后（11:12:26）现场 sha256：wbs.json 5766b0ad595f710e…、audit.log 6aa8cfe5cff08491…（revision 6）→ **现场数据在窗口内发生了变化**
+- 变化来源认定（不计为被验证产物缺陷、也不计为本轮脚本副作用）：
+  * 审计证据：data/audit.log 末条 {"ts":"2026-10-15T03:10:35.214Z"(=+08 11:10:35),"identity":"项目负责人","revision":6,"changed":[T001,T002,… 多行 dates.* 与 status]}
+  * 本轮所有现场（4180）浏览器会话均为只读：断言写入请求 = 0（logs/02-live-browser.log J3、logs/05-live-export.log K3），且 11:10:35 时刻本轮正在跑的是隔离实例（4181）用例，与现场数据目录无关联
+  * 与本轮脚本无关的第三种可能来源：现场真实用户使用（Stage9 作者自述亦记载同类现象：窗口内 revision 因真实用户操作变化）
+  * 结论：现场数据窗口内因**真实使用**发生一次批量保存（多行 dates/status），revision 5→6；本轮现场读回一律以导出/读回同一时点（11:11）的 API 快照为准，读回结果自洽（readback WBS1 diffCount=0）
+- 现场数据在复验结束时 revision=6，note 全为空（notes_nonempty=0），本轮未在现场写入任何 note
+
+## 四、隔离复验实例（写路径证据来源）
+- 复用被验证镜像同一 image id（sha256:189ae1c4cb60c361…），容器 qv-stage10-4181，host 网络 + 端口 4181 + 独立数据目录 …/workdir/scratch/stage10-iso/data（初始为现场副本 + 空 audit.log）
+- 用途：真实浏览器写矩阵（保存 / Ctrl+Enter / 空 note / 超长拒绝 / 409 / 权限 / 摘要截断）、服务端 20000 边界、重启持久
+- 重启持久：docker restart 后 T005 的 20000 字符 note 与 revision 12 保持一致，绑定仍 `*:4181`
+- 收尾：已 `docker rm -f qv-stage10-4181` 删除（不触碰现场容器）；数据现场快照留档 isolated/iso-wbs-final.json、isolated/iso-audit-final.log
+
+## 五、未触碰项
+- Multica 三容器 multica-frontend-1 / multica-backend-1 / multica-postgres-1：docker ps 仍为 Up 2 weeks（未重启未改动）
+- 未修改被验证实现代码：/opt/wbs-rongcheng 下 server.js 与 public/* 的 sha256 全程与源码快照一致
+- 未安装任何系统级浏览器组件；Chromium 140.0.7339.16 只在官方镜像 mcr.microsoft.com/playwright:v1.55.0-jammy 内运行（宿主 CentOS 7 / glibc 2.17 无法直接运行该版本 Chromium，延续 Stage8 既定做法）
+
+## 六、环境偏差（如实记录，用于复跑）
+1. 宿主 node 进程无法访问回环（同一 shell 内 curl 正常）：`node -e "fetch('http://127.0.0.1:4181/api/health')"` 报 ECONNREFUSED，而 curl 200 → 服务端用例改在容器内 node 执行（scripts/run-server-and-restart.sh）。该偏差属执行环境，与被验证产物无关。
+2. 本机 python3 为 3.6.8 且 locale 为 C：读回器与快照脚本需 `PYTHONIOENCODING=utf-8`，命令行参数避免传非 ASCII（argv 会以 surrogateescape 解码导致 UnicodeEncodeError）。
+3. 隔离实例数据目录须先 chown 1000:1000（容器内进程 uid=1000 node）；否则保存会 500 —— 这是 AI-QV 自建脚本的环境准备问题，**不是**被验证产物缺陷（现场 /opt/wbs-rongcheng/data 属主 1000:1000，正常）。

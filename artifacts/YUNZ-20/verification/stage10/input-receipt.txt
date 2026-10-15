@@ -1,0 +1,33 @@
+# YUNZ-30 / Stage10 独立复验：产物定位与两条证据链（核对时间 +08 2026-10-15 10:57–11:14）
+
+## 一、被验证产物定位（只读，未修改）
+- 运行目录：/opt/wbs-rongcheng/（server.js + public/{index.html,app.js,styles.css,template.xlsx,vendor/xlsx.full.min.js}）
+- 运行服务：http://127.0.0.1:4180 与 http://0.0.0.0:4180（容器 wbs-rongcheng，镜像 wbs-rongcheng:20261015104003，host 网络）
+- 数据：/opt/wbs-rongcheng/data/{wbs.json,audit.log,wbs.seed.json}
+- 源码快照：/opt/SoftFactory-AINative/artifacts/YUNZ-20/wbs-rongcheng/
+- 作者自测证据：/opt/SoftFactory-AINative/artifacts/YUNZ-20/selftest/stage9/
+
+## 二、链条 A：作者自报（AI-IE / YUNZ-29，不作为本轮结论证据）
+- 交付评论：YUNZ-29 评论 01a13d79-b8c3-73d6-b080-46acef4d909a（2026-10-15T02:52:29Z = +08 10:52:29）
+- 作者自报哈希（评论原文）与本轮独立计算（sha256sum，运行目录与快照各算一次）逐项一致：
+  | 文件 | 作者自报 | AI-QV 实测（运行目录 = 快照） | 结论 |
+  | --- | --- | --- | --- |
+  | public/app.js | daca670bbedb09fc… | daca670bbedb09fc7a1d8845f6dca3a6c6d095375e9fb0e17c0747aa037faab8 | MATCH |
+  | public/index.html | dad8722de63f35db… | dad8722de63f35dbd7018d0fdb8c408e92e043d685958124aaa00791006eebaf | MATCH |
+  | public/styles.css | 7ca05a0481840062… | 7ca05a04818400625641a1f88803381040a712eb1ec4433ac943adf2a8d2edb8 | MATCH |
+  | server.js | 96363df49c12d496… | 96363df49c12d4961ac8d14fc9e2cbc9e014a3d964d92b92f53235ff2c01b41a | MATCH |
+  | 部署镜像 id | sha256:189ae1c4cb60c361… | sha256:189ae1c4cb60c36153c2ef2f3ec1214c1a996f1377f185d39c91c8953ca3fec8（docker inspect wbs-rongcheng） | MATCH |
+- 作者自报的浏览器/服务端矩阵输出（63/10/15/7 项）**不作为**本轮结论证据，仅用于对照口径。
+
+## 三、链条 B：AI-QV 本轮自跑（结论唯一依据）
+执行窗口 +08 11:01–11:14，脚本位于本目录 scripts/（独立编写，未复用作者自测脚本）：
+- scripts/qv-ch8-live.cjs        真实浏览器只读矩阵（现场 4180；断言全程写请求 = 0）→ logs/02-live-browser.log（PASS=34）
+- scripts/qv-ch8-live-export.cjs 现场导出 / 日报真实下载（只读）→ logs/05-live-export.log（PASS=3）
+- scripts/qv-ch8-write.cjs       真实浏览器写矩阵（隔离实例 4181，同一被验证镜像）→ logs/03-iso-write.log（PASS=34）
+- scripts/qv-iso-server.js       服务端契约与 20000 边界（容器内 node 打 4181）→ logs/04-iso-server-restart.log（PASS=6）
+- scripts/qv-readback.py         导出 / 日报读回（Python 标准库 zipfile+xml）→ logs/06-readback-live.log、logs/07-readback-iso.log（各 PASS=10）
+- scripts/qv-pre.sh / qv-iso-up.sh / qv-post.sh / run-*.sh  现场记录、隔离实例搭建与清理
+结构化结果位于 results/，截图位于 shots/，导出原文件位于 downloads/。
+
+## 四、核验结论
+交付物齐全、可定位、可复跑；作者自报哈希与实测一致；两条证据链独立，结论只采用链条 B。

@@ -1,0 +1,13 @@
+PASS  iso-4181 WBS1：A–K 数据区逐格等于 API/磁盘（K 列为 note 原文 Markdown，未被转换）  :: {"rows": 36, "diffCount": 0, "diff": []}
+PASS  iso-4181 WBS2：L–P 无内容 —— status 未导出、数据区外无越界写入  :: {"extra": []}
+PASS  iso-4181 WBS3：第 1/2 行除 M1 外与模板逐格一致（标题与合并区未被改写），且模板 M1 原为空  :: {"same": true, "template_M1": "", "export_row1_tail": ["", "", ""]}
+PASS  iso-4181 WBS4：M1 日期标签格式为「导出日期：YYYY-MM-DD HH:MM」  :: {"M1": "导出日期：2026-10-15 11:10"}
+PASS  iso-4181 WBS5：A–K 列宽与原模板一致（!cols 保真，K 列宽度未丢失）  :: {"template": ["11.3333333333333", "11.3333333333333", "13.7777777777778", "16.2222222222222", "47.2592592592593"], "export": ["11.3333333333333", "11.3333333333333", "13.7777777777778", "16.2222222222222", "47.2592592592593"]}
+PASS  iso-4181 WBS6：导出文件仅一个工作表且表名与模板一致  :: {"names": ["工作表1"], "tpl": "工作表1"}
+PASS  iso-4181 DLY1：日报含且仅含两个 sheet「阻塞与延期」「当日变更」  :: {"names": ["阻塞与延期", "当日变更"]}
+PASS  iso-4181 DLY2：sheet「阻塞与延期」表头 12 列正确、行集 = 状态为已延期/被阻塞的任务（含状态列与 note 原文）  :: {"rows": 0, "expected": 0, "extra": []}
+PASS  iso-4181 DLY3：sheet「当日变更」表头 10 列正确、行数 = /api/history 当日记录数（无新字段、无多余列）  :: {"rows": 5, "records": 5, "extra": [], "header": ["id", "一级", "二级"]}
+PASS  iso-4181 DLY4：note 变更行旧值/新值与 /api/history 的 Markdown 原文逐条一致（读回比对，未被截断/转换）  :: {"noteRows": 5, "histNotes": 5, "mismatch": []}
+---
+PASS=10 FAIL=0
+readback-iso rc=0

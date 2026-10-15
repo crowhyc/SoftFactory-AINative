@@ -1,0 +1,337 @@
+{
+  "base": "http://127.0.0.1:4180",
+  "mode": "read-only",
+  "started_at": "2026-10-15T03:12:07.546Z",
+  "finished_at": "2026-10-15T03:12:13.762Z",
+  "pass": 34,
+  "fail": 0,
+  "requests_total": 12,
+  "results": [
+    {
+      "name": "现场 A1：身份选择页渲染人员池（12 人）且工作台未显示",
+      "ok": true,
+      "detail": {
+        "idCount": 12
+      }
+    },
+    {
+      "name": "现场 A2（D-3 回归）：选身份后 #identity-layer computed display=none 且工作台可见可交互",
+      "ok": true,
+      "detail": {
+        "layerDisplay": "none",
+        "workbenchHidden": false,
+        "workbenchVisible": true
+      }
+    },
+    {
+      "name": "现场 B1：有权限行（T001 负责人=李欢）K 单元格为可点击摘要格（note-editable、cursor:pointer、无内联编辑器）",
+      "ok": true,
+      "detail": {
+        "cls": "cell cell-note editable note-editable",
+        "cursor": "pointer",
+        "title": "点击打开编辑",
+        "dataNoteEmpty": "true",
+        "text": "点击打开编辑",
+        "sumCls": "note-summary note-placeholder",
+        "nowrap": "nowrap",
+        "overflow": "ellipsis",
+        "inlineEditor": 0,
+        "actionText": null
+      }
+    },
+    {
+      "name": "现场 B2：空 note 显示「点击打开编辑」占位并给出编辑提示（data-note-empty=true、单行省略样式）",
+      "ok": true,
+      "detail": {
+        "cls": "cell cell-note editable note-editable",
+        "cursor": "pointer",
+        "title": "点击打开编辑",
+        "dataNoteEmpty": "true",
+        "text": "点击打开编辑",
+        "sumCls": "note-summary note-placeholder",
+        "nowrap": "nowrap",
+        "overflow": "ellipsis",
+        "inlineEditor": 0,
+        "actionText": null
+      }
+    },
+    {
+      "name": "现场 B3：无权限行（T002 负责人=王言）K 单元格为只读摘要格（note-locked、提示「点击查看进展说明」，点击行为见 G1）",
+      "ok": true,
+      "detail": {
+        "cls": "cell cell-note locked note-locked",
+        "text": "点击查看进展说明",
+        "cursor": "auto",
+        "title": "点击查看进展说明"
+      }
+    },
+    {
+      "name": "现场 C1：整格可视区域（右下角）点击即打开面板，编辑区初值 = 该行 note",
+      "ok": true,
+      "detail": {
+        "inputValue": "",
+        "saveText": "保存"
+      }
+    },
+    {
+      "name": "现场 C2：桌面面板尺寸 ≈ 90vw x 80vh（1440x900 → 1296x720，容差 2px）",
+      "ok": true,
+      "detail": {
+        "w": 1296,
+        "h": 720,
+        "vw": 1440,
+        "vh": 900
+      }
+    },
+    {
+      "name": "现场 C3：面板居中（left/top 与 (视口-面板)/2 偏差 <= 2px）",
+      "ok": true,
+      "detail": {
+        "left": 72,
+        "top": 90
+      }
+    },
+    {
+      "name": "现场 C4：桌面为左「编辑」右「预览」双栏（grid 两列且两栏均可见），标签栏隐藏",
+      "ok": true,
+      "detail": {
+        "cols": 2,
+        "colWidths": [
+          625,
+          625
+        ]
+      }
+    },
+    {
+      "name": "现场 D1：H1–H3 渲染为 h1/h2/h3 且文本正确",
+      "ok": true,
+      "detail": {
+        "h1": "一级标题",
+        "h2": "二级标题",
+        "h3": "三级标题"
+      }
+    },
+    {
+      "name": "现场 D2：粗体 strong / 斜体 em / 删除线 del / 行内代码 code 逐项渲染正确",
+      "ok": true,
+      "detail": {
+        "strong": "粗体文本",
+        "em": "斜体文本",
+        "del": "删除文本",
+        "code": "行内代码"
+      }
+    },
+    {
+      "name": "现场 D3：代码块 pre>code 与引用 blockquote 渲染正确",
+      "ok": true,
+      "detail": {
+        "pre": "const a = 1;",
+        "quote": "引用一行"
+      }
+    },
+    {
+      "name": "现场 D4：无序列表与有序列表分别渲染为 ul/ol 且条目正确",
+      "ok": true,
+      "detail": {
+        "ulLi": [
+          "无序甲",
+          "无序乙"
+        ],
+        "olLi": [
+          "有序甲",
+          "有序乙"
+        ]
+      }
+    },
+    {
+      "name": "现场 D5：链接渲染为 a[target=_blank][rel 含 noopener/noreferrer] 且 href 正确",
+      "ok": true,
+      "detail": {
+        "text": "链接文本",
+        "href": "https://example.com/x",
+        "target": "_blank",
+        "rel": "noopener noreferrer"
+      }
+    },
+    {
+      "name": "现场 E1：`<script>alert(1)</script>` 与 onerror 原始 HTML 原样显示为文本（渲染区无 script/img/iframe 节点、内容被转义）",
+      "ok": true,
+      "detail": {
+        "scriptNodes": 0,
+        "imgNodes": 0,
+        "escaped": true
+      }
+    },
+    {
+      "name": "现场 E2：脚本未执行（window.alert 未被调用、无 dialog 事件）",
+      "ok": true,
+      "detail": {
+        "pwned": 0,
+        "dialogs": 0
+      }
+    },
+    {
+      "name": "现场 E3：`![](http://…png)` 不解析为图片、只显示为安全文本，且渲染阶段无任何外部资源请求",
+      "ok": true,
+      "detail": {
+        "external": [],
+        "reqCount": 0,
+        "imgNodes": 0
+      }
+    },
+    {
+      "name": "现场 F1：有未保存内容时点关闭弹出确认框（「取消 / 继续退出」），面板保持打开",
+      "ok": true,
+      "detail": {
+        "confirm": {
+          "hidden": false,
+          "visible": true
+        },
+        "buttons": [
+          "取消",
+          "继续退出"
+        ]
+      }
+    },
+    {
+      "name": "现场 F2：确认框「取消」路径 —— 确认框收起、面板保留、输入内容不丢",
+      "ok": true,
+      "detail": {
+        "input": "DRAFT-LIVE-UNSAVED"
+      }
+    },
+    {
+      "name": "现场 F3：确认框「继续退出」路径 —— 面板关闭、内容丢弃",
+      "ok": true,
+      "detail": {
+        "panelHidden": true
+      }
+    },
+    {
+      "name": "现场 G1：普通负责人点他人行 K 单元格 = 只读预览（readonly class、无保存按钮、编辑区隐藏、中文只读说明）",
+      "ok": true,
+      "detail": {
+        "readonly": true,
+        "saveVisible": false,
+        "meta": "只读预览（当前身份「王言」对第 T004 行无编辑权限）",
+        "cancel": "关闭"
+      }
+    },
+    {
+      "name": "现场 G2：只读面板无法提交（Ctrl+Enter 无保存路径、未发出任何写请求、面板仍在）",
+      "ok": true,
+      "detail": {
+        "writes": []
+      }
+    },
+    {
+      "name": "现场 G3：只读面板「关闭」按钮可关闭",
+      "ok": true,
+      "detail": {
+        "panelHidden": true
+      }
+    },
+    {
+      "name": "现场 G4：只读面板 Esc 可关闭",
+      "ok": true,
+      "detail": {
+        "panelHidden": true
+      }
+    },
+    {
+      "name": "现场 H1：可编辑面板无未保存内容时 Esc 直接关闭（不弹确认）",
+      "ok": true,
+      "detail": {
+        "panelHidden": true
+      }
+    },
+    {
+      "name": "现场 I1：窄视口（390x844）面板全屏（100vw x 100vh、无圆角），标签栏显示",
+      "ok": true,
+      "detail": {
+        "w": 390,
+        "h": 844,
+        "tabs": "flex"
+      }
+    },
+    {
+      "name": "现场 I2：窄视口默认落在「编辑」页（编辑区可见、预览区不可见）",
+      "ok": true,
+      "detail": {
+        "edit": true,
+        "preview": false
+      }
+    },
+    {
+      "name": "现场 I3：窄视口点「预览」标签后可见区域切换（编辑区隐藏、预览区可见、active 标签切换）",
+      "ok": true,
+      "detail": {
+        "editHidden": true,
+        "previewHidden": false,
+        "activeTab": "note-tab-preview",
+        "dialogTab": "preview",
+        "previewVisibleHeight": 650
+      }
+    },
+    {
+      "name": "现场 I4：切回「编辑」标签后再次切换可见区域",
+      "ok": true,
+      "detail": {
+        "editHidden": false,
+        "previewHidden": true,
+        "activeTab": "note-tab-edit"
+      }
+    },
+    {
+      "name": "现场 M1（CH-1/CH-2 抽样）：36 行常显「编辑」按钮、状态控件与日期输入常显；K 列已无行内编辑器（CH-8 取代实现）",
+      "ok": true,
+      "detail": {
+        "rows": 36,
+        "editButtons": 36,
+        "statusSelects": 36,
+        "dateInputs": 180,
+        "noteInlineEditors": 0
+      }
+    },
+    {
+      "name": "现场 M2（CH-1 回归）：点「编辑」进入行编辑态（tr.row-editing、按钮变「完成」），再点退出编辑态",
+      "ok": true,
+      "detail": {
+        "inEdit": {
+          "editing": 1,
+          "btn": "完成"
+        },
+        "outEdit": {
+          "editing": 0,
+          "btn": "编辑"
+        }
+      }
+    },
+    {
+      "name": "现场 J1：全程无任何外部 / 跨域资源请求（请求面全部同源 127.0.0.1:4180）",
+      "ok": true,
+      "detail": {
+        "total": 12,
+        "external": [],
+        "distinct": [
+          "http://127.0.0.1:4180"
+        ]
+      }
+    },
+    {
+      "name": "现场 J2：全程无 pageerror、无 console error",
+      "ok": true,
+      "detail": {
+        "pageErrors": [],
+        "consoleErrors": []
+      }
+    },
+    {
+      "name": "现场 J3（关键）：只读矩阵全程未发出任何写请求（PUT/POST/DELETE=0），现场数据未被本脚本改动",
+      "ok": true,
+      "detail": {
+        "writes": []
+      }
+    }
+  ]
+}

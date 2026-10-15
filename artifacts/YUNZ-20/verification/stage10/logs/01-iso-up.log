@@ -1,0 +1,10 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+隔离数据目录 /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-30-93111e17d54f/workdir/scratch/stage10-iso/data 初始内容：
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-30-93111e17d54f/workdir/scratch/stage10-iso/data/audit.log
+5766b0ad595f710e4e539b2d6fe8555403a88465609f19004ff3aa3e886f371f  /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-30-93111e17d54f/workdir/scratch/stage10-iso/data/wbs.json
+a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5  /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-30-93111e17d54f/workdir/scratch/stage10-iso/data/wbs.seed.json
+容器：qv-stage10-4181 | wbs-rongcheng:20261015104003 | Up 2 seconds (health: starting)
+镜像 id（隔离实例 vs 现场）：
+sha256:189ae1c4cb60c36153c2ef2f3ec1214c1a996f1377f185d39c91c8953ca3fec8
+sha256:189ae1c4cb60c36153c2ef2f3ec1214c1a996f1377f185d39c91c8953ca3fec8
+{"ok":true,"service":"wbs-rongcheng","revision":6}

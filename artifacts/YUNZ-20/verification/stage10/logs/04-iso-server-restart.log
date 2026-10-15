@@ -1,0 +1,20 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+== 服务端契约用例 2026-10-15 11:10:50+0800（容器内 node，--network host 打 4181） ==
+PASS  服务端 S1：GET /api/wbs 文档契约不变（meta.revision/identities/tasks；note 仍为字符串）  :: {"rev":11,"tasks":36}
+PASS  服务端 S2：note 恰好 20000 字符被接受（200 + revision 递增 + 落盘长度 20000）  :: {"status":200,"rev":12,"diskLen":20000}
+PASS  服务端 S3：note 20001 字符被服务端拒绝（400 + 中文错误指向 note 上限，revision 不变、磁盘逐字节未变）  :: {"status":400,"errors":[{"id":"T005","field":"note","message":"note 长度超过上限 20000"}],"rev":12}
+PASS  服务端 S4：note 非字符串被拒绝（400，note 必须是字符串）—— 数据契约未放宽  :: {"status":400,"errors":[{"id":"T005","field":"note","message":"note 必须是字符串"}]}
+PASS  服务端 S5：过期 If-Match → 409 且不覆盖（磁盘 note 仍为 20000 字符边界值）  :: {"status":409,"current":12}
+PASS  服务端 S6：/api/history 无新字段（记录键集不变），且当日含 note 记录、旧值/新值为 Markdown 原文  :: {"keys":["at","field","identity","level1","level2","new","old","owner","task","task_id"],"count":6}
+---
+PASS=6 FAIL=0
+服务端用例退出码 0
+
+== 重启持久（隔离实例） 2026-10-15 11:10:51+0800 ==
+重启前：T005 note 长度=20000 revision=12
+重启后：T005 note 长度=20000 revision=12
+绑定： LISTEN     0      128          *:4181                     *:*                  
+PASS  重启持久：20000 字符 note 与 revision 跨重启保持一致
+隔离实例数据现场 sha256：
+00efd5fb47110453bbf90dc178c2d1d7efc169986a6b1fd17671d405cbd0a9d3  /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-30-93111e17d54f/workdir/scratch/stage10-iso/data/wbs.json
+4cf70104ef90ca209575f7cb39a377f650d0643e01190a3bd9dff2e413cdd27b  /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-30-93111e17d54f/workdir/scratch/stage10-iso/data/audit.log

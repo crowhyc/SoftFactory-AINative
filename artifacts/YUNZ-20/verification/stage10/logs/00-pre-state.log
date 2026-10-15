@@ -1,0 +1,79 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+# Stage10 复验前现场记录（只读） 2026-10-15 10:59:01+0800
+
+## 1. 数据现场 sha256 / revision
+ef74c4c0d4a105d8f21d5a67106a6101f541c86581286b5d9e329d35e92b4b70  /opt/wbs-rongcheng/data/wbs.json
+a40175a4f4c8bc0a001e8bffdf8ef749d1f22b81cabc41a3b98ce227157fb3e2  /opt/wbs-rongcheng/data/audit.log
+a3632236d54731f21dffd2a9fd41f9b3ea0829f777da4f09aba7f143d9f04aa5  /opt/wbs-rongcheng/data/wbs.seed.json
+revision=5 tasks=36 identities=12 updated_at=2026-10-15T02:44:19.500Z
+task_keys=['dates', 'demo', 'id', 'level1', 'level2', 'note', 'owner', 'status', 'task']
+notes_nonempty=0
+
+## 2. 运行容器 / 镜像 / 绑定
+wbs-rongcheng | wbs-rongcheng:20261015104003 | Up 18 minutes (healthy) | 
+Image=wbs-rongcheng:20261015104003 ImageId=sha256:189ae1c4cb60c36153c2ef2f3ec1214c1a996f1377f185d39c91c8953ca3fec8 NetworkMode=host Env=WBS_HOST=0.0.0.0 WBS_PORT=4180 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin NODE_VERSION=24.21.0 YARN_VERSION=1.22.22 NODE_ENV=production WBS_DATA_DIR=/app/data 
+LISTEN     0      128          *:4180                     *:*                  
+
+## 3. health（回环 / 0.0.0.0 / 公网）
+http://127.0.0.1:4180/api/health -> {"ok":true,"service":"wbs-rongcheng","revision":5}
+http://0.0.0.0:4180/api/health -> {"ok":true,"service":"wbs-rongcheng","revision":5}
+http://47.108.129.157:4180/api/health -> {"ok":true,"service":"wbs-rongcheng","revision":5} (curl rc=0)
+
+## 4. 部署到位：运行态 HTTP 返回 vs 运行目录 vs 源码快照（sha256）
+index.html     served=dad8722de63f35db rundir=dad8722de63f35db snapshot=dad8722de63f35db MATCH
+app.js         served=daca670bbedb09fc rundir=daca670bbedb09fc snapshot=daca670bbedb09fc MATCH
+styles.css     served=7ca05a0481840062 rundir=7ca05a0481840062 snapshot=7ca05a0481840062 MATCH
+template.xlsx          served=e01c269699adad8d rundir=e01c269699adad8d snapshot=e01c269699adad8d MATCH
+vendor/xlsx.full.min.js served=c9506197caf809a0 rundir=c9506197caf809a0 snapshot=c9506197caf809a0 MATCH
+server.js              rundir=96363df49c12d496 snapshot=96363df49c12d496 MATCH
+
+## 5. 镜像内无 node_modules / 无新增依赖
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib64/python3.6/json/__init__.py", line 296, in load
+    return loads(fp.read(),
+  File "/usr/lib64/python3.6/encodings/ascii.py", line 26, in decode
+    return codecs.ascii_decode(input, self.errors)[0]
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xe8 in position 95: ordinal not in range(128)
+package.json dependencies: 
+NO node_modules in image
+data
+package.json
+public
+server.js
+---
+audit.log
+wbs.json
+wbs.json.20261014135531.bak
+wbs.json.20261014144403.bak
+wbs.json.20261014190527.bak
+wbs.json.20261014192829.bak
+wbs.json.20261014201948.bak
+wbs.json.20261014202003.bak
+wbs.json.20261014202005.rollback.bak
+wbs.json.20261014202006.bak
+wbs.json.20261014202054.bak
+wbs.json.20261014202208.bak
+wbs.json.20261014202245.bak
+wbs.json.20261014202301.bak
+wbs.json.20261014202303.rollback.bak
+wbs.json.20261014202304.bak
+wbs.json.20261014203419.bak
+wbs.json.20261014203435.bak
+wbs.json.20261014203437.rollback.bak
+wbs.json.20261014203438.bak
+wbs.json.20261014203454.bak
+wbs.json.20261015103610.bak
+wbs.json.20261015104003.bak
+wbs.seed.json
+
+## 6. 容器内 /app 源码 vs 运行目录（部署到位）
+server.js              image=96363df49c12d496 rundir=96363df49c12d496 MATCH
+public/index.html      image=dad8722de63f35db rundir=dad8722de63f35db MATCH
+public/app.js          image=daca670bbedb09fc rundir=daca670bbedb09fc MATCH
+public/styles.css      image=7ca05a0481840062 rundir=7ca05a0481840062 MATCH
+
+## 7. 未触碰项
+multica-frontend-1 | Up 2 weeks
+multica-backend-1 | Up 2 weeks
+multica-postgres-1 | Up 2 weeks (healthy)
