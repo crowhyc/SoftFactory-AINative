@@ -1,0 +1,18 @@
+=== 自测矩阵 11 · 回归：CH-1…CH-8（含 CH-9/CH-10）/ D-3 / 验收 1–10 / Markdown / 重启持久 / 无外部请求 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage11/browser.log' 'PASS  矩阵11a' 'PASS  矩阵11b' 'PASS  矩阵11c' 'PASS  矩阵11d' 'PASS  矩阵11e' 'PASS  矩阵11f' 'PASS  矩阵11g' 'PASS  矩阵11h' 'PASS  矩阵11i' 'PASS  矩阵11j' && require '/opt/wbs-rongcheng/tests/.tmp/stage11/server.log' 'PASS  矩阵10b 旧 status 保留原值但不被日报引用' 'PASS  矩阵07（前置）CH-9'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵11a
+OK    PASS  矩阵11b
+OK    PASS  矩阵11c
+OK    PASS  矩阵11d
+OK    PASS  矩阵11e
+OK    PASS  矩阵11f
+OK    PASS  矩阵11g
+OK    PASS  矩阵11h
+OK    PASS  矩阵11i
+OK    PASS  矩阵11j
+PASS=10 FAIL=0
+OK    PASS  矩阵10b 旧 status 保留原值但不被日报引用
+OK    PASS  矩阵07（前置）CH-9
+PASS=2 FAIL=0

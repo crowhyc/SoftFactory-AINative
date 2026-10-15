@@ -1,0 +1,13 @@
+=== 自测矩阵 04 · 迁移一次性执行、时间戳备份可回滚、不重复迁移（不污染日报） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage11/browser.log' 'PASS  矩阵04a' 'PASS  矩阵04b' 'PASS  矩阵04c' && require '/opt/wbs-rongcheng/tests/.tmp/stage11/server.log' 'PASS  矩阵04a' 'PASS  矩阵04b' 'PASS  矩阵04c' 'PASS  矩阵04d'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵04a
+OK    PASS  矩阵04b
+OK    PASS  矩阵04c
+PASS=3 FAIL=0
+OK    PASS  矩阵04a
+OK    PASS  矩阵04b
+OK    PASS  矩阵04c
+OK    PASS  矩阵04d
+PASS=4 FAIL=0

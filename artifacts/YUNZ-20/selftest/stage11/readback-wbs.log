@@ -1,0 +1,12 @@
+PASS  WBS 导出为单工作表  :: 工作表1
+PASS  WBS 第 1/2 行 A–K 与源模板逐字一致（含 E 是否演示范围）  :: D2=负责人 / E2=是否演示范围 / K2=进展说明
+PASS  WBS 在 K 之后连续追加 5 个进度列表头  :: 设计进度 / 开发进度 / 测试进度 / 产品进度 / 演示准备进度
+PASS  WBS A–K 数据区逐字段与 JSON 一致（含 demo 原值、日期原文）  :: 36 行
+PASS  WBS 五进度列数据区状态文字与 JSON 一致  :: 36×5 单元格
+PASS  WBS 五进度列颜色填充存在且与五色映射一致（灰/蓝/绿/红/黄）  :: FF27AE60=4 / FF2F80ED=3 / FF9E9E9E=2 / FFE74C3C=5 / FFFFD400=6
+PASS  原「导出日期」标签右移到 Q1（最后一个排序列之后），内容与格式不变、M1 不再是标签  :: 导出日期：2026-10-15 12:39
+PASS  WBS 导出保留 A1:C1 合并  :: <mergeCells count="1"><mergeCell ref="A1:C1"/></mergeCells>
+PASS  WBS 导出 A–K 列宽与模板逐列一致  :: K=47.2592592592593
+PASS  WBS 导出不含旧全局 status 字面量与取值  :: 数据区 36 行 × 16 列
+---
+PASS=10 FAIL=0

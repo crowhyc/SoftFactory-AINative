@@ -1,0 +1,7 @@
+=== 自测矩阵 03 · 页 / API / 磁盘三端一致（含刷新持久） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage11/browser.log' 'PASS  矩阵03 阶段状态改动' 'PASS  矩阵03b'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵03 阶段状态改动
+OK    PASS  矩阵03b
+PASS=2 FAIL=0

@@ -271,7 +271,7 @@ button, input, select { font: inherit; color: inherit; }
 .wbs-table td { max-width: 260px; word-break: break-word; white-space: pre-wrap; }
 .col-id { width: 62px; }
 .col-date { width: 108px; }
-.col-status { width: 104px; }
+.col-phase { width: 108px; }
 .col-op { width: 74px; }
 .cell.locked { color: #64748b; }
 .cell.editable { cursor: cell; background: #fcfdff; }
@@ -294,13 +294,23 @@ button, input, select { font: inherit; color: inherit; }
 .cell textarea { min-height: 52px; resize: vertical; font: inherit; }
 .cell .date-input { min-width: 96px; }
 .cell .owner-select { min-width: 90px; }
-.cell-status { min-width: 104px; }
-.cell-status .status-select { margin-bottom: 4px; }
-.status-select.status-未开始 { background: #f1f5f9; }
-.status-select.status-进行中 { background: #e0f2fe; border-color: #7dd3fc; color: #075985; }
-.status-select.status-已完成 { background: #dcfce7; border-color: #86efac; color: #166534; }
-.status-select.status-已延期 { background: #fef3c7; border-color: #fcd34d; color: #92400e; }
-.status-select.status-被阻塞 { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+/* ---------------- CH-10 五阶段进度：日期列下方的五档下拉（当前值 = 颜色块） ---------------- */
+.cell-date .phase-cell { margin-top: 4px; }
+.cell-date .phase-cell.locked { cursor: default; }
+.phase-select.phase-block { display: block; width: 100%; }
+/* 五色映射：未开始=灰 / 已开始=蓝 / 已完成=绿 / 延期=红 / 阻塞=黄（只读行同样保留颜色块）。 */
+.cell select.phase-select.phase-未开始 { background: #9e9e9e; color: #ffffff; border-color: #8a8a8a; }
+.cell select.phase-select.phase-已开始 { background: #2f80ed; color: #ffffff; border-color: #2a72d4; }
+.cell select.phase-select.phase-已完成 { background: #27ae60; color: #ffffff; border-color: #229954; }
+.cell select.phase-select.phase-延期 { background: #e74c3c; color: #ffffff; border-color: #cf4436; }
+.cell select.phase-select.phase-阻塞 { background: #ffd400; color: #3a2e00; border-color: #e6bf00; }
+.cell select.phase-select:disabled { opacity: 1; }
+/* 五档下拉的「选项」同样带对应颜色。CSP style-src 'self' 会拒绝内联 style，故用类名着色而非内联样式。 */
+.cell select.phase-select option.phase-未开始 { background-color: #9e9e9e; color: #ffffff; }
+.cell select.phase-select option.phase-已开始 { background-color: #2f80ed; color: #ffffff; }
+.cell select.phase-select option.phase-已完成 { background-color: #27ae60; color: #ffffff; }
+.cell select.phase-select option.phase-延期 { background-color: #e74c3c; color: #ffffff; }
+.cell select.phase-select option.phase-阻塞 { background-color: #ffd400; color: #3a2e00; }
 tr.row-editing { background: #f5f8ff; }
 tr.row-editing .cell-editable-editor { padding: 4px; }
 .cell-op { min-width: 74px; }
@@ -310,21 +320,6 @@ tr.l2-start { border-top: 1px solid var(--line-strong); }
 tr.l2-start .cell-l2 { font-weight: 600; color: #0f172a; }
 tr.continuation .cell-l1, tr.continuation .cell-l2 { color: #94a3b8; }
 tr.row-dirty .cell-id { border-left: 3px solid #f59e0b; }
-.badge {
-  display: inline-block;
-  min-width: 60px;
-  padding: 1px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--line-strong);
-  background: #f8fafc;
-  font-size: 12px;
-  text-align: center;
-}
-.badge.status-未开始 { background: #f1f5f9; }
-.badge.status-进行中 { background: #e0f2fe; border-color: #7dd3fc; color: #075985; }
-.badge.status-已完成 { background: #dcfce7; border-color: #86efac; color: #166534; }
-.badge.status-已延期 { background: #fef3c7; border-color: #fcd34d; color: #92400e; }
-.badge.status-被阻塞 { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
 .empty-state { margin: 12px 4px; color: var(--muted); }
 .footer {
   display: flex;

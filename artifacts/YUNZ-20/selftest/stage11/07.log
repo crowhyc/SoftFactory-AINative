@@ -1,0 +1,14 @@
+=== 自测矩阵 07 · WBS 导出：A–K 保真 + 五进度列文字与颜色读回 + 导出日期标签右移到 Q1 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage11/browser.log' 'PASS  矩阵07a' 'PASS  矩阵07b' && require '/opt/wbs-rongcheng/tests/.tmp/stage11/readback-wbs.log' 'WBS A–K 数据区逐字段与 JSON 一致' 'WBS 五进度列数据区状态文字与 JSON 一致' 'WBS 五进度列颜色填充存在' '原「导出日期」标签右移到 Q1' 'WBS 导出保留 A1:C1 合并' 'WBS 导出不含旧全局 status'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵07a
+OK    PASS  矩阵07b
+PASS=2 FAIL=0
+OK    WBS A–K 数据区逐字段与 JSON 一致
+OK    WBS 五进度列数据区状态文字与 JSON 一致
+OK    WBS 五进度列颜色填充存在
+OK    原「导出日期」标签右移到 Q1
+OK    WBS 导出保留 A1:C1 合并
+OK    WBS 导出不含旧全局 status
+PASS=6 FAIL=0

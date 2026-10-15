@@ -24,6 +24,8 @@ const DATA_DIR = process.env.DATA_DIR || '/app/tests/.tmp/stage7-browser-data';
 const TZ = 'Asia/Shanghai';
 const IDENTITIES = ['项目负责人', '李欢', '王言', '张航瑞', '郑述文', '崔文建', '余宇', '黄逸偲', '陈江'];
 const STATUSES = ['未开始', '进行中', '已完成', '已延期', '被阻塞'];
+const PHASES = ['未开始', '已开始', '已完成', '延期', '阻塞'];
+const PHASE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
 
 const results = { base: BASE, tz: TZ, started_at: new Date().toISOString(), checks: [], page_errors: [], console_errors: [] };
 let pass = 0;
@@ -85,9 +87,9 @@ function stopServer() {
       meta: { name: doc0.meta.name },
       identities: doc0.identities.slice(),
       tasks: doc0.tasks.map((task) => {
-        if (task.id === 'T003') return Object.assign({}, task, { status: '被阻塞', note: '日报自测：等待外部依赖' });
-        if (task.id === 'T004') return Object.assign({}, task, { status: '已延期' });
-        if (task.id === 'T005') return Object.assign({}, task, { status: '进行中' });
+        if (task.id === 'T003') return Object.assign({}, task, { phases: Object.assign({}, task.phases, { test: '阻塞' }), note: '日报自测：等待外部依赖' });
+        if (task.id === 'T004') return Object.assign({}, task, { phases: Object.assign({}, task.phases, { dev: '延期' }) });
+        if (task.id === 'T005') return Object.assign({}, task, { phases: Object.assign({}, task.phases, { product: '已完成' }) });
         return task;
       })
     };
@@ -98,7 +100,7 @@ function stopServer() {
     });
     if (prep.status !== 200) throw new Error('准备数据失败 HTTP ' + prep.status);
     fs.writeFileSync(path.join(OUTDIR, 'wbs-at-export.json'), JSON.stringify(prepared));
-    console.log('[env] 准备数据 revision=' + prep.body.revision + '（T003 被阻塞 / T004 已延期 / T005 进行中）');
+    console.log('[env] 准备数据 revision=' + prep.body.revision + '（T003 测试=阻塞 / T004 开发=延期 / T005 产品=已完成）');
 
     browser = await chromium.launch({ args: ['--no-sandbox', '--disable-dev-shm-usage'] });
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
@@ -127,6 +129,17 @@ function stopServer() {
         editable: td ? td.classList.contains('editable') : null
       };
     }, [id, field]);
+    const phaseState = (id, key) => page.evaluate(([rowId, k]) => {
+      const td = document.querySelector('#wbs-body tr[data-id="' + rowId + '"] td[data-field="dates.' + k + '"]');
+      const sel = td ? td.querySelector('select.phase-select') : null;
+      return {
+        hasControl: !!sel,
+        tag: sel ? 'select' : null,
+        disabled: sel ? !!sel.disabled : null,
+        value: sel ? sel.value : null,
+        options: sel ? Array.from(sel.options).map((o) => o.value) : []
+      };
+    }, [id, key]);
     const hint = () => page.evaluate(() => {
       const el = document.getElementById('hint');
       return el.hidden ? '' : el.textContent.trim();
@@ -204,26 +217,26 @@ function stopServer() {
     for (const key of ['design', 'dev', 'test', 'product', 'demo_prep']) {
       foreignDates[key] = await columnState(foreignId, 'dates.' + key);
     }
-    const foreignStatus = await columnState(foreignId, 'status');
+    const foreignPhase = await phaseState(foreignId, 'design');
     const allDisabled = Object.keys(foreignDates).every((key) => foreignDates[key].hasControl && foreignDates[key].type === 'date' && foreignDates[key].disabled === true);
     check('矩阵2a 无权限行五列日期常显为 type=date 且 disabled（非「点击才出现」）', allDisabled, foreignDates);
-    check('矩阵2b 无权限行状态列常显下拉、disabled、选项集合不变',
-      foreignStatus.hasControl && foreignStatus.tag === 'select' && foreignStatus.disabled === true && JSON.stringify(foreignStatus.options) === JSON.stringify(STATUSES),
-      { options: foreignStatus.options, disabled: foreignStatus.disabled });
+    check('矩阵2b 无权限行阶段进度下拉常显、disabled、选项集合不变（五阶段枚举）',
+      foreignPhase.hasControl && foreignPhase.tag === 'select' && foreignPhase.disabled === true && JSON.stringify(foreignPhase.options) === JSON.stringify(PHASES),
+      { options: foreignPhase.options, disabled: foreignPhase.disabled });
 
     await page.click('#wbs-body tr[data-id="' + foreignId + '"] td[data-field="dates.design"]');
     await page.waitForTimeout(200);
     const lockedHintDate = await hint();
     check('矩阵2c 点击无权限行日期单元格仍给中文只读提示', lockedHintDate.indexOf('只读') !== -1 && lockedHintDate.indexOf('设计') !== -1, lockedHintDate);
-    await page.click('#wbs-body tr[data-id="' + foreignId + '"] td[data-field="status"]');
+    await page.click('#wbs-body tr[data-id="' + foreignId + '"] td[data-field="dates.design"] .phase-cell');
     await page.waitForTimeout(200);
     const lockedHintStatus = await hint();
-    check('矩阵2d 点击无权限行状态单元格仍给中文只读提示', lockedHintStatus.indexOf('只读') !== -1 && lockedHintStatus.indexOf('状态') !== -1, lockedHintStatus);
+    check('矩阵2d 点击无权限行阶段进度单元格仍给中文只读提示', lockedHintStatus.indexOf('只读') !== -1 && lockedHintStatus.indexOf('设计进度') !== -1, lockedHintStatus);
 
     const ownDates = await columnState(ownId, 'dates.design');
-    const ownStatus = await columnState(ownId, 'status');
-    check('矩阵2e 本人行日期/状态控件可交互（未 disabled）', ownDates.hasControl && ownDates.disabled === false && ownStatus.hasControl && ownStatus.disabled === false,
-      { date_disabled: ownDates.disabled, status_disabled: ownStatus.disabled });
+    const ownPhase = await phaseState(ownId, 'design');
+    check('矩阵2e 本人行日期/阶段进度控件可交互（未 disabled）', ownDates.hasControl && ownDates.disabled === false && ownPhase.hasControl && ownPhase.disabled === false,
+      { date_disabled: ownDates.disabled, phase_disabled: ownPhase.disabled });
     await page.click('#wbs-body tr[data-id="' + foreignId + '"] td[data-field="note"]');
     await page.waitForTimeout(200);
     const othersHint = await hint();
@@ -269,7 +282,7 @@ function stopServer() {
 
     const pmControls = {
       dates: {},
-      status: await columnState('T003', 'status'),
+      phase: await phaseState('T003', 'design'),
       owner: await columnState('T001', 'owner')
     };
     for (const key of ['design', 'dev', 'test', 'product', 'demo_prep']) {
@@ -278,9 +291,10 @@ function stopServer() {
     check('矩阵1a 项目负责人可见五列日期常显 type=date 且可交互（未 disabled）',
       Object.keys(pmControls.dates).every((key) => pmControls.dates[key].hasControl && pmControls.dates[key].type === 'date' && pmControls.dates[key].disabled === false),
       pmControls.dates.design);
-    check('矩阵1b 状态列常显五枚举下拉且可交互',
-      pmControls.status.tag === 'select' && pmControls.status.disabled === false && JSON.stringify(pmControls.status.options) === JSON.stringify(STATUSES),
-      pmControls.status.options);
+    check('矩阵1b 五阶段进度下拉常显五枚举且可交互（旧「状态」列已移除）',
+      pmControls.phase.tag === 'select' && pmControls.phase.disabled === false && JSON.stringify(pmControls.phase.options) === JSON.stringify(PHASES) &&
+      (await page.evaluate(() => document.querySelectorAll('#wbs-body td[data-field="status"]').length)) === 0,
+      pmControls.phase.options);
     check('矩阵5 负责人列为下拉、选项＝当前人员池（项目负责人可见）',
       pmControls.owner.tag === 'select' && JSON.stringify(pmControls.owner.options) === JSON.stringify(IDENTITIES) && (await cellValue('T001', 'owner')) === '李欢',
       pmControls.owner.options);
@@ -324,8 +338,10 @@ function stopServer() {
       await page.evaluate(() => {
         window.__captured = null;
         window.__capturedName = null;
-        window.XLSX.writeFile = (workbook, name) => {
-          window.__captured = window.XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+        window.WBS_DOWNLOAD_HOOK = (bytes, name) => {
+          let out = '';
+          for (let i = 0; i < bytes.length; i += 8192) out += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
+          window.__captured = btoa(out);
           window.__capturedName = name;
         };
       });
@@ -354,47 +370,58 @@ function stopServer() {
     check('矩阵7a 日报文件名与日期口径正确', dailyNameOk, { name: daily.name, today: today() });
     results.daily = { name: daily.name, sheets: daily.sheets };
     if (!daily.sheets) throw new Error('日报未产出文件');
-    check('矩阵7b 日报为单个 workbook、两个 sheet（阻塞与延期 / 当日变更）',
-      daily.sheets.length === 2 && daily.sheets[0].name === '阻塞与延期' && daily.sheets[1].name === '当日变更',
+    check('矩阵7b 日报为单个 workbook、三个 sheet（今日摘要 / 阻塞与延期 / 当日变更）',
+      daily.sheets.length === 3 && daily.sheets.map((s) => s.name).join('/') === '今日摘要/阻塞与延期/当日变更',
       daily.sheets.map((s) => s.name));
 
-    const blockedRows = daily.sheets[0].rows;
+    const blockedRows = daily.sheets[1].rows;
     const blockedHeader = blockedRows[0];
     const blockedBody = blockedRows.slice(1);
-    check('矩阵7c 阻塞与延期表头 = A–K 全字段 + 状态（12 列）',
-      blockedHeader.length === 12 && blockedHeader[11] === '状态' && blockedHeader[0] === '一级' && blockedHeader[10] === '进展说明',
+    check('矩阵7c 阻塞与延期表头 = A–K 全字段 + 五个阶段进度列（16 列，含 是否演示范围）',
+      blockedHeader.length === 16 && blockedHeader[4] === '是否演示范围' && blockedHeader[10] === '进展说明' &&
+      blockedHeader[11] === '设计进度' && blockedHeader[15] === '演示准备进度',
       blockedHeader);
-    const expectedBlocked = prepared.tasks.filter((task) => ['被阻塞', '已延期'].indexOf(task.status) !== -1).map((task) => {
-      const dates = task.dates || {};
-      return [task.level1, task.level2, task.task, task.owner, task.demo]
-        .concat(['design', 'dev', 'test', 'product', 'demo_prep'].map((key) => dates[key] || ''))
-        .concat([task.note, task.status]);
-    });
-    check('矩阵7d 阻塞与延期 sheet 恰好 = status ∈ {被阻塞, 已延期} 的行，A–K + 状态逐字段与数据一致',
-      JSON.stringify(blockedBody) === JSON.stringify(expectedBlocked) && blockedBody.length === 2,
+    const blockedRank = (task) => (PHASE_KEYS.some((k) => task.phases[k] === '阻塞') ? 0 : 1);
+    const expectedBlocked = prepared.tasks
+      .filter((task) => PHASE_KEYS.some((k) => ['延期', '阻塞'].indexOf(task.phases[k]) !== -1))
+      .sort((a, b) => blockedRank(a) - blockedRank(b))
+      .map((task) => {
+        const dates = task.dates || {};
+        const phases = task.phases || {};
+        return [task.level1, task.level2, task.task, task.owner, task.demo]
+          .concat(PHASE_KEYS.map((key) => dates[key] || ''))
+          .concat([task.note])
+          .concat(PHASE_KEYS.map((key) => phases[key] || ''));
+      });
+    check('矩阵7d 阻塞与延期 sheet 恰好 = 任一阶段 ∈ {延期, 阻塞} 的行，A–K + 五进度列逐字段与数据一致（阻塞行排前）',
+      JSON.stringify(blockedBody) === JSON.stringify(expectedBlocked) && blockedBody.length >= 2,
       { expected: expectedBlocked, actual: blockedBody });
 
-    const changeRowsOut = daily.sheets[1].rows;
+    const changeRowsOut = daily.sheets[2].rows;
     const changeHeader = changeRowsOut[0];
     const changeBody = changeRowsOut.slice(1);
-    check('矩阵8a 当日变更表头正确（id/一级/二级/任务项/负责人/改动字段/旧值/新值/时间/操作身份）',
-      JSON.stringify(changeHeader) === JSON.stringify(['id', '一级', '二级', '任务项', '负责人', '改动字段', '旧值', '新值', '时间', '操作身份']),
+    check('矩阵8a 当日变更表头正确（一级/二级/任务项/负责人/改动字段/旧值/新值/时间/操作身份）',
+      JSON.stringify(changeHeader) === JSON.stringify(['一级', '二级', '任务项', '负责人', '改动字段', '旧值', '新值', '时间', '操作身份']),
       changeHeader);
+    const nameById = {};
+    prepared.tasks.forEach((t) => { nameById[t.id] = t.task; });
+    const beforeById = {};
+    doc0.tasks.forEach((t) => { beforeById[t.id] = t; });
     const expectedChanges = [
-      ['T003', '进展说明', '', '日报自测：等待外部依赖'],
-      ['T003', '状态', '未开始', '被阻塞'],
-      ['T004', '状态', '未开始', '已延期'],
-      ['T005', '状态', '未开始', '进行中']
+      [nameById.T003, '进展说明', '', '日报自测：等待外部依赖'],
+      [nameById.T003, '测试进度', beforeById.T003.phases.test, '阻塞'],
+      [nameById.T004, '开发进度', beforeById.T004.phases.dev, '延期'],
+      [nameById.T005, '产品进度', beforeById.T005.phases.product, '已完成']
     ];
-    const actualChanges = changeBody.map((row) => [row[0], row[5], row[6], row[7]]);
-    const shapeOk = changeBody.every((row) => row.length === 10 && row[9] === '项目负责人' &&
-      /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(row[8]) && row[8].slice(0, 10) === today() &&
-      row[1] !== '' && row[4] !== '');
+    const actualChanges = changeBody.map((row) => [row[2], row[4], row[5], row[6]]);
+    const shapeOk = changeBody.every((row) => row.length === 9 && row[8] === '项目负责人' &&
+      /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(row[7]) && row[7].slice(0, 10) === today() &&
+      row[1] !== '' && row[3] !== '');
     const setEqual = (a, b) => JSON.stringify(a.slice().sort()) === JSON.stringify(b.slice().sort());
     check('矩阵8b 当日变更每行 = 一个被改动的字段，旧值→新值/时间/操作身份正确（自然日口径）',
       shapeOk && changeBody.length === expectedChanges.length && setEqual(actualChanges, expectedChanges),
       { expected: expectedChanges, actual: actualChanges });
-    const times = changeBody.map((row) => Date.parse(row[8].replace(' ', 'T') + '+08:00'));
+    const times = changeBody.map((row) => Date.parse(row[7].replace(' ', 'T') + '+08:00'));
     check('矩阵8c 当日变更同一任务按时间升序', times.every((t, i) => i === 0 || t >= times[i - 1]), times);
     if (daily.base64) fs.writeFileSync(path.join(OUTDIR, daily.name), Buffer.from(daily.base64, 'base64'));
 
@@ -432,26 +459,27 @@ function stopServer() {
       JSON.stringify(wbsFidelity.capture_data) === JSON.stringify(expectedWbsRows),
       { name: wbsExport.name, rows: wbsFidelity.capture_data.length, expect: expectedWbsRows.length });
     const rowA2K = (row) => (row || []).slice(0, 11);
-    check('矩阵9b 原 WBS 导出第 1/2 行 A–K 逐字与源模板一致（无状态列；CH-6 仅新增 M1 标签，不改原文）',
+    check('矩阵9b 原 WBS 导出第 1/2 行 A–K 逐字与源模板一致，K 后追加五个阶段进度列表头（旧状态列已移除）',
       JSON.stringify(rowA2K(wbsFidelity.capture_row1)) === JSON.stringify(rowA2K(wbsFidelity.template_row1)) &&
       JSON.stringify(rowA2K(wbsFidelity.capture_row2)) === JSON.stringify(rowA2K(wbsFidelity.template_row2)) &&
-      wbsFidelity.capture_row2[3] === '负责人' && wbsFidelity.capture_row2[10] === '进展说明' && wbsFidelity.capture_row2[11] === '',
+      wbsFidelity.capture_row2[3] === '负责人' && wbsFidelity.capture_row2[10] === '进展说明' &&
+      wbsFidelity.capture_row2[11] === '设计进度' && wbsFidelity.capture_row2[15] === '演示准备进度',
       { row2: wbsFidelity.capture_row2 });
     const dataFlat = JSON.stringify(wbsFidelity.capture_data);
     check('矩阵9c 原 WBS 导出数据区不含 status 字段与五个状态取值（status 不导出）',
       dataFlat.indexOf('status') === -1 && STATUSES.every((status) => dataFlat.indexOf(status) === -1) &&
       wbsFidelity.sheet_names.length === 1,
       { has_status_literal: dataFlat.indexOf('status') !== -1, sheets: wbsFidelity.sheet_names });
-    /* ---------- 矩阵13（CH-6）：M1 导出日期标签（Asia/Shanghai，仅新增 M1） ---------- */
-    const m1 = String(wbsFidelity.capture_row1[12] == null ? '' : wbsFidelity.capture_row1[12]);
-    const m2 = String(wbsFidelity.capture_row2[12] == null ? '' : wbsFidelity.capture_row2[12]);
-    check('矩阵13a（CH-6）原 WBS 导出 M1 写入「导出日期：YYYY-MM-DD HH:mm」（Asia/Shanghai 当日）',
-      /^导出日期：\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(m1) && m1.slice(5, 15) === today(),
-      { m1, today: today() });
-    check('矩阵13b（CH-6）M1 为唯一新增单元格：模板 M1/M2 原为空、A1:C1 合并与 A–K 数据区不受影响',
-      String(wbsFidelity.template_row1[12] == null ? '' : wbsFidelity.template_row1[12]) === '' && m2 === '' &&
+    /* ---------- 矩阵13（CH-10）：Q1 导出日期标签（Asia/Shanghai，仅新增 Q1） ---------- */
+    const q1 = String(wbsFidelity.capture_row1[16] == null ? '' : wbsFidelity.capture_row1[16]);
+    const q2 = String(wbsFidelity.capture_row2[16] == null ? '' : wbsFidelity.capture_row2[16]);
+    check('矩阵13a（CH-10）原 WBS 导出 Q1 写入「导出日期：YYYY-MM-DD HH:mm」（Asia/Shanghai 当日）',
+      /^导出日期：\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(q1) && q1.slice(5, 15) === today(),
+      { q1, today: today() });
+    check('矩阵13b（CH-10）Q1 为唯一新增单元格：模板 Q1/Q2 原为空、A1:C1 合并与 A–K 数据区不受影响',
+      String(wbsFidelity.template_row1[16] == null ? '' : wbsFidelity.template_row1[16]) === '' && q2 === '' &&
       wbsFidelity.template_row_count === wbsFidelity.capture_data.length + 2,
-      { template_m1: wbsFidelity.template_row1[12], m2: m2, template_rows: wbsFidelity.template_row_count });
+      { template_q1: wbsFidelity.template_row1[16], q2: q2, template_rows: wbsFidelity.template_row_count });
 
     /* ---------- 矩阵5：项目负责人改派负责人 + 保存 + 三端一致 + 刷新持久 ---------- */
     const beforeOwner = await cellValue('T001', 'owner');
@@ -604,12 +632,12 @@ function stopServer() {
     const daily2Name = String(daily2.name || 'daily-after-add.xlsx').replace(/\.xlsx$/, '-含新增人员.xlsx');
     if (daily2.base64) fs.writeFileSync(path.join(OUTDIR, daily2Name), Buffer.from(daily2.base64, 'base64'));
     const changeSheet2 = (daily2.sheets || []).find((sheet) => sheet.name === '当日变更');
-    const addRow2 = changeSheet2 ? changeSheet2.rows.find((row) => row[5] === '人员池' && row[7] === '赵新') : null;
-    const poolRows2 = changeSheet2 ? changeSheet2.rows.filter((row) => row[5] === '人员池') : [];
+    const addRow2 = changeSheet2 ? changeSheet2.rows.find((row) => row[4] === '人员池' && row[6] === '赵新') : null;
+    const poolRows2 = changeSheet2 ? changeSheet2.rows.filter((row) => row[4] === '人员池') : [];
     check('矩阵14c（CH-7）日报「当日变更」sheet 含「新增人员 赵新」一行（任务项=新增人员 赵新 / 改动字段=人员池 / 旧值空 / 新值=姓名 / 操作身份照实）',
-      !!addRow2 && addRow2[0] === '' && addRow2[1] === '' && addRow2[2] === '' && addRow2[3] === '新增人员 赵新' &&
-      addRow2[4] === '' && addRow2[5] === '人员池' && addRow2[6] === '' && addRow2[7] === '赵新' &&
-      /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(String(addRow2[8])) && addRow2[9] === '项目负责人' &&
+      !!addRow2 && addRow2[0] === '' && addRow2[1] === '' && addRow2[2] === '新增人员 赵新' &&
+      addRow2[3] === '' && addRow2[4] === '人员池' && addRow2[5] === '' && addRow2[6] === '赵新' &&
+      /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(String(addRow2[7])) && addRow2[8] === '项目负责人' &&
       poolRows2.length === 1,
       addRow2);
 

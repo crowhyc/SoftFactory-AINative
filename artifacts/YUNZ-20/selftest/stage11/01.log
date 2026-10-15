@@ -1,0 +1,9 @@
+=== 自测矩阵 01 · 五阶段下拉常显与五色映射（灰/蓝/绿/红/黄；含 option 颜色） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage11/browser.log' 'PASS  矩阵01a' 'PASS  矩阵01b' 'PASS  矩阵01c' 'PASS  矩阵01d'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵01a
+OK    PASS  矩阵01b
+OK    PASS  矩阵01c
+OK    PASS  矩阵01d
+PASS=4 FAIL=0

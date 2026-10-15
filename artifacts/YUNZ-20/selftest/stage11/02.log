@@ -1,0 +1,8 @@
+=== 自测矩阵 02 · 普通负责人 / PM 权限边界与只读提示 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage11/browser.log' 'PASS  矩阵02a' 'PASS  矩阵02b' 'PASS  矩阵02c'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵02a
+OK    PASS  矩阵02b
+OK    PASS  矩阵02c
+PASS=3 FAIL=0

@@ -1,0 +1,10 @@
+=== 自测矩阵 09 · 到期未更新判定 与「当天已更新则不判定」两条构造用例 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage11/browser.log' 'PASS  矩阵09a' 'PASS  矩阵09b' && require '/opt/wbs-rongcheng/tests/.tmp/stage11/server.log' 'PASS  矩阵09a' 'PASS  矩阵09b'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵09a
+OK    PASS  矩阵09b
+PASS=2 FAIL=0
+OK    PASS  矩阵09a
+OK    PASS  矩阵09b
+PASS=2 FAIL=0

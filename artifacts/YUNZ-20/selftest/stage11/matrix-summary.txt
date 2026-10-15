@@ -1,0 +1,28 @@
+YUNZ-31 变更包 #4（CH-9 + CH-10）作者自测开始 2026-10-15T12:38:49+0800
+node: /bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+v24.21.0  python3: Python 3.6.8  docker: Docker version 26.1.4, build 5650f9b  today: 2026-10-15
+
+--- 准备 A：真实浏览器（Chromium 容器）用例集（迁移边界 + 五阶段 + 日报/WBS 导出） ---
+浏览器用例集退出码 0（完整输出：/opt/wbs-rongcheng/tests/.tmp/stage11/browser.log）
+--- 准备 B：服务端迁移 / 派生规则 / 审计用例集 ---
+服务端用例集退出码 0（完整输出：/opt/wbs-rongcheng/tests/.tmp/stage11/server.log）
+--- 准备 C：导出产物宿主 python 独立读回（zip/XML，不依赖 openpyxl） ---
+WBS 读回退出码 0（/opt/wbs-rongcheng/tests/.tmp/stage11/readback-wbs.log） 日报读回退出码 0（/opt/wbs-rongcheng/tests/.tmp/stage11/readback-daily.log）
+
+01   五阶段下拉常显与五色映射（灰/蓝/绿/红/黄；含 option 颜色） 通过（PASS=4 FAIL=0）
+02   普通负责人 / PM 权限边界与只读提示         通过（PASS=3 FAIL=0）
+03   页 / API / 磁盘三端一致（含刷新持久）      通过（PASS=2 FAIL=0）
+04   迁移一次性执行、时间戳备份可回滚、不重复迁移（不污染日报） 通过（PASS=4 FAIL=0）
+05   恰好边界（今天 / 昨天 / 缺失）迁移结果   通过（PASS=1 FAIL=0）
+06   保存与 409（阶段状态字段级 audit + 并发非覆盖 + 非法枚举 400） 通过（PASS=3 FAIL=0）
+07   WBS 导出：A–K 保真 + 五进度列文字与颜色读回 + 导出日期标签右移到 Q1 通过（PASS=6 FAIL=0）
+08   今日摘要格式逐字断言（含 @ 与风险前缀）与重要度排序 通过（PASS=2 FAIL=0）
+09   到期未更新判定 与「当天已更新则不判定」两条构造用例 通过（PASS=2 FAIL=0）
+10   日报三 sheet 与 CH-7 新增人员审计              通过（PASS=4 FAIL=0）
+11   回归：CH-1…CH-8（含 CH-9/CH-10）/ D-3 / 验收 1–10 / Markdown / 重启持久 / 无外部请求 通过（PASS=2 FAIL=0）
+12   既有 18 项矩阵回归（JS/DOM/导出；按当前部署口径跳过容器附加项） 通过（PASS=1 FAIL=0）
+13   Stage7 矩阵 01–14 回归（CH-1…CH-7 真实浏览器深度复跑） 通过（PASS=1 FAIL=0）
+14   部署与镜像自检（BIND_HOST=0.0.0.0 / 双端+公网 health / 无 node_modules / 资源与源码一致 / 新基线 live 冒烟） 通过（PASS=6 FAIL=0）
+
+结论：变更包 #4（CH-9 + CH-10）作者自测矩阵 01–14 全部通过（浏览器用例集 0 / 服务端用例集 0）
+输出目录：/opt/wbs-rongcheng/tests/.tmp/stage11

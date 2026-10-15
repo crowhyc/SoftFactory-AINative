@@ -21,6 +21,11 @@ const MAX_BODY = 4 * 1024 * 1024;
 
 const STATUS_ENUM = ['未开始', '进行中', '已完成', '已延期', '被阻塞'];
 const DATE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
+/* CH-10：五阶段独立进度。phases.<key> 取值为下列五枚举之一；字段级审计路径写作 phases.<key>.status。 */
+const PHASE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
+const PHASE_ENUM = ['未开始', '已开始', '已完成', '延期', '阻塞'];
+const PHASE_LABELS = { design: '设计', dev: '开发', test: '测试', product: '产品', demo_prep: '演示准备' };
+const MIGRATION_IDENTITY = '系统迁移';
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const TASK_FIELDS = ['level1', 'level2', 'task', 'owner', 'demo', 'note'];
 const IDENTITY_MAX_LEN = 20;
@@ -132,6 +137,21 @@ function validateDocument(body) {
       });
     }
 
+    /* CH-10：phases 五键必须齐备，取值仅限五枚举；未知阶段字段一律拒绝。 */
+    if (!isPlainObject(task.phases)) {
+      push(id, 'phases', 'phases 必须是对象');
+    } else {
+      PHASE_KEYS.forEach((key) => {
+        const value = task.phases[key];
+        if (typeof value !== 'string' || PHASE_ENUM.indexOf(value) === -1) {
+          push(id, 'phases.' + key, '阶段进度必须是 ' + PHASE_ENUM.join(' / ') + ' 之一');
+        }
+      });
+      Object.keys(task.phases).forEach((key) => {
+        if (PHASE_KEYS.indexOf(key) === -1) push(id, 'phases.' + key, '未知阶段字段');
+      });
+    }
+
     if (typeof task.status !== 'string' || STATUS_ENUM.indexOf(task.status) === -1) {
       push(id, 'status', '状态必须是 ' + STATUS_ENUM.join(' / ') + ' 之一');
     }
@@ -201,6 +221,71 @@ function appendAudit(entry) {
   }
 }
 
+/* ------------------------------------------------------- CH-10 一次性迁移 */
+
+/* YYYYMMDDHHmmss（本地时区），用于时间戳备份文件名。 */
+function compactStamp(at) {
+  const d = at instanceof Date ? at : new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return String(d.getFullYear()) + pad(d.getMonth() + 1) + pad(d.getDate()) +
+    pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
+}
+
+/* 迁移是否尚未执行：任一行缺少 phases 或取值非法即视为未迁移。 */
+function needsMigration(doc) {
+  const tasks = (doc && Array.isArray(doc.tasks)) ? doc.tasks : [];
+  return tasks.some((task) => {
+    if (!isPlainObject(task.phases)) return true;
+    const keys = Object.keys(task.phases);
+    if (keys.some((key) => PHASE_KEYS.indexOf(key) === -1)) return true;
+    return PHASE_KEYS.some((key) => PHASE_ENUM.indexOf(task.phases[key]) === -1);
+  });
+}
+
+/* 依据 dates.* 一次性生成 phases：日期存在且早于今天 → 延期，否则 → 未开始。
+   迁移前先落时间戳备份；审计每阶段一条 type:"migrated"（操作身份「系统迁移」），
+   该类型不进日报任何 sheet、也不产生「今日摘要」事件。revision 正常递增。 */
+function migrateDocument(doc, today, options) {
+  const opts = options || {};
+  const at = opts.at || new Date().toISOString();
+  let backup = null;
+  if (fs.existsSync(DATA_FILE)) {
+    backup = DATA_FILE + '.' + compactStamp(new Date(at)) + '.bak';
+    fs.copyFileSync(DATA_FILE, backup);
+  }
+  const revision = Number(doc.meta.revision) + 1;
+  const tasks = (doc.tasks || []).map((task) => {
+    const phases = {};
+    PHASE_KEYS.forEach((key) => {
+      const planned = isPlainObject(task.dates) && typeof task.dates[key] === 'string' ? task.dates[key] : '';
+      phases[key] = (isValidDateString(planned) && planned < today) ? '延期' : '未开始';
+    });
+    return Object.assign({}, task, { phases });
+  });
+  const next = {
+    meta: Object.assign({}, doc.meta, { revision, updated_at: at }),
+    identities: (doc.identities || []).slice(),
+    tasks
+  };
+  atomicWriteJson(DATA_FILE, next);
+  tasks.forEach((task) => {
+    PHASE_KEYS.forEach((key) => {
+      appendAudit({
+        type: 'migrated',
+        identity: MIGRATION_IDENTITY,
+        task_id: task.id,
+        phase: key,
+        field: 'phases.' + key + '.status',
+        old: '',
+        new: task.phases[key],
+        at,
+        revision
+      });
+    });
+  });
+  return { backup, revision, at, migrated: tasks.length * PHASE_KEYS.length };
+}
+
 /* 字段级差异：同时给出 old/new 映射（键：任务 id → 字段 → 值）与改动后快照，
    供 audit.log 记录与 /api/history 还原「当日变更」。dates 展开到 dates.<key>。 */
 function diffFields(prevDoc, nextDoc) {
@@ -231,6 +316,17 @@ function diffFields(prevDoc, nextDoc) {
           const a = before[key] == null ? '' : String(before[key]);
           const b = after[key] == null ? '' : String(after[key]);
           if (a !== b) record('dates.' + key, a, b);
+        });
+        return;
+      }
+      /* CH-10：phases 展平为字段级路径 phases.<阶段>.status（契约指定口径），便于日报逐阶段归类。 */
+      if (field === 'phases') {
+        const before = isPlainObject(old.phases) ? old.phases : {};
+        const after = isPlainObject(task.phases) ? task.phases : {};
+        [...new Set([...Object.keys(before), ...Object.keys(after)])].forEach((key) => {
+          const a = before[key] == null ? '' : String(before[key]);
+          const b = after[key] == null ? '' : String(after[key]);
+          if (a !== b) record('phases.' + key + '.status', a, b);
         });
         return;
       }
@@ -325,6 +421,8 @@ function historyRecords(dateStr, tz) {
     let entry = null;
     try { entry = JSON.parse(text); } catch (err) { return; }
     if (!isPlainObject(entry)) return;
+    /* CH-10：一次性迁移审计（type:"migrated"，身份「系统迁移」）不进日报任何 sheet。 */
+    if (entry.type === 'migrated') return;
     /* CH-7：新增人员审计事件 → 日报「当日变更」一行（改动字段 人员池、旧值空、新值姓名）。 */
     if (entry.type === 'identity_added') {
       const atText = entry.at == null ? entry.ts : entry.at;
@@ -362,6 +460,142 @@ function historyRecords(dateStr, tz) {
   });
   records.sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
   return records;
+}
+
+/* ------------------------------------------------ CH-10 当日概览（日报口径） */
+
+/* 重要度排序：延期 > 阻塞 > 到期未更新判定延期 > 完成 > 普通变更。 */
+const DAILY_RANK = { '延期': 1, '阻塞': 2, '到期未更新': 3, '完成': 4, '普通': 5 };
+const DAILY_PREFIX = { '延期': '延期·高风险', '阻塞': '阻塞·高风险', '到期未更新': '延期·高风险', '完成': '完成', '普通': '普通' };
+const DAILY_FIELD_LABELS = { owner: '负责人', level1: '一级', level2: '二级', task: '任务项', demo: '是否演示范围' };
+
+/* MM-DD（结论模板要求的最简日期表达）；空值写「（空）」。 */
+function mmdd(value) {
+  const text = String(value == null ? '' : value);
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text);
+  if (match) return match[2] + '-' + match[3];
+  return text === '' ? '（空）' : text;
+}
+
+/* 单条字段变更记录的重要度分类（用于「当日变更」排序与摘要结论）。 */
+function changeCategory(field, value) {
+  const phase = /^phases\.(.+)\.status$/.exec(String(field || ''));
+  if (!phase) return '普通';
+  if (value === '延期') return '延期';
+  if (value === '阻塞') return '阻塞';
+  if (value === '已完成') return '完成';
+  return '普通';
+}
+
+/* 当日概览：三张 sheet 的数据（今日摘要事件 / 阻塞与延期行 / 当日变更明细）。
+   派生规则：阶段计划日期 < 今天，且今天 0 点至今该阶段日期与状态都没被更新 → 到期未更新判定延期。 */
+function dailyOverview(doc, dateStr, tz) {
+  /* CH-10：旧全局 status 字段已废弃，新日报不再引用（历史审计行仍留在 audit.log，仅不进日报）。 */
+  const records = historyRecords(dateStr, tz).filter((record) => record.field !== 'status');
+  const tasks = (doc && Array.isArray(doc.tasks)) ? doc.tasks : [];
+  const byTask = new Map();
+  records.forEach((record) => {
+    if (!byTask.has(record.task_id)) byTask.set(record.task_id, []);
+    byTask.get(record.task_id).push(record);
+  });
+
+  const events = [];
+  tasks.forEach((task, index) => {
+    const taskRecords = byTask.get(task.id) || [];
+    const touched = new Set();
+    taskRecords.forEach((record) => {
+      const d = /^dates\.(.+)$/.exec(record.field);
+      if (d) touched.add(d[1]);
+      const p = /^phases\.(.+)\.status$/.exec(record.field);
+      if (p) touched.add(p[1]);
+    });
+    const base = {
+      level1: task.level1 == null ? '' : String(task.level1),
+      level2: task.level2 == null ? '' : String(task.level2),
+      task: task.task == null ? '' : String(task.task),
+      owner: task.owner == null ? '' : String(task.owner)
+    };
+    taskRecords.forEach((record) => {
+      const phase = /^phases\.(.+)\.status$/.exec(record.field);
+      if (phase) {
+        const label = PHASE_LABELS[phase[1]] || phase[1];
+        let category = '普通';
+        let conclusion = label + '进度 ' + (record.old || '（空）') + ' → ' + (record.new || '（空）');
+        if (record.new === '延期') { category = '延期'; conclusion = label + '延期'; }
+        else if (record.new === '阻塞') { category = '阻塞'; conclusion = '阶段更新为阻塞'; }
+        else if (record.new === '已完成') { category = '完成'; conclusion = '阶段已完成'; }
+        events.push(Object.assign({}, base, { category, conclusion, at: record.at || '', basis: '当日阶段状态变更', index }));
+        return;
+      }
+      const date = /^dates\.(.+)$/.exec(record.field);
+      if (date) {
+        const label = PHASE_LABELS[date[1]] || date[1];
+        events.push(Object.assign({}, base, {
+          category: '普通',
+          conclusion: label + '计划 ' + mmdd(record.old) + ' → ' + mmdd(record.new),
+          at: record.at || '', basis: '当日日期变更', index
+        }));
+        return;
+      }
+      if (record.field === 'note') {
+        events.push(Object.assign({}, base, { category: '普通', conclusion: '进展说明已更新', at: record.at || '', basis: '当日字段变更', index }));
+        return;
+      }
+      const label = DAILY_FIELD_LABELS[record.field];
+      if (label) {
+        events.push(Object.assign({}, base, {
+          category: '普通',
+          conclusion: label + ' ' + (record.old || '（空）') + ' → ' + (record.new || '（空）'),
+          at: record.at || '', basis: '当日字段变更', index
+        }));
+      }
+    });
+    PHASE_KEYS.forEach((key) => {
+      const planned = isPlainObject(task.dates) ? task.dates[key] : '';
+      if (!isValidDateString(planned) || !(planned < dateStr)) return;
+      if (isPlainObject(task.phases) && task.phases[key] === '已完成') return;
+      if (touched.has(key)) return;
+      const label = PHASE_LABELS[key] || key;
+      events.push(Object.assign({}, base, {
+        category: '到期未更新',
+        conclusion: label + ' ' + mmdd(planned) + ' 到期未更新，判定延期',
+        at: '', basis: '计划日期早于今天且今日未更新', index
+      }));
+    });
+  });
+
+  events.sort((a, b) => (DAILY_RANK[a.category] - DAILY_RANK[b.category]) ||
+    (a.index - b.index) || (Date.parse(a.at || 0) - Date.parse(b.at || 0)));
+
+  const summary = events.length ? events.map((event) => ({
+    line: '【' + DAILY_PREFIX[event.category] + '】' + event.level1 + ' / ' + event.level2 + ' / ' +
+      event.task + ' @' + event.owner + '：' + event.conclusion + '。',
+    importance: DAILY_PREFIX[event.category],
+    conclusion: event.conclusion,
+    level1: event.level1, level2: event.level2, task: event.task, owner: event.owner,
+    at: event.at, basis: event.basis
+  })) : [{
+    line: '今日无阻塞、延期或变更。', importance: '', conclusion: '',
+    level1: '', level2: '', task: '', owner: '', at: '', basis: ''
+  }];
+
+  const blockedTasks = tasks.map((task, index) => ({ task, index }))
+    .filter((entry) => {
+      const phases = isPlainObject(entry.task.phases) ? entry.task.phases : {};
+      return PHASE_KEYS.some((key) => phases[key] === '延期' || phases[key] === '阻塞');
+    })
+    .map((entry) => {
+      const phases = entry.task.phases || {};
+      const hasBlocked = PHASE_KEYS.some((key) => phases[key] === '阻塞');
+      return { task: entry.task, index: entry.index, blocked: hasBlocked ? 0 : 1 };
+    })
+    .sort((a, b) => (a.blocked - b.blocked) || (a.index - b.index))
+    .map((entry) => entry.task);
+
+  const changes = records.slice().sort((a, b) => (DAILY_RANK[changeCategory(a.field, a.new)] - DAILY_RANK[changeCategory(b.field, b.new)]) ||
+    (Date.parse(a.at) - Date.parse(b.at)));
+
+  return { date: dateStr, tz, summary, blocked: blockedTasks, changes };
 }
 
 /* -------------------------------------------------------------- 静态资源 */
@@ -562,6 +796,37 @@ function handler(req, res) {
     });
     return;
   }
+  /* CH-10：日报三 sheet 的数据源（今日摘要事件 / 阻塞与延期行 / 当日变更明细）。 */
+  if (pathname === '/api/daily') {
+    if (req.method !== 'GET') {
+      res.writeHead(405, { 'Content-Type': 'text/plain; charset=utf-8', Allow: 'GET' });
+      res.end('405 Method Not Allowed');
+      return;
+    }
+    const query = new URL(url, 'http://127.0.0.1').searchParams;
+    const tz = query.get('tz') || DEFAULT_TZ;
+    if (!isValidTimeZone(tz)) {
+      sendJson(res, 400, { ok: false, errors: [{ id: null, field: 'tz', message: '未知时区：' + tz }] });
+      return;
+    }
+    const date = query.get('date') || todayInTimeZone(tz);
+    if (!isValidDateString(date)) {
+      sendJson(res, 400, { ok: false, errors: [{ id: null, field: 'date', message: 'date 必须为 YYYY-MM-DD' }] });
+      return;
+    }
+    let doc = null;
+    try {
+      doc = loadDocument();
+    } catch (err) {
+      sendJson(res, 500, { ok: false, reason: 'storage', message: '数据文件不可读' });
+      return;
+    }
+    const overview = dailyOverview(doc, date, tz);
+    sendJson(res, 200, Object.assign({ ok: true }, overview, {
+      counts: { summary: overview.summary.length, blocked: overview.blocked.length, changes: overview.changes.length }
+    }));
+    return;
+  }
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     res.writeHead(405, { 'Content-Type': 'text/plain; charset=utf-8', Allow: 'GET, HEAD' });
     res.end('405 Method Not Allowed');
@@ -578,6 +843,17 @@ function handler(req, res) {
 
 if (require.main === module) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
+  /* CH-10：一次性迁移（仅首次）。迁移前落时间戳备份，迁移审计身份为「系统迁移」。 */
+  try {
+    const doc = loadDocument();
+    if (needsMigration(doc)) {
+      const info = migrateDocument(doc, todayInTimeZone(DEFAULT_TZ));
+      process.stdout.write('[migrate] 已生成 phases（每阶段一条 migrated 审计，身份：' + MIGRATION_IDENTITY +
+        '），revision -> ' + info.revision + '，备份：' + (info.backup || '（无原文件）') + '\n');
+    }
+  } catch (err) {
+    process.stderr.write('[migrate] 迁移失败，服务继续启动（未写入数据）：' + err.message + '\n');
+  }
   const server = http.createServer(handler);
   server.listen(PORT, HOST, () => {
     process.stdout.write('wbs-rongcheng listening on http://' + HOST + ':' + PORT + ' (data: ' + DATA_DIR + ')\n');
@@ -587,5 +863,6 @@ if (require.main === module) {
 module.exports = {
   handler, validateDocument, atomicWriteJson, loadDocument, STATUS_ENUM,
   diffFields, historyRecords, dayBounds, todayInTimeZone, DEFAULT_TZ
-  , isValidDateString
+  , isValidDateString, PHASE_KEYS, PHASE_ENUM, PHASE_LABELS, MIGRATION_IDENTITY,
+  needsMigration, migrateDocument, dailyOverview, changeCategory, mmdd, compactStamp
 };

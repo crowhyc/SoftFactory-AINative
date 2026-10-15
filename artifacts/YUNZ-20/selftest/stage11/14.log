@@ -1,0 +1,37 @@
+=== 自测矩阵 14 · 部署与镜像自检（BIND_HOST=0.0.0.0 / 双端+公网 health / 无 node_modules / 资源与源码一致 / 新基线 live 冒烟） ===
+$ bash tests/stage11/deploy_check.sh
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+=== Stage11 部署/镜像自检 2026-10-15T12:39:57+0800 ===
+--- 复用 stage9 部署口径（容器镜像 / 0.0.0.0 绑定 / 双端+公网 health / 无 node_modules / 资源与源码一致） ---
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+=== 部署/镜像自检 2026-10-15T12:39:57+0800 ===
+容器：wbs-rongcheng  端口：4180  BIND_HOST：0.0.0.0  APP_DIR：/opt/wbs-rongcheng
+PASS  现场容器存在并运行（镜像 wbs-rongcheng:20261015123713，网络 host，挂载 /opt/wbs-rongcheng/data->/app/data）
+PASS  容器进程绑定 0.0.0.0（D-0006 授权对外暴露口径）
+PASS  运行数据挂载 = /opt/wbs-rongcheng/data（现场数据未改挂载）
+PASS  本机 http://127.0.0.1:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":10}
+PASS  http://0.0.0.0:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":10}
+PASS  宿主监听包含 0.0.0.0:4180（按 D-0006 授权对外暴露）
+PASS  公网 http://47.108.129.157:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":10}
+PASS  镜像内无 node_modules / package-lock.json（零运行时依赖）
+镜像 /app 内容：data package.json public server.js 
+PASS  服务端返回 /app.js 与运行目录源码一致（sha256 8665d0fc639f637744ec2c9e14fbde1a3dcd6b853841448f99bbf3063f76c325）
+PASS  服务端返回 /styles.css 与运行目录源码一致（sha256 62771efb859cc4f51e49a99c6975828c2073aa07638a6f3faa027a435bc501db）
+PASS  服务端返回 / 与运行目录 index.html 一致（sha256 4438496e27be970030f6c032df8c2920e4fcb39795b515d728965d4a52a5c0aa）
+PASS  容器内 /app/public/app.js == 运行目录（sha256 8665d0fc639f637744ec2c9e14fbde1a3dcd6b853841448f99bbf3063f76c325）
+PASS  容器内 /app/public/index.html == 运行目录（sha256 4438496e27be970030f6c032df8c2920e4fcb39795b515d728965d4a52a5c0aa）
+PASS  容器内 /app/public/styles.css == 运行目录（sha256 62771efb859cc4f51e49a99c6975828c2073aa07638a6f3faa027a435bc501db）
+PASS  容器内 /app/server.js == 运行目录（sha256 d9b29f0001fece55ec8c7010ea4c4526f62b70f37538f1761439e0936df4ec33）
+---
+PASS=15 FAIL=0
+PASS  stage9 部署口径全部通过（容器 / 绑定 / health / 镜像无依赖 / 资源一致）
+--- 新基线 live 冒烟（CH-9 / CH-10） ---
+PASS  live /api/daily 返回 ok（三 sheet 数据源可达）
+PASS  live /api/daily 摘要文本无「undefined」占位（到期未更新前缀 = 延期·高风险）
+PASS  live 页面不含「是否演示范围」列（CH-9 生效，测试文件字段保留）
+PASS  live app.js 含五阶段下拉实现（CH-10 生效）
+PASS  live app.js 无旧全局 STATUSES 常量
+---
+PASS=6 FAIL=0

@@ -94,7 +94,7 @@ run_item 09 "并发 PUT 409 不覆盖（前端 + 服务端）" \
 run_item 10 "重启后 note 与人员池持久（前端 + 服务端）" \
   "require '$BROWSER_LOG' 'PASS  矩阵10a 服务重启后 note 与人员池仍在' 'PASS  矩阵10b 重启后页面重新加载' && require '$SERVER_LOG' 'PASS  矩阵10 服务重启后 note 与人员池仍在'"
 run_item 11 "回归：M1 标签 / 日报双 sheet / WBS 导出 A–K / D-3 / CH-1…CH-7" \
-  "require '$BROWSER_LOG' 'PASS  矩阵11a 回归(D-3/验收1)' 'PASS  矩阵11b 回归(CH-1)' 'PASS  矩阵11c 回归(CH-2)' 'PASS  矩阵11d 回归(CH-3)' 'PASS  矩阵11e 回归(CH-2/验收4)' 'PASS  矩阵11f 回归(CH-4/CH-7)' 'PASS  矩阵11g 回归(CH-5)' 'PASS  矩阵11h 回归(CH-5/CH-8-7)' 'PASS  矩阵11i 回归(导出)' 'PASS  矩阵11j 回归(导出/CH-6)' 'PASS  矩阵11k 回归：全程无外部资源请求' 'PASS  矩阵11l 全程无 pageerror' && require '$SERVER_LOG' 'PASS  矩阵11 服务端返回的 index.html / app.js / styles.css 与源码运行目录一致' 'PASS  矩阵11 回归(CH-7) 非项目负责人通过 API 新增人员被拒'"
+  "require '$BROWSER_LOG' 'PASS  矩阵11a 回归(D-3/验收1)' 'PASS  矩阵11b 回归(CH-1)' 'PASS  矩阵11c 回归(CH-2)' 'PASS  矩阵11d 回归(CH-3)' 'PASS  矩阵11e 回归(CH-2/验收4)' 'PASS  矩阵11f 回归(CH-4/CH-7)' 'PASS  矩阵11g 回归(CH-5)' 'PASS  矩阵11h 回归(CH-5/CH-8-7)' 'PASS  矩阵11i 回归(导出)' 'PASS  矩阵11j 回归(导出/CH-10)' 'PASS  矩阵11k 回归：全程无外部资源请求' 'PASS  矩阵11l 全程无 pageerror' && require '$SERVER_LOG' 'PASS  矩阵11 服务端返回的 index.html / app.js / styles.css 与源码运行目录一致' 'PASS  矩阵11 回归(CH-7) 非项目负责人通过 API 新增人员被拒'"
 run_item 12 "既有 18 项矩阵回归（JS/DOM/导出；按当前部署口径跳过容器附加项）" \
   "WBS_SKIP_CONTAINER_ITEMS=1 bash tests/verify.sh '$OUT/legacy-matrix' && grep -F '结论：全部矩阵项通过' '$OUT/legacy-matrix/matrix-summary.txt' && echo 'PASS=1 FAIL=0'"
 run_item 13 "Stage7 矩阵 01–14 回归（CH-1…CH-7 真实浏览器深度复跑）" \

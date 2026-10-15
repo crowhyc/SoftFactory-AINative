@@ -43,9 +43,6 @@
     <label class="field-inline" for="owner-filter">负责人
       <select id="owner-filter"></select>
     </label>
-    <label class="field-inline" for="status-filter">状态
-      <select id="status-filter"></select>
-    </label>
     <div class="toolbar-actions">
       <button id="add-person-btn" type="button" class="btn" hidden>新增人员</button>
       <button id="add-row-btn" type="button" class="btn" hidden>新增行</button>
@@ -71,14 +68,12 @@
           <th class="col-l2">二级</th>
           <th class="col-task">任务项</th>
           <th class="col-owner">负责人</th>
-          <th class="col-demo">是否演示范围</th>
           <th class="col-date">设计</th>
           <th class="col-date">开发</th>
           <th class="col-date">测试</th>
           <th class="col-date">产品</th>
           <th class="col-date">演示准备</th>
           <th class="col-note">进展说明</th>
-          <th class="col-status">状态</th>
           <th class="col-op">操作</th>
         </tr>
       </thead>
@@ -89,8 +84,8 @@
 
   <footer class="footer">
     <span id="task-count" class="task-count">0 条</span>
-    <span class="footer-legend">状态枚举：未开始 / 进行中 / 已完成 / 已延期 / 被阻塞</span>
-    <span class="footer-legend">导出仅写回原模板 A–K 数据区，第 1/2 行与其它单元格保持原样；status 不导出。</span>
+    <span class="footer-legend">阶段进度：未开始（灰）/ 已开始（蓝）/ 已完成（绿）/ 延期（红）/ 阻塞（黄），位于各日期列下方</span>
+    <span class="footer-legend">导出保留原模板 A–K 数据区与第 1/2 行原文，K 后追加 5 个进度列；旧 status 不导出、日报不引用。</span>
   </footer>
 </div>
 

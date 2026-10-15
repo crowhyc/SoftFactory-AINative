@@ -226,10 +226,9 @@ async function openPage(options) {
       assert(page.$('session-status').textContent.includes('已与服务器一致'), '面板保存后会话状态未更新');
       page.click(page.$('note-close'));
       assert(page.$('note-panel').hidden === true, '面板未关闭');
-      const statusCell = page.cellOf('T002', 'status');
-      page.click(statusCell);
-      const select = statusCell.querySelector('select');
-      select.value = '进行中';
+      const phaseCell = page.cellOf('T002', 'dates.dev');
+      const select = phaseCell.querySelector('select.phase-select');
+      select.value = '已开始';
       page.change(select);
       assert(page.$('save-btn').disabled === false, '保存按钮应可用');
       assert(page.$('session-status').textContent.includes('有未保存修改'), '会话状态未提示未保存');
@@ -240,10 +239,10 @@ async function openPage(options) {
       const apiRow = apiDoc.tasks.find((t) => t.id === 'T002');
       const diskRow = diskDoc.tasks.find((t) => t.id === 'T002');
       assert(apiRow.note === note && diskRow.note === note, 'API/磁盘 note 不一致');
-      assert(apiRow.status === '进行中' && diskRow.status === '进行中', 'API/磁盘 status 不一致');
+      assert(apiRow.phases.dev === '已开始' && diskRow.phases.dev === '已开始', 'API/磁盘 阶段进度 不一致');
       assert(page.cellOf('T002', 'note').querySelector('.note-summary').textContent.includes('DOM 自测'), '页面未回显新值');
-      ok('矩阵3 普通负责人本人行可编辑并保存（页面/API/磁盘三端一致）', 'T002 note + status，revision ' + apiDoc.meta.revision);
-      ok('矩阵6b 保存后 API 与磁盘逐字段一致', JSON.stringify({ note: diskRow.note, status: diskRow.status }));
+      ok('矩阵3 普通负责人本人行可编辑并保存（页面/API/磁盘三端一致）', 'T002 note + 开发阶段进度，revision ' + apiDoc.meta.revision);
+      ok('矩阵6b 保存后 API 与磁盘逐字段一致', JSON.stringify({ note: diskRow.note, dev: diskRow.phases.dev }));
       page.close();
 
       const fresh = await openPage({ identity: '王言' });
@@ -412,12 +411,9 @@ async function openPage(options) {
       assert(await page.waitFor(() => page.rows().length === 36), '页面未就绪');
       let captured = null;
       let capturedName = null;
-      page.window.XLSX.writeFile = (workbook, name) => {
-        captured = Buffer.from(page.window.XLSX.write(workbook, { bookType: 'xlsx', type: 'buffer' }));
-        capturedName = name;
-      };
+      page.window.WBS_DOWNLOAD_HOOK = (bytes, name) => { captured = Buffer.from(bytes); capturedName = name; };
       page.click(page.$('export-btn'));
-      assert(await page.waitFor(() => captured !== null, 8000), '页面导出未捕获到文件（XLSX.writeFile 未被调用）');
+      assert(await page.waitFor(() => captured !== null, 8000), '页面导出未捕获到文件（WBS_DOWNLOAD_HOOK 未被调用）');
       const file = path.join(TMP, 'page-export.xlsx');
       fs.writeFileSync(file, captured);
       assert(/^蓉城战役WBS-\d{8}\.xlsx$/.test(String(capturedName)), '导出文件名异常：' + capturedName);

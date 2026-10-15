@@ -1,0 +1,13 @@
+=== 自测矩阵 10 · 日报三 sheet 与 CH-7 新增人员审计 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage11/browser.log' 'PASS  矩阵10a' 'PASS  矩阵10b' 'PASS  矩阵10c' && require '/opt/wbs-rongcheng/tests/.tmp/stage11/readback-daily.log' '日报为单 workbook 三 sheet' '「阻塞与延期」保留 A–K 与 是否演示范围' '「当日变更」含 CH-7 新增人员审计行' '「当日变更」不引用旧全局 status'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵10a
+OK    PASS  矩阵10b
+OK    PASS  矩阵10c
+PASS=3 FAIL=0
+OK    日报为单 workbook 三 sheet
+OK    「阻塞与延期」保留 A–K 与 是否演示范围
+OK    「当日变更」含 CH-7 新增人员审计行
+OK    「当日变更」不引用旧全局 status
+PASS=4 FAIL=0

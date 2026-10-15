@@ -1,0 +1,17 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  矩阵04a 迁移前生成 wbs.json 时间戳备份且内容 = 迁移前文件（可回滚）  :: wbs.json.20261015043903.bak sha256 4d24bc9990fa52ac…
+PASS  矩阵04b 每阶段一条 type:"migrated" 审计、身份「系统迁移」、revision 递增  :: 180 条 · revision 1
+PASS  矩阵05 迁移边界：昨天 → 延期、恰好今天 → 未开始、未来 → 未开始  :: {"T001":{"design":"延期","dev":"未开始","test":"未开始","product":"未开始","demo_prep":"未开始"},"T003":{"design":"未开始","dev":"未开始","test":"未开始","product":"未开始","demo_prep":"未开始"}}
+PASS  矩阵04c 迁移审计不进 /api/history 与日报任何 sheet；迁移本身不产生「今日摘要」事件  :: history=0 changes=0
+PASS  矩阵09a（服务端）派生规则①：计划日期 < 今天且今日无更新 → 到期未更新判定延期（2 例：昨天/更早）  :: 设计 10-14 到期未更新，判定延期 / 设计 10-08 到期未更新，判定延期
+PASS  矩阵04d 迁移幂等：重复启动不重复迁移、revision 与审计条数不变  :: revision 1 · migrated 180
+PASS  矩阵06a 阶段状态改动走既有保存流程并写字段级审计 phases.design.status old→new + 时间 + 操作身份  :: {"phases.design.status":"已完成"}
+PASS  矩阵06b 并发 PUT 409 不覆盖（current=2）  :: disk T002.dev = 未开始
+PASS  矩阵06c phases 取值非法 / 缺键 → 400 且不落盘  :: phases.design={"id":"T001","field":"phases.design","message":"阶段进度必须是 未开始 / 已开始 / 已完成 / 延期 / 阻塞 之一"}
+PASS  矩阵09b（服务端）派生规则②：当天更新该阶段状态 → 按实际状态出「完成」，不再判到期未更新  :: 【完成】客户端 / 业务工作台 / 需求拆分 @王言：阶段已完成。 || 【普通】客户端 / 业务工作台 / 需求拆分 @王言：测试计划 （空） → 11-01。 || 【普通】客户端 / 业务工作台 / 需求拆分 @王言：测试计划 11-01 → 11-05。
+PASS  矩阵08（服务端）今日摘要按重要度排序（延期 > 阻塞 > 到期未更新 > 完成 > 普通）  :: 1,2,2,4,4,5,5
+PASS  矩阵10a（服务端）阻塞与延期 = 任一阶段命中 延期/阻塞 的行，阻塞行排前  :: 共 3 行（阻塞 2 / 延期 1）：T004,T005,T003
+PASS  矩阵10b 旧 status 保留原值但不被日报引用；/api/history 字段集仍为既有口径  :: status 逐条一致 · 日报 status 行 0 · history 字段集不变
+PASS  矩阵07（前置）CH-9：data/wbs.json 中 demo 值与迁移前逐条一致（未写空、未清空）  :: 非空 demo 行 0 行
+---
+PASS=14 FAIL=0

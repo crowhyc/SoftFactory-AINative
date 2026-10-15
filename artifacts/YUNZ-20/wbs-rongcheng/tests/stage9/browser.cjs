@@ -21,6 +21,8 @@ const DATA_DIR = process.env.DATA_DIR || '/app/tests/.tmp/stage9-browser-data';
 const TZ = 'Asia/Shanghai';
 const IDENTITIES = ['项目负责人', '李欢', '王言', '张航瑞', '郑述文', '崔文建', '余宇', '黄逸偲', '陈江'];
 const STATUSES = ['未开始', '进行中', '已完成', '已延期', '被阻塞'];
+const PHASES = ['未开始', '已开始', '已完成', '延期', '阻塞'];
+const PHASE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
 const NOTE_LIMIT = 20000;
 const SUMMARY_LIMIT = 80;
 const NOTE_PLACEHOLDER = '点击打开编辑';
@@ -182,8 +184,10 @@ function trackPage(page, list) {
       await page.evaluate(() => {
         window.__captured = null;
         window.__capturedName = null;
-        window.XLSX.writeFile = (workbook, name) => {
-          window.__captured = window.XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+        window.WBS_DOWNLOAD_HOOK = (bytes, name) => {
+          let out = '';
+          for (let i = 0; i < bytes.length; i += 8192) out += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
+          window.__captured = btoa(out);
           window.__capturedName = name;
         };
       });
@@ -819,7 +823,7 @@ function trackPage(page, list) {
     const regression = await page.evaluate(() => {
       const layer = document.getElementById('identity-layer');
       const rows = Array.from(document.querySelectorAll('#wbs-body tr'));
-      const statusOptions = Array.from(document.querySelectorAll('#wbs-body tr[data-id="T003"] td[data-field="status"] select option')).map((o) => o.value);
+      const phaseOptions = Array.from(document.querySelectorAll('#wbs-body tr[data-id="T003"] td[data-field="dates.design"] select.phase-select option')).map((o) => o.value);
       const ownerOptions = Array.from(document.querySelectorAll('#wbs-body tr[data-id="T001"] td[data-field="owner"] select option')).map((o) => o.value);
       const dateInputs = Array.from(document.querySelectorAll('#wbs-body tr[data-id="T003"] td[data-field^="dates."] input')).map((i) => ({ type: i.type, disabled: i.disabled }));
       return {
@@ -829,7 +833,8 @@ function trackPage(page, list) {
         editButtons: rows.filter((tr) => tr.querySelector('button[data-edit-row]')).length,
         deleteButtons: rows.filter((tr) => tr.querySelector('button[data-delete]')).length,
         noteTextareas: rows.filter((tr) => tr.querySelector('td[data-field="note"] textarea, td[data-field="note"] input')).length,
-        statusOptions, ownerOptions, dateInputs,
+        phaseOptions, ownerOptions, dateInputs,
+        statusCells: document.querySelectorAll('#wbs-body td[data-field="status"]').length,
         warningBanner: !document.getElementById('banner').hidden
       };
     });
@@ -839,10 +844,10 @@ function trackPage(page, list) {
     check('矩阵11b 回归(CH-1) 操作列每行常显「编辑」+ 项目负责人「删除」；K 列改为摘要、无内联编辑器',
       regression.editButtons === regression.rows && regression.deleteButtons === regression.rows && regression.noteTextareas === 0,
       { edit: regression.editButtons, del: regression.deleteButtons, noteInputs: regression.noteTextareas });
-    check('矩阵11c 回归(CH-2) 五列日期常显 type=date 且可交互、状态列常显五枚举下拉',
+    check('矩阵11c 回归(CH-2) 五列日期常显 type=date 且可交互、五阶段进度下拉常显五枚举（旧「状态」列已移除）',
       regression.dateInputs.length === 5 && regression.dateInputs.every((i) => i.type === 'date' && i.disabled === false) &&
-      JSON.stringify(regression.statusOptions) === JSON.stringify(STATUSES),
-      { dates: regression.dateInputs.length, status: regression.statusOptions });
+      JSON.stringify(regression.phaseOptions) === JSON.stringify(PHASES) && regression.statusCells === 0,
+      { dates: regression.dateInputs.length, phase: regression.phaseOptions });
     check('矩阵11d 回归(CH-3) 负责人列为下拉、选项＝当前人员池',
       JSON.stringify(regression.ownerOptions) === JSON.stringify((await api('/api/wbs')).body.identities), regression.ownerOptions);
 
@@ -852,15 +857,15 @@ function trackPage(page, list) {
       const tr = Array.from(document.querySelectorAll('#wbs-body tr')).find((row) => row.querySelector('td[data-field="owner"]').textContent.trim() !== '王言');
       const id = tr.getAttribute('data-id');
       const date = tr.querySelector('td[data-field="dates.design"] input');
-      const status = tr.querySelector('td[data-field="status"] select');
+      const phase = tr.querySelector('td[data-field="dates.design"] select.phase-select');
       const note = tr.querySelector('td[data-field="note"]');
-      return { id, dateDisabled: date && date.disabled, statusDisabled: status && status.disabled, noteClasses: note.className, noteTextarea: !!note.querySelector('textarea') };
+      return { id, dateDisabled: date && date.disabled, phaseDisabled: phase && phase.disabled, noteClasses: note.className, noteTextarea: !!note.querySelector('textarea') };
     });
-    await page.click('#wbs-body tr[data-id="' + readOnlySide.id + '"] td[data-field="status"]');
+    await page.click('#wbs-body tr[data-id="' + readOnlySide.id + '"] td[data-field="dates.design"] .phase-cell');
     await page.waitForTimeout(200);
     const readOnlyHint = await hint();
-    check('矩阵11e 回归(CH-2/验收4) 他人行日期与状态控件 disabled、K 列只读且点击给中文只读提示',
-      readOnlySide.dateDisabled === true && readOnlySide.statusDisabled === true && readOnlySide.noteTextarea === false &&
+    check('矩阵11e 回归(CH-2/验收4) 他人行日期与阶段进度控件 disabled、K 列只读且点击给中文只读提示',
+      readOnlySide.dateDisabled === true && readOnlySide.phaseDisabled === true && readOnlySide.noteTextarea === false &&
       readOnlySide.noteClasses.indexOf('note-locked') !== -1 && readOnlyHint.indexOf('只读') !== -1,
       { id: readOnlySide.id, hint: readOnlyHint });
     await page.keyboard.press('Escape');
@@ -888,28 +893,35 @@ function trackPage(page, list) {
     const daily = await capture('#daily-btn');
     results.daily = { name: daily.name, sheets: daily.sheets ? daily.sheets.map((s) => s.name) : null };
     if (daily.base64) fs.writeFileSync(path.join(OUTDIR, daily.name), Buffer.from(daily.base64, 'base64'));
-    const blockedSheet = (daily.sheets || [])[0];
-    const changeSheet = (daily.sheets || [])[1];
+    const blockedSheet = (daily.sheets || [])[1];
+    const changeSheet = (daily.sheets || [])[2];
     const blockedHeader = blockedSheet ? blockedSheet.rows[0] : null;
-    const expectedBlocked = currentDoc.tasks.filter((task) => ['被阻塞', '已延期'].indexOf(task.status) !== -1).map((task) => {
-      const dates = task.dates || {};
-      return [task.level1, task.level2, task.task, task.owner, task.demo]
-        .concat(['design', 'dev', 'test', 'product', 'demo_prep'].map((key) => dates[key] || ''))
-        .concat([task.note, task.status]);
-    });
-    check('矩阵11g 回归(CH-5) 日报为单 workbook 双 sheet，阻塞与延期行 = status ∈ {被阻塞, 已延期}',
-      !!daily.sheets && daily.sheets.length === 2 && blockedSheet.name === '阻塞与延期' && changeSheet.name === '当日变更' &&
-      blockedHeader.length === 12 && blockedHeader[11] === '状态' && blockedHeader[10] === '进展说明' &&
+    const blockedRank9 = (task) => (PHASE_KEYS.some((k) => task.phases[k] === '阻塞') ? 0 : 1);
+    const expectedBlocked = currentDoc.tasks
+      .filter((task) => PHASE_KEYS.some((k) => ['延期', '阻塞'].indexOf(task.phases[k]) !== -1))
+      .sort((a, b) => blockedRank9(a) - blockedRank9(b))
+      .map((task) => {
+        const dates = task.dates || {};
+        const phases = task.phases || {};
+        return [task.level1, task.level2, task.task, task.owner, task.demo]
+          .concat(PHASE_KEYS.map((key) => dates[key] || ''))
+          .concat([task.note])
+          .concat(PHASE_KEYS.map((key) => phases[key] || ''));
+      });
+    check('矩阵11g 回归(CH-5) 日报为单 workbook 三 sheet，阻塞与延期行 = 任一阶段 ∈ {延期, 阻塞}（A–K + 五进度列）',
+      !!daily.sheets && daily.sheets.length === 3 && (daily.sheets || [])[0].name === '今日摘要' &&
+      blockedSheet.name === '阻塞与延期' && changeSheet.name === '当日变更' &&
+      blockedHeader.length === 16 && blockedHeader[10] === '进展说明' && blockedHeader[11] === '设计进度' && blockedHeader[15] === '演示准备进度' &&
       JSON.stringify(blockedSheet.rows.slice(1)) === JSON.stringify(expectedBlocked),
       { sheets: daily.sheets ? daily.sheets.map((s) => s.name) : null, blocked: blockedSheet ? blockedSheet.rows.length - 1 : null });
     const changeHeader = changeSheet ? changeSheet.rows[0] : [];
     const changeBody = changeSheet ? changeSheet.rows.slice(1) : [];
-    const noteChangeRows = changeBody.filter((row) => row[0] === 'T005' && row[5] === '进展说明');
-    check('矩阵11h 回归(CH-5/CH-8-7) 日报「当日变更」不引入新字段（10 列）且包含 note 字段级 old→new',
-      JSON.stringify(changeHeader) === JSON.stringify(['id', '一级', '二级', '任务项', '负责人', '改动字段', '旧值', '新值', '时间', '操作身份']) &&
-      changeBody.every((row) => row.length === 10) &&
-      noteChangeRows.some((row) => row[6] === '' && row[7] === consistentNote && row[9] === '项目负责人') &&
-      changeBody.some((row) => row[5] === '人员池' && row[7] === '赵新'),
+    const noteChangeRows = changeBody.filter((row) => row[4] === '进展说明');
+    check('矩阵11h 回归(CH-5/CH-8-7) 日报「当日变更」字段级明细（9 列，去 id）且包含 note 字段级 old→new',
+      JSON.stringify(changeHeader) === JSON.stringify(['一级', '二级', '任务项', '负责人', '改动字段', '旧值', '新值', '时间', '操作身份']) &&
+      changeBody.every((row) => row.length === 9) &&
+      noteChangeRows.some((row) => row[5] === '' && row[6] === consistentNote && row[8] === '项目负责人') &&
+      changeBody.some((row) => row[4] === '人员池' && row[6] === '赵新'),
       { header: changeHeader, noteRows: noteChangeRows.length, total: changeBody.length });
 
     const wbsExport = await capture('#export-btn');
@@ -945,13 +957,14 @@ function trackPage(page, list) {
       JSON.stringify(fidelity.captureData).indexOf('status') === -1 &&
       fidelity.captureData.every((row) => row.length === 11),
       { rows: fidelity.captureData.length, expect: expectedWbsRows.length, notePreview: String(fidelity.captureData[4][10]).slice(0, 24) });
-    check('矩阵11j 回归(导出/CH-6) 第 1/2 行 A–K 与源模板逐字一致，M1 写入导出日期标签（唯一新增单元格）',
+    check('矩阵11j 回归(导出/CH-10) 第 1/2 行 A–K 与源模板逐字一致，Q1 写入导出日期标签（唯一新增单元格）',
       JSON.stringify(rowA2K(fidelity.captureRow1)) === JSON.stringify(rowA2K(fidelity.templateRow1)) &&
       JSON.stringify(rowA2K(fidelity.captureRow2)) === JSON.stringify(rowA2K(fidelity.templateRow2)) &&
       fidelity.captureRow2[3] === '负责人' && fidelity.captureRow2[10] === '进展说明' &&
-      /^导出日期：\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(String(fidelity.captureRow1[12] || '')) &&
-      String(fidelity.captureRow2[12] || '') === '' && fidelity.templateRowCount === fidelity.captureData.length + 2,
-      { m1: fidelity.captureRow1[12], templateRows: fidelity.templateRowCount });
+      fidelity.captureRow2[11] === '设计进度' && fidelity.captureRow2[15] === '演示准备进度' &&
+      /^导出日期：\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(String(fidelity.captureRow1[16] || '')) &&
+      String(fidelity.captureRow2[16] || '') === '' && fidelity.templateRowCount === fidelity.captureData.length + 2,
+      { q1: fidelity.captureRow1[16], templateRows: fidelity.templateRowCount });
     check('矩阵11k 回归：全程无外部资源请求（页面资源全本地，无 CDN / 外链 / 外部图片）',
       allRequests.filter((r) => r.url.indexOf(BASE) !== 0).length === 0,
       { total: allRequests.length, external: allRequests.filter((r) => r.url.indexOf(BASE) !== 0).map((r) => r.url).slice(0, 5) });

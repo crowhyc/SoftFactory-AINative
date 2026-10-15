@@ -136,7 +136,7 @@ function writeExport(tasks, fileName) {
     if (headers[0] === '负责人' && headers[1] === '进展说明') ok('读回导出文件：第 2 行表头仍在', headers.join('/'));
     else bad('读回导出文件表头异常', headers.join('/'));
     const ref = XLSX.utils.decode_range(sheet['!ref']);
-    if (String(sheet['!ref']) === 'A1:M38') ok('读回导出文件工作表范围与模板一致', sheet['!ref']);
+    if (String(sheet['!ref']) === 'A1:Q38') ok('读回导出文件工作表范围 = A–P 数据列 + Q 导出日期标签', sheet['!ref']);
     else bad('工作表范围变化', sheet['!ref'] + ' -> ' + JSON.stringify(ref));
 
     // 行数变少：原数据区残留必须清空

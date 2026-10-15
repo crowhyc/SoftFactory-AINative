@@ -1,0 +1,14 @@
+=== 自测矩阵 08 · 今日摘要格式逐字断言（含 @ 与风险前缀）与重要度排序 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage11/browser.log' 'PASS  矩阵08a' 'PASS  矩阵08b' 'PASS  矩阵08c' 'PASS  矩阵08d' && require '/opt/wbs-rongcheng/tests/.tmp/stage11/server.log' 'PASS  矩阵08' && require '/opt/wbs-rongcheng/tests/.tmp/stage11/readback-daily.log' '「今日摘要」行格式逐字符合' '「今日摘要」按重要度排序'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵08a
+OK    PASS  矩阵08b
+OK    PASS  矩阵08c
+OK    PASS  矩阵08d
+PASS=4 FAIL=0
+OK    PASS  矩阵08
+PASS=1 FAIL=0
+OK    「今日摘要」行格式逐字符合
+OK    「今日摘要」按重要度排序
+PASS=2 FAIL=0

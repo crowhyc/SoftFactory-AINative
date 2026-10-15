@@ -2,15 +2,26 @@
 /* WC-001 蓉城战役 WBS 工作系统 —— 前端（身份选择 / 权限矩阵 / 行内编辑 / 本地导出）。 */
 (function (global) {
   var PM = '项目负责人';
-  var STATUSES = ['未开始', '进行中', '已完成', '已延期', '被阻塞'];
   var DATE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
   var DATE_LABELS = { design: '设计', dev: '开发', test: '测试', product: '产品', demo_prep: '演示准备' };
+  /* CH-10：五阶段独立进度（phases.<key>，取值见 PHASES）。 */
+  var PHASE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
+  var PHASES = ['未开始', '已开始', '已完成', '延期', '阻塞'];
+  var PHASE_LABELS = { design: '设计', dev: '开发', test: '测试', product: '产品', demo_prep: '演示准备' };
+  var PHASE_HEADERS = ['设计进度', '开发进度', '测试进度', '产品进度', '演示准备进度'];
+  /* 五色映射：未开始=灰、已开始=蓝、已完成=绿、延期=红、阻塞=黄。 */
+  var PHASE_HEX = { '未开始': '9E9E9E', '已开始': '2F80ED', '已完成': '27AE60', '延期': 'E74C3C', '阻塞': 'FFD400' };
+  var PHASE_TEXT = { '未开始': 'FFFFFF', '已开始': 'FFFFFF', '已完成': 'FFFFFF', '延期': 'FFFFFF', '阻塞': '3A2E00' };
   var FIELD_LABELS = {
     id: '序号',
     level1: '一级', level2: '二级', task: '任务项', owner: '负责人', demo: '是否演示范围',
-    note: '进展说明', status: '状态',
+    note: '进展说明',
     'dates.design': '设计', 'dates.dev': '开发', 'dates.test': '测试', 'dates.product': '产品', 'dates.demo_prep': '演示准备'
   };
+  PHASE_KEYS.forEach(function (key) {
+    FIELD_LABELS['phases.' + key] = PHASE_HEADERS[PHASE_KEYS.indexOf(key)];
+    FIELD_LABELS['phases.' + key + '.status'] = PHASE_HEADERS[PHASE_KEYS.indexOf(key)];
+  });
   var STRUCT_FIELDS = ['level1', 'level2', 'task', 'owner'];
   var MAX_LEN = { level1: 200, level2: 200, task: 300, owner: 40, demo: 20, note: 20000 };
   /* CH-8：K 进展说明摘要长度（约 80 字符）、面板占位文案与窄视口断点。 */
@@ -22,11 +33,15 @@
   var DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
   var COL_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'];
   var EXPORT_COL_COUNT = 11;
-  var BLOCKED_STATUSES = ['被阻塞', '已延期'];
   var HISTORY_TZ = 'Asia/Shanghai';
   var IDENTITY_MAX_LEN = 20;
-  var DAILY_BLOCKED_HEADER = ['一级', '二级', '任务项', '负责人', '是否演示范围', '设计', '开发', '测试', '产品', '演示准备', '进展说明', '状态'];
-  var DAILY_CHANGE_HEADER = ['id', '一级', '二级', '任务项', '负责人', '改动字段', '旧值', '新值', '时间', '操作身份'];
+  /* CH-10：日报三 sheet 表头。今日摘要 = 微信文本行 + 分列结构；阻塞与延期 = A–K + 五进度列；当日变更 = 字段级明细。 */
+  var DAILY_SUMMARY_HEADER = ['微信文本行', '重要度', '结论', '一级', '二级', '任务项', '负责人', '时间', '依据'];
+  var DAILY_BLOCKED_HEADER = ['一级', '二级', '任务项', '负责人', '是否演示范围', '设计', '开发', '测试', '产品', '演示准备', '进展说明']
+    .concat(PHASE_HEADERS);
+  var DAILY_CHANGE_HEADER = ['一级', '二级', '任务项', '负责人', '改动字段', '旧值', '新值', '时间', '操作身份'];
+  var DAILY_SHEET_NAMES = ['今日摘要', '阻塞与延期', '当日变更'];
+  var DAILY_RANK = { '延期': 1, '阻塞': 2, '到期未更新': 3, '完成': 4, '普通': 5 };
 
   /* ------------------------------------------------------------ 纯逻辑 */
 
@@ -49,6 +64,11 @@
       var dates = task.dates || {};
       return dates[field.slice(6)] == null ? '' : String(dates[field.slice(6)]);
     }
+    if (field.indexOf('phases.') === 0) {
+      var phases = task.phases || {};
+      var value = phases[field.slice(7)];
+      return value == null ? '' : String(value);
+    }
     return task[field] == null ? '' : String(task[field]);
   }
 
@@ -58,16 +78,19 @@
       task.dates[field.slice(6)] = value;
       return;
     }
+    if (field.indexOf('phases.') === 0) {
+      task.phases = task.phases || {};
+      task.phases[field.slice(7)] = value;
+      return;
+    }
     task[field] = value;
   }
 
   function filterTasks(tasks, filter) {
     var q = ((filter && filter.q) || '').trim().toLowerCase();
     var owner = (filter && filter.owner) || '';
-    var status = (filter && filter.status) || '';
     return tasks.filter(function (task) {
       if (owner && task.owner !== owner) return false;
-      if (status && task.status !== status) return false;
       if (q) {
         var hay = [task.level1, task.level2, task.task, task.owner, task.note].join(' ').toLowerCase();
         if (hay.indexOf(q) === -1) return false;
@@ -100,15 +123,23 @@
 
   /* ------------------------------------------------------- 日报（导出） */
 
+  /* 某行的五个阶段进度（顺序 design/dev/test/product/demo_prep）。 */
+  function phaseValues(task) {
+    var phases = (task && task.phases) || {};
+    return PHASE_KEYS.map(function (key) { return phases[key] == null ? '' : String(phases[key]); });
+  }
+
+  /* CH-10：阻塞与延期 sheet —— 任一阶段命中 延期/阻塞 的行；A–K（含是否演示范围）+ 五进度列；阻塞行排前。 */
   function blockedRows(tasks) {
     var rows = [DAILY_BLOCKED_HEADER.slice()];
-    (tasks || []).forEach(function (task) {
-      if (BLOCKED_STATUSES.indexOf(task.status) === -1) return;
-      var row = exportRows([task])[0];
-      row = row.slice();
-      row.push(task.status == null ? '' : String(task.status));
-      rows.push(row);
-    });
+    (tasks || []).map(function (task, index) {
+      var phases = (task && task.phases) || {};
+      var delayed = PHASE_KEYS.some(function (key) { return phases[key] === '延期' || phases[key] === '阻塞'; });
+      var blocked = PHASE_KEYS.some(function (key) { return phases[key] === '阻塞'; });
+      return { task: task, index: index, hit: delayed, group: blocked ? 0 : 1 };
+    }).filter(function (item) { return item.hit; })
+      .sort(function (a, b) { return (a.group - b.group) || (a.index - b.index); })
+      .forEach(function (item) { rows.push(exportRows([item.task])[0].concat(phaseValues(item.task))); });
     return rows;
   }
 
@@ -146,17 +177,32 @@
     return String(value);
   }
 
-  /* 每条变更记录（一个被改动的字段）→ 一行；按时间升序。 */
+  /* 单条变更记录的重要度分类（与「今日摘要」同一口径）。 */
+  function changeCategory(field, value) {
+    var phase = /^phases\.(.+)\.status$/.exec(String(field == null ? '' : field));
+    if (!phase) return '普通';
+    if (value === '延期') return '延期';
+    if (value === '阻塞') return '阻塞';
+    if (value === '已完成') return '完成';
+    return '普通';
+  }
+
+  function changeRank(record) {
+    return DAILY_RANK[changeCategory(record && record.field, record && record.new)] || 5;
+  }
+
+  /* 当日变更：字段级明细，按重要度（延期 > 阻塞 > 到期未更新判定延期 > 完成 > 普通）后按时间升序。 */
   function changeRows(records) {
     var rows = [DAILY_CHANGE_HEADER.slice()];
     (records || []).slice().sort(function (a, b) {
+      var rank = changeRank(a) - changeRank(b);
+      if (rank !== 0) return rank;
       var ta = Date.parse(a && a.at);
       var tb = Date.parse(b && b.at);
       if (isNaN(ta) || isNaN(tb)) return 0;
       return ta - tb;
     }).forEach(function (record) {
       rows.push([
-        cellText(record.task_id),
         cellText(record.level1),
         cellText(record.level2),
         cellText(record.task),
@@ -166,6 +212,25 @@
         cellText(record.new),
         formatInTz(record.at),
         cellText(record.identity)
+      ]);
+    });
+    return rows;
+  }
+
+  /* 今日摘要 sheet：A 列为微信可直接复制的检索式文本行，B–I 列为分列结构。 */
+  function summaryRows(summary) {
+    var rows = [DAILY_SUMMARY_HEADER.slice()];
+    (summary || []).forEach(function (item) {
+      rows.push([
+        cellText(item.line),
+        cellText(item.importance),
+        cellText(item.conclusion),
+        cellText(item.level1),
+        cellText(item.level2),
+        cellText(item.task),
+        cellText(item.owner),
+        item.at ? formatInTz(item.at) : '-',
+        cellText(item.basis)
       ]);
     });
     return rows;
@@ -197,8 +262,13 @@
     };
   }
 
-  /** 仅覆写 A3:K(3+n-1)，并清空原数据区中超出新行数的 A–K 残留；其余单元格与合并保持不动。 */
-  function applyExportRows(worksheet, rows, startRow) {
+  /** A–K 为原模板 11 列（含 E 是否演示范围），L–P 为 CH-10 追加的五个阶段进度列。 */
+  var EXPORT_PHASE_FIRST_COL = EXPORT_COL_COUNT;                       // L（0 基索引 11）
+  var EXPORT_TOTAL_COL_COUNT = EXPORT_COL_COUNT + PHASE_KEYS.length;   // P（16 列）
+
+  /** 仅覆写 A3:K(3+n-1)（其余原文不动），在 K 之后追加五个进度列（文字 + 填充色），
+   *  清空原数据区超出新行数的残留，并把 !ref 扩到 Q 列（供「导出日期」标签右移落位）。 */
+  function applyExportRows(worksheet, rows, startRow, tasks) {
     var first = startRow || 3;
     var range = parseRange(worksheet['!ref']);
     var originalLastRow = range.e.r + 1;
@@ -213,12 +283,35 @@
       }
     });
     for (var r = first + rows.length; r <= originalLastRow; r += 1) {
-      for (var c2 = 0; c2 < EXPORT_COL_COUNT; c2 += 1) {
+      for (var c2 = 0; c2 < EXPORT_TOTAL_COL_COUNT; c2 += 1) {
         var addr = addrOf(r, c2);
         if (worksheet[addr]) delete worksheet[addr];
       }
     }
-    return Math.max(originalLastRow, first + rows.length - 1);
+    if (Array.isArray(tasks)) applyExportPhases(worksheet, tasks, first);
+    var lastRow = Math.max(originalLastRow, first + rows.length - 1);
+    worksheet['!ref'] = 'A1:' + colName(EXPORT_TOTAL_COL_COUNT) + lastRow; // Q 列用于「导出日期」标签
+    return lastRow;
+  }
+
+  /** CH-10：行 2 写五进度列表头，数据区写状态文字并尝试填充对应颜色。 */
+  function applyExportPhases(worksheet, tasks, first) {
+    var headerStyle = worksheet['K2'] && worksheet['K2'].s;
+    PHASE_KEYS.forEach(function (key, index) {
+      var header = { t: 's', v: PHASE_HEADERS[index] };
+      if (headerStyle !== undefined) header.s = headerStyle;
+      worksheet[addrOf(2, EXPORT_PHASE_FIRST_COL + index)] = header;
+    });
+    tasks.forEach(function (task, rowIndex) {
+      PHASE_KEYS.forEach(function (key, index) {
+        var value = (task && task.phases) ? task.phases[key] : '';
+        var text = value == null ? '' : String(value);
+        var cell = { t: 's', v: text };
+        var rgb = PHASE_HEX[text];
+        if (rgb) cell.s = { patternType: 'solid', fgColor: { rgb: rgb }, bgColor: { indexed: 64 } };
+        worksheet[addrOf(first + rowIndex, EXPORT_PHASE_FIRST_COL + index)] = cell;
+      });
+    });
   }
 
   /** 导出构建：页面导出与作者自测走同一实现，消除缺陷 D-1 的双路径差异。
@@ -229,25 +322,210 @@
     if (!XLSX) throw new Error('XLSX 未加载');
     var workbook = XLSX.read(templateBytes, { type: 'array', cellStyles: true });
     var sheet = workbook.Sheets[workbook.SheetNames[0]];
-    applyExportRows(sheet, exportRows(tasks));
+    applyExportRows(sheet, exportRows(tasks), 3, tasks);
     stampExportLabel(sheet, new Date());
     return workbook;
   }
 
-  /** CH-6：在 M1 写入导出日期标签（Asia/Shanghai，精确到分钟）。
-   *  仅新增 M1 一个单元格；第 1/2 行原文、A1:C1 合并与 A–K 数据区保持不动。 */
+  /** CH-6 / CH-10：导出日期标签（Asia/Shanghai，精确到分钟）。
+   *  CH-10 起 K 之后追加 5 个进度列，标签随新列右移到最后一个排序列之后的 Q1；内容与格式不变。 */
   function stampExportLabel(sheet, at) {
     var when = (at instanceof Date) ? at.toISOString() : String(at);
-    sheet['M1'] = { t: 's', v: '导出日期：' + formatInTz(when, HISTORY_TZ).slice(0, 16) };
+    sheet[addrOf(1, EXPORT_TOTAL_COL_COUNT)] = { t: 's', v: '导出日期：' + formatInTz(when, HISTORY_TZ).slice(0, 16) };
   }
 
-  /** 日报：单文件两个 sheet（阻塞与延期 / 当日变更），浏览器本地生成，不依赖模板。 */
-  function buildDailyWorkbook(tasks, records) {
+  /* ---------------- CH-10：进度列颜色填充（最小 ZIP 级修补） ----------------
+   * 随包 SheetJS 0.18.5 社区版读得到单元格样式、却不在写出时生成 <fills>/cellXfs，
+   * 且 !ref 之外的单元格会被丢弃。因此这里不走旁路：仍用同一份 Core.buildExportWorkbook
+   * 生成工作表，再以「不压缩写盘」得到 STORED 的 xlsx 字节，只在两处做最小修补：
+   *   a) xl/styles.xml：追加 5 个纯色 fill 与对应 cellXfs（未开始灰 / 已开始蓝 / 已完成绿 / 延期红 / 阻塞黄）；
+   *   b) xl/worksheets/sheet1.xml：给 L–P 数据区单元格加 s="<xf>"。
+   * 其余条目逐字节保持不变；重新封装时统一用 STORED 与正确的 CRC32/长度，仍是合法 zip。
+   * 零新增依赖、不联网。 */
+  var CRC_TABLE = (function () {
+    var table = new Uint32Array(256);
+    for (var n = 0; n < 256; n += 1) {
+      var value = n;
+      for (var bit = 0; bit < 8; bit += 1) value = (value & 1) ? (0xEDB88320 ^ (value >>> 1)) : (value >>> 1);
+      table[n] = value >>> 0;
+    }
+    return table;
+  })();
+
+  function crc32(bytes) {
+    var crc = 0xFFFFFFFF;
+    for (var i = 0; i < bytes.length; i += 1) crc = CRC_TABLE[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
+    return (crc ^ 0xFFFFFFFF) >>> 0;
+  }
+
+  function utf8Encode(text) {
+    if (typeof TextEncoder === 'function') return new TextEncoder().encode(text);
+    var escaped = unescape(encodeURIComponent(text));
+    var out = new Uint8Array(escaped.length);
+    for (var i = 0; i < escaped.length; i += 1) out[i] = escaped.charCodeAt(i) & 0xFF;
+    return out;
+  }
+
+  function utf8Decode(bytes) {
+    if (typeof TextDecoder === 'function') return new TextDecoder('utf-8').decode(bytes);
+    var text = '';
+    for (var i = 0; i < bytes.length; i += 1) text += String.fromCharCode(bytes[i]);
+    return decodeURIComponent(escape(text));
+  }
+
+  /* 读 STORED zip 的全部条目（按中央目录顺序）。非 STORED 时抛错，由调用方回落。 */
+  function readStoredZip(bytes) {
+    var view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    var eocd = -1;
+    for (var i = bytes.length - 22; i >= 0; i -= 1) {
+      if (view.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+    }
+    if (eocd < 0) throw new Error('xlsx zip 缺少 EOCD');
+    var count = view.getUint16(eocd + 10, true);
+    var pointer = view.getUint32(eocd + 16, true);
+    var entries = [];
+    for (var n = 0; n < count; n += 1) {
+      if (view.getUint32(pointer, true) !== 0x02014b50) throw new Error('xlsx zip 中央目录异常');
+      var method = view.getUint16(pointer + 10, true);
+      var size = view.getUint32(pointer + 20, true);
+      var nameLen = view.getUint16(pointer + 28, true);
+      var extraLen = view.getUint16(pointer + 30, true);
+      var commentLen = view.getUint16(pointer + 32, true);
+      var localOffset = view.getUint32(pointer + 42, true);
+      var name = utf8Decode(bytes.subarray(pointer + 46, pointer + 46 + nameLen));
+      var localNameLen = view.getUint16(localOffset + 26, true);
+      var localExtraLen = view.getUint16(localOffset + 28, true);
+      var dataStart = localOffset + 30 + localNameLen + localExtraLen;
+      if (method !== 0) throw new Error('xlsx 条目为压缩存储，无法修补：' + name);
+      entries.push({ name: name, data: bytes.subarray(dataStart, dataStart + size) });
+      pointer += 46 + nameLen + extraLen + commentLen;
+    }
+    return entries;
+  }
+
+  function writeStoredZip(entries) {
+    var locals = [];
+    var central = [];
+    var offset = 0;
+    entries.forEach(function (entry) {
+      var name = utf8Encode(entry.name);
+      var data = entry.data;
+      var crc = crc32(data);
+      var header = new Uint8Array(30 + name.length);
+      var hv = new DataView(header.buffer);
+      hv.setUint32(0, 0x04034b50, true);
+      hv.setUint16(4, 20, true);
+      hv.setUint16(6, 0, true);
+      hv.setUint16(8, 0, true);
+      hv.setUint16(10, 0, true);
+      hv.setUint16(12, 0x21, true);
+      hv.setUint32(14, crc, true);
+      hv.setUint32(18, data.length, true);
+      hv.setUint32(22, data.length, true);
+      hv.setUint16(26, name.length, true);
+      header.set(name, 30);
+      locals.push(header, data);
+
+      var directory = new Uint8Array(46 + name.length);
+      var dv = new DataView(directory.buffer);
+      dv.setUint32(0, 0x02014b50, true);
+      dv.setUint16(4, 20, true);
+      dv.setUint16(6, 20, true);
+      dv.setUint16(8, 0, true);
+      dv.setUint16(10, 0, true);
+      dv.setUint16(12, 0, true);
+      dv.setUint16(14, 0x21, true);
+      dv.setUint32(16, crc, true);
+      dv.setUint32(20, data.length, true);
+      dv.setUint32(24, data.length, true);
+      dv.setUint16(28, name.length, true);
+      dv.setUint32(42, offset, true);
+      directory.set(name, 46);
+      central.push(directory);
+      offset += header.length + data.length;
+    });
+    var centralSize = central.reduce(function (sum, chunk) { return sum + chunk.length; }, 0);
+    var eocd = new Uint8Array(22);
+    var ev = new DataView(eocd.buffer);
+    ev.setUint32(0, 0x06054b50, true);
+    ev.setUint16(8, entries.length, true);
+    ev.setUint16(10, entries.length, true);
+    ev.setUint32(12, centralSize, true);
+    ev.setUint32(16, offset, true);
+    var out = new Uint8Array(offset + centralSize + 22);
+    var at = 0;
+    locals.concat(central).forEach(function (chunk) { out.set(chunk, at); at += chunk.length; });
+    out.set(eocd, at);
+    return out;
+  }
+
+  /** 给 L–P 进度列数据区单元格补上颜色填充样式（其余条目逐字节保留）。 */
+  function patchPhaseStyles(bytes, tasks, first) {
+    var entries = readStoredZip(bytes);
+    var fills = '';
+    var xfs = '';
+    PHASES.forEach(function (phase, index) {
+      fills += '<fill><patternFill patternType="solid"><fgColor rgb="FF' + PHASE_HEX[phase] +
+        '"/><bgColor indexed="64"/></patternFill></fill>';
+      xfs += '<xf numFmtId="0" fontId="0" fillId="' + (index + 2) + '" borderId="0" xfId="0" applyFill="1" applyNumberFormat="1"/>';
+    });
+    var firstRow = first || 3;
+    entries.forEach(function (entry) {
+      if (entry.name === 'xl/styles.xml') {
+        var styles = utf8Decode(entry.data)
+          .replace(/<fills count="(\d+)">([\s\S]*?)<\/fills>/, function (all, count, body) {
+            return '<fills count="' + (Number(count) + PHASES.length) + '">' + body + fills + '</fills>';
+          })
+          .replace(/<cellXfs count="(\d+)">([\s\S]*?)<\/cellXfs>/, function (all, count, body) {
+            return '<cellXfs count="' + (Number(count) + PHASES.length) + '">' + body + xfs + '</cellXfs>';
+          });
+        entry.data = utf8Encode(styles);
+        return;
+      }
+      if (entry.name === 'xl/worksheets/sheet1.xml') {
+        var sheet = utf8Decode(entry.data);
+        tasks.forEach(function (task, rowIndex) {
+          PHASE_KEYS.forEach(function (key, columnIndex) {
+            var value = (task && task.phases) ? task.phases[key] : '';
+            var xf = PHASES.indexOf(value) + 1;
+            if (!xf) return;
+            var ref = addrOf(firstRow + rowIndex, EXPORT_PHASE_FIRST_COL + columnIndex);
+            var pattern = new RegExp('<c r="' + ref + '"([^>]*?)(\\/?)>');
+            sheet = sheet.replace(pattern, function (all, attrs, selfClose) {
+              if (/(^|\s)s="\d+"/.test(attrs)) return all;
+              return '<c r="' + ref + '"' + attrs + ' s="' + xf + '"' + selfClose + '>';
+            });
+          });
+        });
+        entry.data = utf8Encode(sheet);
+      }
+    });
+    return writeStoredZip(entries);
+  }
+
+  /** 导出字节：同一份 Core.buildExportWorkbook → 不压缩写出 → 进度列上色。 */
+  function exportBytes(templateBytes, tasks) {
     var XLSX = global.XLSX;
     if (!XLSX) throw new Error('XLSX 未加载');
+    var workbook = buildExportWorkbook(templateBytes, tasks);
+    var raw = XLSX.write(workbook, { bookType: 'xlsx', type: 'array', compression: false });
+    try {
+      return patchPhaseStyles(new Uint8Array(raw), tasks, 3);
+    } catch (err) {
+      /* 修补失败不改变导出语义：回落到未上色但 A–K 保真的文件。 */
+      return new Uint8Array(raw);
+    }
+  }
+
+  /** CH-10：日报单文件三个 sheet（今日摘要 / 阻塞与延期 / 当日变更），浏览器本地生成，不依赖模板。 */
+  function buildDailyWorkbook(data) {
+    var XLSX = global.XLSX;
+    if (!XLSX) throw new Error('XLSX 未加载');
+    var payload = data || {};
     var workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(blockedRows(tasks)), '阻塞与延期');
-    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(changeRows(records)), '当日变更');
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(summaryRows(payload.summary)), DAILY_SHEET_NAMES[0]);
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(blockedRows(payload.blocked)), DAILY_SHEET_NAMES[1]);
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(changeRows(payload.changes)), DAILY_SHEET_NAMES[2]);
     return workbook;
   }
 
@@ -279,7 +557,11 @@
         if (typeof value !== 'string') push(id, 'dates.' + key, DATE_LABELS[key] + '日期必须是文本');
         else if (value !== '' && !DATE_RE.test(value)) push(id, 'dates.' + key, DATE_LABELS[key] + '日期格式必须为 YYYY-MM-DD');
       });
-      if (STATUSES.indexOf(task.status) === -1) push(id, 'status', '状态必须是 ' + STATUSES.join(' / ') + ' 之一');
+      /* CH-10：前端只校验五阶段进度（旧 status 已不由前端编辑，其合法性由服务端兜底）。 */
+      PHASE_KEYS.forEach(function (key) {
+        var phase = (task.phases || {})[key];
+        if (PHASES.indexOf(phase) === -1) push(id, 'phases.' + key, PHASE_LABELS[key] + '进度必须是 ' + PHASES.join(' / ') + ' 之一');
+      });
     });
     return errors;
   }
@@ -475,8 +757,22 @@
 
   var Core = {
     PM: PM,
-    STATUSES: STATUSES,
     DATE_KEYS: DATE_KEYS,
+    PHASE_KEYS: PHASE_KEYS,
+    PHASES: PHASES,
+    PHASE_LABELS: PHASE_LABELS,
+    PHASE_HEADERS: PHASE_HEADERS,
+    PHASE_HEX: PHASE_HEX,
+    PHASE_TEXT: PHASE_TEXT,
+    phaseValues: phaseValues,
+    DAILY_SUMMARY_HEADER: DAILY_SUMMARY_HEADER,
+    DAILY_BLOCKED_HEADER: DAILY_BLOCKED_HEADER,
+    DAILY_CHANGE_HEADER: DAILY_CHANGE_HEADER,
+    DAILY_SHEET_NAMES: DAILY_SHEET_NAMES,
+    summaryRows: summaryRows,
+    changeCategory: changeCategory,
+    EXPORT_TOTAL_COL_COUNT: EXPORT_TOTAL_COL_COUNT,
+    applyExportPhases: applyExportPhases,
     STRUCT_FIELDS: STRUCT_FIELDS,
     IDENTITY_KEY: IDENTITY_KEY,
     isPM: isPM,
@@ -490,12 +786,16 @@
     applyExportRows: applyExportRows,
     buildExportWorkbook: buildExportWorkbook,
     stampExportLabel: stampExportLabel,
+    exportBytes: exportBytes,
+    patchPhaseStyles: patchPhaseStyles,
+    readStoredZip: readStoredZip,
+    writeStoredZip: writeStoredZip,
+    crc32: crc32,
     blockedRows: blockedRows,
     changeRows: changeRows,
     buildDailyWorkbook: buildDailyWorkbook,
     todayInTz: todayInTz,
     formatInTz: formatInTz,
-    BLOCKED_STATUSES: BLOCKED_STATUSES,
     parseRange: parseRange,
     NOTE_SUMMARY_LIMIT: NOTE_SUMMARY_LIMIT,
     NOTE_PLACEHOLDER: NOTE_PLACEHOLDER,
@@ -519,7 +819,7 @@
     identity: null,
     revision: null,
     dirty: false,
-    filter: { q: '', owner: '', status: '' },
+    filter: { q: '', owner: '' },
     errorCells: {},
     health: null,
     editingRows: {},
@@ -634,19 +934,6 @@
     ownerFilter.value = state.filter.owner || '';
     if (!ownerFilter.value && keepOwner) ownerFilter.value = '';
 
-    var statusFilter = $('status-filter');
-    statusFilter.textContent = '';
-    var anyStatus = document.createElement('option');
-    anyStatus.value = '';
-    anyStatus.textContent = '全部';
-    statusFilter.appendChild(anyStatus);
-    STATUSES.forEach(function (status) {
-      var option = document.createElement('option');
-      option.value = status;
-      option.textContent = status;
-      statusFilter.appendChild(option);
-    });
-    statusFilter.value = state.filter.status || '';
   }
 
   function cellKey(id, field) { return id + '|' + field; }
@@ -686,15 +973,8 @@
   /* 编辑器构件：与既有 startEdit 共用，行编辑态与单元格编辑态外观一致。 */
   function buildEditor(field, value) {
     var editor;
-    if (field === 'status') {
-      editor = document.createElement('select');
-      STATUSES.forEach(function (status) {
-        var option = document.createElement('option');
-        option.value = status;
-        option.textContent = status;
-        editor.appendChild(option);
-      });
-      editor.value = value || STATUSES[0];
+    if (field.indexOf('phases.') === 0) {
+      editor = createPhaseSelect(field, value);
     } else if (field === 'owner') {
       editor = document.createElement('select');
       editor.className = 'owner-select';
@@ -728,7 +1008,26 @@
     return editor;
   }
 
-  /* 常显控件（日期 / 状态 / 负责人）与行编辑态共用的提交逻辑：change 即写入草稿。 */
+  /* CH-10 五档阶段下拉：常显控件；选项与当前值都带对应颜色（未开始灰 / 已开始蓝 / 已完成绿 / 延期红 / 阻塞黄）。 */
+  function createPhaseSelect(field, value) {
+    var select = document.createElement('select');
+    var current = PHASES.indexOf(value) === -1 ? PHASES[0] : value;
+    select.className = 'phase-select phase-block phase-' + (value || PHASES[0]);
+    select.setAttribute('data-edit-field', field);
+    select.setAttribute('data-phase', field.slice(7));
+    select.setAttribute('data-phase-value', current);
+    PHASES.forEach(function (phase) {
+      var option = document.createElement('option');
+      option.value = phase;
+      option.textContent = phase;
+      option.className = 'phase-' + phase;
+      select.appendChild(option);
+    });
+    select.value = current;
+    return select;
+  }
+
+  /* 常显控件（日期 / 阶段进度 / 负责人）与行编辑态共用的提交逻辑：change 即写入草稿。 */
   function bindEditorChange(editor, task, field) {
     editor.addEventListener('change', function () {
       var next = editor.value;
@@ -756,11 +1055,14 @@
     if (state.errorCells[cellKey(task.id, field)]) td.classList.add('cell-error');
   }
 
-  /* 日期列：常显 <input type=date>；无权限行 disabled 且点击仍给中文提示。 */
+  /* 日期列：常显 <input type=date>；其下方常显 CH-10 五档阶段进度下拉（可编辑则联动，只读则 disabled）。
+     无权限行点击仍给中文提示（沿用既有行为）。 */
   function buildDateCell(task, key) {
     var field = 'dates.' + key;
+    var phaseField = 'phases.' + key;
     var td = document.createElement('td');
     var editable = canEditField(state.identity, task, field);
+    var phaseEditable = canEditField(state.identity, task, phaseField);
     td.className = 'cell cell-date ' + (editable ? 'editable' : 'locked');
     td.setAttribute('data-id', task.id);
     td.setAttribute('data-field', field);
@@ -772,40 +1074,24 @@
     if (editable) bindEditorChange(input, task, field);
     else input.disabled = true;
     td.appendChild(input);
+
+    var phaseWrap = document.createElement('div');
+    phaseWrap.className = 'phase-cell' + (phaseEditable ? ' editable' : ' locked');
+    phaseWrap.setAttribute('data-id', task.id);
+    phaseWrap.setAttribute('data-field', phaseField);
+    phaseWrap.setAttribute('title', PHASE_LABELS[key] + '进度：' + (readField(task, phaseField) || PHASES[0]));
+    var select = createPhaseSelect(phaseField, readField(task, phaseField));
+    if (phaseEditable) bindEditorChange(select, task, phaseField);
+    else select.disabled = true;
+    phaseWrap.appendChild(select);
+    markErrorCell(phaseWrap, task, phaseField);
+    if (!phaseEditable) phaseWrap.addEventListener('click', function (event) { event.stopPropagation(); showReadOnlyHint(task, phaseField); });
+    td.appendChild(phaseWrap);
+
     markErrorCell(td, task, field);
     if (!editable) td.addEventListener('click', function () { showReadOnlyHint(task, field); });
     return td;
   }
-
-  /* 状态列：常显五枚举下拉 + 当前状态徽标；无权限行 disabled。 */
-  function buildStatusCell(task) {
-    var td = document.createElement('td');
-    var editable = canEditField(state.identity, task, 'status');
-    td.className = 'cell cell-status ' + (editable ? 'editable' : 'locked');
-    td.setAttribute('data-id', task.id);
-    td.setAttribute('data-field', 'status');
-    var select = document.createElement('select');
-    select.className = 'status-select status-' + task.status;
-    select.setAttribute('data-edit-field', 'status');
-    STATUSES.forEach(function (status) {
-      var option = document.createElement('option');
-      option.value = status;
-      option.textContent = status;
-      select.appendChild(option);
-    });
-    select.value = STATUSES.indexOf(task.status) === -1 ? STATUSES[0] : task.status;
-    if (editable) bindEditorChange(select, task, 'status');
-    else select.disabled = true;
-    td.appendChild(select);
-    var badge = document.createElement('span');
-    badge.className = 'badge status-' + task.status;
-    badge.textContent = task.status;
-    td.appendChild(badge);
-    markErrorCell(td, task, 'status');
-    if (!editable) td.addEventListener('click', function () { showReadOnlyHint(task, 'status'); });
-    return td;
-  }
-
 
   /* K 列「进展说明」：显示去 Markdown 的纯文本摘要（单行截断），整格可点击打开大尺寸编辑器。 */
   function buildNoteCell(task) {
@@ -926,10 +1212,10 @@
     });
     tr.appendChild(buildCell(task, 'task', 'cell-task'));
     tr.appendChild(buildOwnerCell(task));
-    tr.appendChild(buildCell(task, 'demo', 'cell-demo'));
+    /* CH-9：网页不渲染「是否演示范围」列，也不提供任何编辑入口；数据字段 demo 原样保留（导出/日报仍含原值）。 */
     DATE_KEYS.forEach(function (key) { tr.appendChild(buildDateCell(task, key)); });
     tr.appendChild(buildNoteCell(task));
-    tr.appendChild(buildStatusCell(task));
+    /* CH-10：旧全局「状态」列已从网页移除，阶段进度随各日期列下方的五档下拉呈现。 */
 
     var opCell = document.createElement('td');
     opCell.className = 'cell cell-op';
@@ -975,7 +1261,9 @@
     var task = {
       id: nextTaskId(state.doc.tasks),
       level1: '', level2: '', task: '', owner: state.doc.identities[0] === PM ? state.doc.identities[1] : state.doc.identities[0],
-      demo: '', dates: { design: '', dev: '', test: '', product: '', demo_prep: '' }, note: '', status: STATUSES[0], __dirty: true
+      demo: '', dates: { design: '', dev: '', test: '', product: '', demo_prep: '' },
+      phases: { design: '未开始', dev: '未开始', test: '未开始', product: '未开始', demo_prep: '未开始' },
+      note: '', status: '未开始', __dirty: true
     };
     state.doc.tasks.push(task);
     state.dirty = true;
@@ -1003,7 +1291,7 @@
 
   /* 该行对当前身份是否存在可编辑字段（普通负责人：仅「负责人 == 自己」的行）。 */
   function rowEditable(task) {
-    return canEditField(state.identity, task, 'note') || canEditField(state.identity, task, 'status') ||
+    return canEditField(state.identity, task, 'note') || canEditField(state.identity, task, 'phases.design') ||
       canEditField(state.identity, task, 'level1');
   }
 
@@ -1345,18 +1633,27 @@
     return response.json();
   }
 
+  /* CH-10：日报数据源为 /api/daily（三 sheet：今日摘要 / 阻塞与延期 / 当日变更）。 */
+  async function fetchDaily(dateStr) {
+    var url = '/api/daily?tz=' + encodeURIComponent(HISTORY_TZ) + '&date=' + encodeURIComponent(dateStr);
+    var response = await fetch(url, { cache: 'no-store' });
+    if (!response.ok) throw new Error('日报数据读取失败 HTTP ' + response.status);
+    return response.json();
+  }
+
   async function exportDailyReport() {
     var dateStr = todayInTz(HISTORY_TZ);
     try {
-      var history = await fetchHistory(dateStr);
-      var records = (history && history.records) || [];
-      var workbook = Core.buildDailyWorkbook(state.doc.tasks, records);
+      var daily = await fetchDaily(dateStr);
+      var workbook = Core.buildDailyWorkbook(daily);
       var name = dailyReportFileName(dateStr);
-      global.XLSX.writeFile(workbook, name);
-      var blocked = state.doc.tasks.filter(function (task) { return BLOCKED_STATUSES.indexOf(task.status) !== -1; }).length;
-      showBanner('ok', '已导出日报 ' + name + '：sheet「阻塞与延期」' + blocked + ' 行、sheet「当日变更」' + records.length +
-        ' 行（' + dateStr + ' ' + HISTORY_TZ + ' 自然日口径；原 WBS 导出仍不含 status）。');
-      return { ok: true, name: name, date: dateStr, blocked: blocked, changes: records.length, records: records };
+      var bytes = new Uint8Array(global.XLSX.write(workbook, { bookType: 'xlsx', type: 'array' }));
+      state.lastDaily = { name: name, bytes: bytes };
+      downloadExport(bytes, name);
+      var counts = daily.counts || { summary: 0, blocked: 0, changes: 0 };
+      showBanner('ok', '已导出日报 ' + name + '：sheet「今日摘要」' + counts.summary + ' 行、「阻塞与延期」' + counts.blocked +
+        ' 行、「当日变更」' + counts.changes + ' 行（' + dateStr + ' ' + HISTORY_TZ + ' 自然日口径；旧 status 不进日报、WBS 导出与页面）。');
+      return { ok: true, name: name, date: dateStr, summary: counts.summary, blocked: counts.blocked, changes: counts.changes, daily: daily, bytes: bytes };
     } catch (err) {
       showBanner('error', '日报导出失败：' + err.message);
       return { ok: false, error: err.message };
@@ -1479,13 +1776,35 @@
     return Core.buildExportWorkbook(new Uint8Array(buffer), state.doc.tasks);
   }
 
+  var EXPORT_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+  /* 导出下载：优先交给测试接缝（自测脚本用于取回字节），否则用 Blob + <a download> 本地下载。
+     全程不发任何外部请求。 */
+  function downloadExport(bytes, name) {
+    if (typeof global.WBS_DOWNLOAD_HOOK === 'function') { global.WBS_DOWNLOAD_HOOK(bytes, name); return; }
+    var blob = new Blob([bytes], { type: EXPORT_MIME });
+    var url = global.URL.createObjectURL(blob);
+    var anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = name;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    global.setTimeout(function () { global.URL.revokeObjectURL(url); }, 0);
+  }
+
   async function exportXlsx() {
     try {
-      var workbook = await loadExportWorkbook();
+      var response = await fetch('template.xlsx', { cache: 'no-store' });
+      if (!response.ok) throw new Error('模板读取失败 HTTP ' + response.status);
+      var buffer = new Uint8Array(await response.arrayBuffer());
+      var bytes = Core.exportBytes(buffer, state.doc.tasks);
       var name = exportFileName();
-      global.XLSX.writeFile(workbook, name);
-      showBanner('ok', '已按原模板导出 ' + state.doc.tasks.length + ' 行 A–K 数据，文件名 ' + name + '（第 1/2 行与合并单元格保持原样，status 不导出）。');
-      return { ok: true, name: name };
+      state.lastExport = { name: name, bytes: bytes };
+      downloadExport(bytes, name);
+      showBanner('ok', '已按原模板导出 ' + state.doc.tasks.length + ' 行 A–K 数据 + K 后 5 个阶段进度列（含颜色），文件名 ' + name +
+        '（第 1/2 行与合并单元格保持原样；demo 原值保留，旧 status 不导出）。');
+      return { ok: true, name: name, bytes: bytes };
     } catch (err) {
       showBanner('error', '导出失败：' + err.message);
       return { ok: false, error: err.message };
@@ -1517,10 +1836,6 @@
     });
     $('owner-filter').addEventListener('change', function (event) {
       state.filter.owner = event.target.value;
-      render();
-    });
-    $('status-filter').addEventListener('change', function (event) {
-      state.filter.status = event.target.value;
       render();
     });
     $('save-btn').addEventListener('click', function () { save(); });
@@ -1601,6 +1916,7 @@
     exportDailyReport: exportDailyReport,
     dailyReportFileName: dailyReportFileName,
     fetchHistory: fetchHistory,
+    fetchDaily: fetchDaily,
     openAddPersonPanel: openAddPersonPanel,
     closeAddPersonPanel: closeAddPersonPanel,
     confirmAddPerson: confirmAddPerson,
@@ -1609,6 +1925,7 @@
     canAddIdentity: canAddIdentity,
     backHome: backHome,
     loadExportWorkbook: loadExportWorkbook,
+    downloadExport: downloadExport,
     exportFileName: exportFileName,
     checkHealth: checkHealth,
     openNotePanel: openNotePanel,

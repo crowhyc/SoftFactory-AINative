@@ -1,0 +1,8 @@
+=== 自测矩阵 05 · 恰好边界（今天 / 昨天 / 缺失）迁移结果 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage11/browser.log' 'PASS  矩阵05 迁移边界' && require '/opt/wbs-rongcheng/tests/.tmp/stage11/server.log' 'PASS  矩阵05 迁移边界'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵05 迁移边界
+PASS=1 FAIL=0
+OK    PASS  矩阵05 迁移边界
+PASS=1 FAIL=0
