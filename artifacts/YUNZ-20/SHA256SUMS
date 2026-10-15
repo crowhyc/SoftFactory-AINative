@@ -227,6 +227,7 @@ c6d73ee1bd957f9db464aafdd06ef234fa9fa2fa438ac257404243feb20e3692  ./verification
 4ecc030a9d55f2e5682ff2ac00a44e822d3b0de111e145ec8118d8aff3ddb87f  ./verification/stage10/logs/06-readback-live.log
 3982f6e20c4df3e7fcfefbc201a4eca4dac1ff2700da80aee706f3a1f0a14263  ./verification/stage10/logs/07-readback-iso.log
 82f2377a3ea792ebdb0a081c865833ac8995e375bb42ce97c2b4d0fdfa03606d  ./verification/stage10/logs/08-post-check.log
+d7c41f831c2d12bd556da8ab304ba53f705cd835ddb251ac91b16b29bbbdb6f7  ./verification/stage10/push-receipt.txt
 b4ed4d89dcc3076567456b71a31f54cdf2a40d39041c93f5816888cd4e31dcf8  ./verification/stage10/results/iso-api-history-today.json
 f15b0b1bccb7b57effe74704e685cee07855e9edca614869aabb37f3e50dec57  ./verification/stage10/results/iso-api-wbs-at-export.json
 1fb111edfbef6fdf44d04ffd673344448bac528cae11d8fa80fa165db4e4e4ba  ./verification/stage10/results/iso-browser-results.json

@@ -1,0 +1,9 @@
+# YUNZ-30 / Stage10 复验报告推送回执
+
+- 仓库：softfactory-github:crowhyc/SoftFactory-AINative.git（分支 main）
+- 提交：3b5bbb3 `task(YUNZ-20)：变更包 #3 复验报告`
+- 范围：dd021f6..3b5bbb3（前一条为 Stage9 作者的 `task(YUNZ-20)：变更包 #3 实现与自测`）
+- 内容：仅 artifacts/YUNZ-20/（49 个文件：verification/stage10/ 全部证据 + 刷新 artifacts/YUNZ-20/SHA256SUMS）
+- 推送时间：2026-10-15 11:16（+08），`git push origin main` 返回 `dd021f6..3b5bbb3  main -> main`
+- 校验：`sha256sum -c artifacts/YUNZ-20/SHA256SUMS`（435 项）与 `-c verification/stage10/SHA256SUMS`（47 项）均全通过
+- 未触碰：其它任务目录、artifacts/INDEX.md、被验证运行目录 /opt/wbs-rongcheng
