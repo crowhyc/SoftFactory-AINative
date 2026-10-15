@@ -1,0 +1,24 @@
+YUNZ-33 变更包 #5（CH-11 + CH-12）作者自测开始 2026-10-15T14:24:41+0800
+node: /bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+v24.21.0  python3: Python 3.6.8  docker: Docker version 26.1.4, build 5650f9b  today: 2026-10-15
+
+--- 准备 A：真实浏览器（Chromium 容器）用例集（日报两 sheet / 摘要仅 A 列 / WBS 不回归 / 409 / 重启） ---
+浏览器用例集退出码 0（完整输出：/opt/wbs-rongcheng/tests/.tmp/stage13/browser.log）
+--- 准备 B：导出产物宿主 python 独立读回（zip/XML，不依赖 openpyxl） ---
+WBS 读回退出码 0（/opt/wbs-rongcheng/tests/.tmp/stage13/readback-wbs.log） 日报读回退出码 0（/opt/wbs-rongcheng/tests/.tmp/stage13/readback-daily.log） 无事件读回退出码 0（/opt/wbs-rongcheng/tests/.tmp/stage13/readback-daily-quiet.log）
+
+01   日报 sheetNames == ["今日摘要","阻塞与延期"]（CH-12） 通过（PASS=1 FAIL=0）
+02   今日摘要仅 A 列有值（列数 1 / 无辅助表头）与 A 列宽 + 自动换行（CH-11） 通过（PASS=4 FAIL=0）
+03   摘要文本逐字与 #4 口径一致（@ / 高风险前缀 / 排序 / 五类模板 / 一任务多行 / 无事件兜底） 通过（PASS=2 FAIL=0）
+04   旧「当日变更」表头不出现（导出路径已移除） 通过（PASS=3 FAIL=0）
+05   WBS 导出不回归：五色填充 / A–K 保真 / L–P 五进度列 / Q1 导出日期标签 通过（PASS=7 FAIL=0）
+06   CH-7 identity_added 仍写审计、/api/history 仍返回（导出不再含当日变更 sheet） 通过（PASS=3 FAIL=0）
+07   保存 / 409 / 重启持久 / 健康探针 / 无外部请求不回归 通过（PASS=4 FAIL=0）
+08   回归：既有 18 项矩阵（JS/DOM/导出；按当前部署口径跳过容器附加项） 通过（PASS=1 FAIL=0）
+09   回归：Stage7 矩阵 01–14（CH-1…CH-7 真实浏览器深度复跑） 通过（PASS=1 FAIL=0）
+10   回归：Stage9 矩阵 01–14（CH-8 大尺寸 Markdown 编辑器） 通过（PASS=1 FAIL=0）
+11   回归：Stage11 矩阵 01–14（CH-9 / CH-10 五阶段与日报重构） 通过（PASS=1 FAIL=0）
+12   部署与镜像自检（BIND_HOST=0.0.0.0 / 双端+公网 health / 无 node_modules / 资源与源码一致 / 新基线 live 冒烟） 通过（PASS=8 FAIL=0）
+
+结论：变更包 #5（CH-11 + CH-12）作者自测矩阵 01–07 与回归项 08–12 全部通过（浏览器用例集 0）
+输出目录：/opt/wbs-rongcheng/tests/.tmp/stage13

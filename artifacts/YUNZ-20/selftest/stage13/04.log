@@ -1,0 +1,10 @@
+=== 自测矩阵 04 · 旧「当日变更」表头不出现（导出路径已移除） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage13/browser.log' 'PASS  矩阵04 旧「当日变更」表头与「今日摘要」辅助分列表头' && require '/opt/wbs-rongcheng/tests/.tmp/stage13/readback-daily.log' '日报导出不含「当日变更」sheet' '旧「当日变更」表头与「今日摘要」辅助表头均不出现在任何 sheet' '全部 sheet/workbook 部件无旧「当日变更」表头字样'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵04 旧「当日变更」表头与「今日摘要」辅助分列表头
+PASS=1 FAIL=0
+OK    日报导出不含「当日变更」sheet
+OK    旧「当日变更」表头与「今日摘要」辅助表头均不出现在任何 sheet
+OK    全部 sheet/workbook 部件无旧「当日变更」表头字样
+PASS=3 FAIL=0

@@ -1,0 +1,33 @@
+=== 自测矩阵 09 · 回归：Stage7 矩阵 01–14（CH-1…CH-7 真实浏览器深度复跑） ===
+$ bash tests/verify_stage7.sh '/opt/wbs-rongcheng/tests/.tmp/stage13/regress-stage7' && grep -F '结论：新增自测矩阵 01–14 全部通过' '/opt/wbs-rongcheng/tests/.tmp/stage13/regress-stage7/matrix-summary.txt' && echo 'PASS=1 FAIL=0'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+YUNZ-27 变更包 #2 作者自测开始 2026-10-15T14:25:26+0800
+node: /bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+v24.21.0  python3: Python 3.6.8  docker: Docker version 26.1.4, build 5650f9b
+
+--- 准备 A：真实浏览器（Chromium 容器）用例集 ---
+浏览器用例集退出码 0（完整输出：/opt/wbs-rongcheng/tests/.tmp/stage13/regress-stage7/browser.log）
+--- 准备 B：服务端 / 历史接口用例集 ---
+服务端用例集退出码 0（完整输出：/opt/wbs-rongcheng/tests/.tmp/stage13/regress-stage7/server.log）
+
+01   日期五列与阶段进度列常显为可交互控件（非点击才出现） 通过（PASS=3 FAIL=0）
+02   无权限行日期/阶段进度 disabled、选项不变、点击给中文提示 通过（PASS=4 FAIL=0）
+03   操作列：每行常显「编辑」进入行编辑态；「删除」仅项目负责人可见 通过（PASS=5 FAIL=0）
+04   删除确认框「取消」不删除 / 「确认」删除 通过（PASS=2 FAIL=0）
+05   负责人下拉＝人员池；项目负责人可改派、普通负责人只读 通过（PASS=3 FAIL=0）
+06   新增人员：非空/去重/1–20 校验；立即生效；返回首页同步；落盘 通过（PASS=2 FAIL=0）
+07   日报「阻塞与延期」sheet：仅延期/阻塞行，A–K + 五进度列（两 sheet 口径） 通过（PASS=4 FAIL=0）
+08   字段级改动证据：日报不再含「当日变更」sheet（CH-12），逐行 old→new 仍由 /api/history 承载 通过（PASS=3 FAIL=0）
+09   原 WBS 导出不含 status、第 1/2 行 A–K 逐字一致、A–K 保真 通过（PASS=27 FAIL=0）
+10   旧数据兼容：老 wbs.json 可读可保存；老/损坏 audit.log 不报错 通过（PASS=2 FAIL=0）
+11   三端一致 + 刷新持久 + 409 非覆盖 + 重启持久 + health 通过（PASS=5 FAIL=0）
+12   回归子集：D-3 遮罩级联 / 验收1 / 验收3 / 验收4 / 无 pageerror 通过（PASS=8 FAIL=0）
+13   CH-10 导出 Q1 日期标签（Asia/Shanghai，仅新增 Q1，不改原文） 通过（PASS=27 FAIL=0）
+14   CH-7 新增人员写 identity_added 审计 + 日报数据源含该行（导出不含当日变更 sheet）+ 越权被拒 通过（PASS=4 FAIL=0）
+
+结论：新增自测矩阵 01–14 全部通过（浏览器用例集 0 / 服务端用例集 0）
+输出目录：/opt/wbs-rongcheng/tests/.tmp/stage13/regress-stage7
+结论：新增自测矩阵 01–14 全部通过（浏览器用例集 0 / 服务端用例集 0）
+PASS=1 FAIL=0

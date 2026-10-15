@@ -1,0 +1,9 @@
+=== 自测矩阵 01 · 日报 sheetNames == ["今日摘要","阻塞与延期"]（CH-12） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage13/browser.log' 'PASS  矩阵01 日报 sheetNames == ' 'PASS  矩阵01b' && require '/opt/wbs-rongcheng/tests/.tmp/stage13/readback-daily.log' '日报为单 workbook 两 sheet'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵01 日报 sheetNames == 
+OK    PASS  矩阵01b
+PASS=2 FAIL=0
+OK    日报为单 workbook 两 sheet
+PASS=1 FAIL=0

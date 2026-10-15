@@ -1,0 +1,39 @@
+=== 自测矩阵 12 · 部署与镜像自检（BIND_HOST=0.0.0.0 / 双端+公网 health / 无 node_modules / 资源与源码一致 / 新基线 live 冒烟） ===
+$ bash tests/stage13/deploy_check.sh
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+=== Stage13 部署/镜像自检 2026-10-15T14:28:21+0800 ===
+--- 复用 stage9 部署口径（容器镜像 / 0.0.0.0 绑定 / 双端+公网 health / 无 node_modules / 资源与源码一致） ---
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+=== 部署/镜像自检 2026-10-15T14:28:21+0800 ===
+容器：wbs-rongcheng  端口：4180  BIND_HOST：0.0.0.0  APP_DIR：/opt/wbs-rongcheng
+PASS  现场容器存在并运行（镜像 wbs-rongcheng:20261015141900，网络 host，挂载 /opt/wbs-rongcheng/data->/app/data）
+PASS  容器进程绑定 0.0.0.0（D-0006 授权对外暴露口径）
+PASS  运行数据挂载 = /opt/wbs-rongcheng/data（现场数据未改挂载）
+PASS  本机 http://127.0.0.1:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":10}
+PASS  http://0.0.0.0:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":10}
+PASS  宿主监听包含 0.0.0.0:4180（按 D-0006 授权对外暴露）
+PASS  公网 http://47.108.129.157:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":10}
+PASS  镜像内无 node_modules / package-lock.json（零运行时依赖）
+镜像 /app 内容：data package.json public server.js 
+PASS  服务端返回 /app.js 与运行目录源码一致（sha256 d49cc9e2fce5c3c0e22a35f52ce4ab642110a6a920464bf1d1d14d2a279280f7）
+PASS  服务端返回 /styles.css 与运行目录源码一致（sha256 62771efb859cc4f51e49a99c6975828c2073aa07638a6f3faa027a435bc501db）
+PASS  服务端返回 / 与运行目录 index.html 一致（sha256 4438496e27be970030f6c032df8c2920e4fcb39795b515d728965d4a52a5c0aa）
+PASS  容器内 /app/public/app.js == 运行目录（sha256 d49cc9e2fce5c3c0e22a35f52ce4ab642110a6a920464bf1d1d14d2a279280f7）
+PASS  容器内 /app/public/index.html == 运行目录（sha256 4438496e27be970030f6c032df8c2920e4fcb39795b515d728965d4a52a5c0aa）
+PASS  容器内 /app/public/styles.css == 运行目录（sha256 62771efb859cc4f51e49a99c6975828c2073aa07638a6f3faa027a435bc501db）
+PASS  容器内 /app/server.js == 运行目录（sha256 d9b29f0001fece55ec8c7010ea4c4526f62b70f37538f1761439e0936df4ec33）
+---
+PASS=15 FAIL=0
+PASS  stage9 部署口径全部通过（容器 / 绑定 / health / 镜像无依赖 / 资源一致）
+--- 新基线 live 冒烟（CH-11 / CH-12） ---
+PASS  live /api/daily 返回 ok（日报数据源可达，服务端审计与 changes 保留）
+PASS  live /api/daily 仍返回 summary / blocked / changes 三个数据源（只有导出路径变化）
+PASS  live app.js 已移除「当日变更」表头与组装代码（CH-12 生效）
+PASS  live app.js 日报 sheet 常量为两 sheet（CH-12 生效）
+PASS  live app.js 今日摘要表头仅 A 列（CH-11 生效）
+PASS  live app.js 含 A 列自动换行修补（CH-11 生效）
+PASS  公网 http://47.108.129.157:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":10}
+---
+PASS=8 FAIL=0

@@ -22,7 +22,7 @@ echo "--- 新基线 live 冒烟（CH-9 / CH-10） ---"
 TODAY="$(TZ=Asia/Shanghai date +%F)"
 DAILY_JSON="$(curl -fsS "http://127.0.0.1:$PORT/api/daily?tz=Asia/Shanghai&date=$TODAY" 2>/dev/null || true)"
 case "$DAILY_JSON" in
-  *'"ok":true'*) ok "live /api/daily 返回 ok（三 sheet 数据源可达）";;
+  *'"ok":true'*) ok "live /api/daily 返回 ok（日报数据源可达）";;
   *) bad "live /api/daily 未返回 ok" "${DAILY_JSON:0:120}";;
 esac
 if [ -n "$DAILY_JSON" ] && ! printf '%s' "$DAILY_JSON" | grep -q 'undefined'; then

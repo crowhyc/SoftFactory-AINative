@@ -35,13 +35,14 @@
   var EXPORT_COL_COUNT = 11;
   var HISTORY_TZ = 'Asia/Shanghai';
   var IDENTITY_MAX_LEN = 20;
-  /* CH-10：日报三 sheet 表头。今日摘要 = 微信文本行 + 分列结构；阻塞与延期 = A–K + 五进度列；当日变更 = 字段级明细。 */
-  var DAILY_SUMMARY_HEADER = ['微信文本行', '重要度', '结论', '一级', '二级', '任务项', '负责人', '时间', '依据'];
+  /* CH-11：日报两 sheet 表头。今日摘要 = 仅 A 列微信文本行（原辅助分列已删除）；阻塞与延期 = A–K + 五进度列。 */
+  var DAILY_SUMMARY_HEADER = ['微信文本行'];
   var DAILY_BLOCKED_HEADER = ['一级', '二级', '任务项', '负责人', '是否演示范围', '设计', '开发', '测试', '产品', '演示准备', '进展说明']
     .concat(PHASE_HEADERS);
-  var DAILY_CHANGE_HEADER = ['一级', '二级', '任务项', '负责人', '改动字段', '旧值', '新值', '时间', '操作身份'];
-  var DAILY_SHEET_NAMES = ['今日摘要', '阻塞与延期', '当日变更'];
-  var DAILY_RANK = { '延期': 1, '阻塞': 2, '到期未更新': 3, '完成': 4, '普通': 5 };
+  /* CH-12：日报导出只保留两个 sheet（当日变更 sheet 及其表头/组装代码已从导出路径移除）。 */
+  var DAILY_SHEET_NAMES = ['今日摘要', '阻塞与延期'];
+  /* CH-11：A 列微信文本行足够宽 + 自动换行（社区版 SheetJS 不写样式，故沿用 STORED zip 最小修补）。 */
+  var DAILY_SUMMARY_COL_WIDTH = 120;
 
   /* ------------------------------------------------------------ 纯逻辑 */
 
@@ -177,61 +178,11 @@
     return String(value);
   }
 
-  /* 单条变更记录的重要度分类（与「今日摘要」同一口径）。 */
-  function changeCategory(field, value) {
-    var phase = /^phases\.(.+)\.status$/.exec(String(field == null ? '' : field));
-    if (!phase) return '普通';
-    if (value === '延期') return '延期';
-    if (value === '阻塞') return '阻塞';
-    if (value === '已完成') return '完成';
-    return '普通';
-  }
-
-  function changeRank(record) {
-    return DAILY_RANK[changeCategory(record && record.field, record && record.new)] || 5;
-  }
-
-  /* 当日变更：字段级明细，按重要度（延期 > 阻塞 > 到期未更新判定延期 > 完成 > 普通）后按时间升序。 */
-  function changeRows(records) {
-    var rows = [DAILY_CHANGE_HEADER.slice()];
-    (records || []).slice().sort(function (a, b) {
-      var rank = changeRank(a) - changeRank(b);
-      if (rank !== 0) return rank;
-      var ta = Date.parse(a && a.at);
-      var tb = Date.parse(b && b.at);
-      if (isNaN(ta) || isNaN(tb)) return 0;
-      return ta - tb;
-    }).forEach(function (record) {
-      rows.push([
-        cellText(record.level1),
-        cellText(record.level2),
-        cellText(record.task),
-        cellText(record.owner),
-        fieldLabel(record.field),
-        cellText(record.old),
-        cellText(record.new),
-        formatInTz(record.at),
-        cellText(record.identity)
-      ]);
-    });
-    return rows;
-  }
-
-  /* 今日摘要 sheet：A 列为微信可直接复制的检索式文本行，B–I 列为分列结构。 */
+  /* CH-11：今日摘要 sheet 只有 A 列——每行一段微信可直接复制的文本行（原 B–I 辅助分列已删除）。 */
   function summaryRows(summary) {
     var rows = [DAILY_SUMMARY_HEADER.slice()];
     (summary || []).forEach(function (item) {
-      rows.push([
-        cellText(item.line),
-        cellText(item.importance),
-        cellText(item.conclusion),
-        cellText(item.level1),
-        cellText(item.level2),
-        cellText(item.task),
-        cellText(item.owner),
-        item.at ? formatInTz(item.at) : '-',
-        cellText(item.basis)
-      ]);
+      rows.push([cellText(item.line)]);
     });
     return rows;
   }
@@ -517,16 +468,65 @@
     }
   }
 
-  /** CH-10：日报单文件三个 sheet（今日摘要 / 阻塞与延期 / 当日变更），浏览器本地生成，不依赖模板。 */
+  /** CH-11 / CH-12：日报单文件两个 sheet（今日摘要 / 阻塞与延期），浏览器本地生成，不依赖模板。 */
   function buildDailyWorkbook(data) {
     var XLSX = global.XLSX;
     if (!XLSX) throw new Error('XLSX 未加载');
     var payload = data || {};
     var workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(summaryRows(payload.summary)), DAILY_SHEET_NAMES[0]);
+    var summary = XLSX.utils.aoa_to_sheet(summaryRows(payload.summary));
+    summary['!cols'] = [{ wch: DAILY_SUMMARY_COL_WIDTH }];  // CH-11：A 列足够宽
+    XLSX.utils.book_append_sheet(workbook, summary, DAILY_SHEET_NAMES[0]);
     XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(blockedRows(payload.blocked)), DAILY_SHEET_NAMES[1]);
-    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(changeRows(payload.changes)), DAILY_SHEET_NAMES[2]);
     return workbook;
+  }
+
+  /** CH-11：「今日摘要」A 列自动换行（最小 ZIP 级修补，与 CH-10 五色修补同一套机制）。
+   *  随包 SheetJS 0.18.5 社区版读得到单元格样式、写出时却不生成 cellXfs，因此仍用
+   *  「不压缩写盘 + 只改 styles.xml/sheet1.xml」的方式补一个 wrapText 的 cellXf 并套到 A 列。
+   *  修补失败不改变导出语义：回落到仅列宽。 */
+  function patchSummaryWrap(bytes) {
+    try {
+      var entries = readStoredZip(bytes);
+      var stylesIndex = -1;
+      var sheetIndex = -1;
+      entries.forEach(function (entry, index) {
+        if (entry.name === 'xl/styles.xml') stylesIndex = index;
+        if (entry.name === 'xl/worksheets/sheet1.xml') sheetIndex = index;
+      });
+      if (stylesIndex < 0 || sheetIndex < 0) throw new Error('xlsx 缺少 styles/sheet 部件');
+      var styles = utf8Decode(entries[stylesIndex].data);
+      var match = /<cellXfs count="(\d+)">([\s\S]*?)<\/cellXfs>/.exec(styles);
+      if (!match) throw new Error('styles.xml 缺少 cellXfs');
+      var wrapXf = Number(match[1]);   // 追加的 xf 索引 = 原 count（0 基）
+      styles = styles.replace(/<cellXfs count="(\d+)">([\s\S]*?)<\/cellXfs>/, function (all, count, body) {
+        return '<cellXfs count="' + (Number(count) + 1) + '">' + body +
+          '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1">' +
+          '<alignment wrapText="1" vertical="top"/></xf></cellXfs>';
+      });
+      var sheet = utf8Decode(entries[sheetIndex].data);
+      for (var row = 1; row <= 1000; row += 1) {
+        var ref = 'A' + row;
+        var pattern = new RegExp('<c r="' + ref + '"([^>]*?)(\\/?)>');
+        if (!pattern.test(sheet)) continue;
+        sheet = sheet.replace(pattern, function (all, attrs, selfClose) {
+          if (/(^|\s)s="\d+"/.test(attrs)) return all;
+          return '<c r="' + ref + '"' + attrs + ' s="' + wrapXf + '"' + selfClose + '>';
+        });
+      }
+      entries[stylesIndex].data = utf8Encode(styles);
+      entries[sheetIndex].data = utf8Encode(sheet);
+      var patched = writeStoredZip(entries);
+      return patched && patched.length ? patched : bytes;
+    } catch (err) {
+      return bytes;
+    }
+  }
+
+  /** 日报字节：同一份 buildDailyWorkbook → 不压缩写出 → A 列自动换行修补。 */
+  function dailyBytes(workbook) {
+    var raw = global.XLSX.write(workbook, { bookType: 'xlsx', type: 'array', compression: false });
+    return patchSummaryWrap(new Uint8Array(raw));
   }
 
   function validateDraft(doc, identities) {
@@ -767,10 +767,8 @@
     phaseValues: phaseValues,
     DAILY_SUMMARY_HEADER: DAILY_SUMMARY_HEADER,
     DAILY_BLOCKED_HEADER: DAILY_BLOCKED_HEADER,
-    DAILY_CHANGE_HEADER: DAILY_CHANGE_HEADER,
     DAILY_SHEET_NAMES: DAILY_SHEET_NAMES,
     summaryRows: summaryRows,
-    changeCategory: changeCategory,
     EXPORT_TOTAL_COL_COUNT: EXPORT_TOTAL_COL_COUNT,
     applyExportPhases: applyExportPhases,
     STRUCT_FIELDS: STRUCT_FIELDS,
@@ -792,8 +790,9 @@
     writeStoredZip: writeStoredZip,
     crc32: crc32,
     blockedRows: blockedRows,
-    changeRows: changeRows,
     buildDailyWorkbook: buildDailyWorkbook,
+    patchSummaryWrap: patchSummaryWrap,
+    dailyBytes: dailyBytes,
     todayInTz: todayInTz,
     formatInTz: formatInTz,
     parseRange: parseRange,
@@ -1647,13 +1646,13 @@
       var daily = await fetchDaily(dateStr);
       var workbook = Core.buildDailyWorkbook(daily);
       var name = dailyReportFileName(dateStr);
-      var bytes = new Uint8Array(global.XLSX.write(workbook, { bookType: 'xlsx', type: 'array' }));
+      var bytes = dailyBytes(workbook);
       state.lastDaily = { name: name, bytes: bytes };
       downloadExport(bytes, name);
-      var counts = daily.counts || { summary: 0, blocked: 0, changes: 0 };
+      var counts = daily.counts || { summary: 0, blocked: 0 };
       showBanner('ok', '已导出日报 ' + name + '：sheet「今日摘要」' + counts.summary + ' 行、「阻塞与延期」' + counts.blocked +
-        ' 行、「当日变更」' + counts.changes + ' 行（' + dateStr + ' ' + HISTORY_TZ + ' 自然日口径；旧 status 不进日报、WBS 导出与页面）。');
-      return { ok: true, name: name, date: dateStr, summary: counts.summary, blocked: counts.blocked, changes: counts.changes, daily: daily, bytes: bytes };
+        ' 行（' + dateStr + ' ' + HISTORY_TZ + ' 自然日口径；日报只含两个 sheet、今日摘要只保留 A 列；旧 status 不进日报、WBS 导出与页面）。');
+      return { ok: true, name: name, date: dateStr, summary: counts.summary, blocked: counts.blocked, daily: daily, bytes: bytes };
     } catch (err) {
       showBanner('error', '日报导出失败：' + err.message);
       return { ok: false, error: err.message };

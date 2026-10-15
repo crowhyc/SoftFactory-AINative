@@ -241,56 +241,73 @@ def check_daily(export, snapshot):
     book = Book(export)
     payload = json.load(open(snapshot, encoding='utf-8'))
     names = [s[0] for s in book.sheets]
-    if names == ['今日摘要', '阻塞与延期', '当日变更']:
-        ok('日报为单 workbook 三 sheet', ' / '.join(names))
+    if names == ['今日摘要', '阻塞与延期']:
+        ok('日报为单 workbook 两 sheet（今日摘要 / 阻塞与延期）', ' / '.join(names))
     else:
         bad('日报 sheet 名称/数量异常', str(names))
 
     summary_cells = book.cells(dict(book.sheets)['今日摘要'])
-    header = row_values(summary_cells, 1, 9)
-    if header == ['微信文本行', '重要度', '结论', '一级', '二级', '任务项', '负责人', '时间', '依据']:
-        ok('「今日摘要」分列结构齐备', ' / '.join(header))
+    header = row_values(summary_cells, 1, 1)
+    if header == ['微信文本行']:
+        ok('「今日摘要」只有 A 列（表头=微信文本行，辅助分列已删除）', ' / '.join(header))
     else:
-        bad('「今日摘要」分列结构异常', str(header))
+        bad('「今日摘要」A 列表头异常', str(header))
+    wide = [r for r in row_values(summary_cells, 2, 2) if r != '']
+    if len(wide) <= 1:
+        ok('「今日摘要」A 列之外无任何值（列数 1）', 'A2=%s' % wide[:1])
+    else:
+        bad('「今日摘要」B 列及之后仍有值', str(wide))
 
     lines = []
     row = 2
     while summary_cells.get('A' + str(row)) is not None:
-        lines.append(row_values(summary_cells, row, 9))
+        lines.append(row_values(summary_cells, row, 1))
         row += 1
     expected_lines = [item['line'] for item in payload['summary']]
     if [r[0] for r in lines] == expected_lines:
         ok('「今日摘要」A 列 = /api/daily 的微信检索式文本行（逐字）', '共 %d 行' % len(lines))
     else:
         bad('「今日摘要」文本行与 /api/daily 不一致', str([r[0] for r in lines])[:200])
-    if all(re.match(r'^【[^】]+】.+ / .+ / .+ @.+：.+。$|^今日无阻塞、延期或变更。$', r[0]) for r in lines):
-        ok('「今日摘要」行格式逐字符合【重要度】一级 / 二级 / 任务项 @负责人：结论。', lines[0][0] if lines else '')
+    expect_lines = ['【%s】%s / %s / %s @%s：%s。' % (item['importance'], item['level1'], item['level2'],
+                                                   item['task'], item['owner'], item['conclusion'])
+                    for item in payload['summary']]
+    if expected_lines == expect_lines:
+        ok('「今日摘要」逐字 = 【重要度】一级 / 二级 / 任务项 @负责人：结论。（含 @ 与高风险前缀，五类模板）',
+           lines[0][0] if lines else '')
     else:
-        bad('「今日摘要」行格式不符', str([r[0] for r in lines])[:200])
-    if [r[1] for r in lines] == [item['importance'] for item in payload['summary']] and \
-            [r[2] for r in lines] == [item['conclusion'] for item in payload['summary']]:
-        ok('「今日摘要」重要度/结论列与 /api/daily 一致（含五类前缀与结论模板）', str([r[:3] for r in lines[:3]])[:200])
-    else:
-        bad('「今日摘要」重要度/结论列不一致', str([r[:3] for r in lines[:3]])[:200])
+        bad('「今日摘要」行格式与 /api/daily 拼接模板不一致', str(expect_lines[:2])[:200])
 
     rank = {'延期·高风险': 1, '阻塞·高风险': 2, '完成': 4, '普通': 5}
     ranks = []
-    for r in lines:
-        if r[1] == '延期·高风险' and '到期未更新' in r[2]:
+    for item in payload['summary']:
+        if item['importance'] == '延期·高风险' and '到期未更新' in item['conclusion']:
             ranks.append(3)
         else:
-            ranks.append(rank.get(r[1], 5))
+            ranks.append(rank.get(item['importance'], 5))
     if ranks == sorted(ranks):
         ok('「今日摘要」按重要度排序：延期 > 阻塞 > 到期未更新判定延期 > 完成 > 普通变更', str(ranks))
     else:
         bad('「今日摘要」排序异常', str(ranks))
     multi = {}
-    for r in lines:
-        multi[r[4]] = multi.get(r[4], 0) + 1
+    for item in payload['summary']:
+        multi[item['task']] = multi.get(item['task'], 0) + 1
     if any(v > 1 for v in multi.values()):
         ok('「今日摘要」同一任务多事件多行', str([k for k, v in multi.items() if v > 1]))
     else:
         bad('「今日摘要」未见一任务多行', str(multi))
+
+    cols = book.cols(dict(book.sheets)['今日摘要'])
+    width_a = cols.get(0)
+    if width_a is not None and float(width_a) >= 100:
+        ok('「今日摘要」A 列列宽足够（自动换行前的可读性前提）', 'width=%s' % width_a)
+    else:
+        bad('「今日摘要」A 列列宽不足', str(cols))
+    raw_sheet = book.raw(dict(book.sheets)['今日摘要'])
+    if 'wrapText="1"' in raw_sheet or 'wrapText="1"' in book.raw('xl/styles.xml'):
+        ok('「今日摘要」单元格套用自动换行样式（cellXfs wrapText=1 且 A 列单元格引用该 xf）',
+           str(re.findall(r'<c r="A\d+"[^>]*s="\d+"', raw_sheet)[:2]))
+    else:
+        bad('「今日摘要」缺少自动换行样式', raw_sheet[:200])
 
     blocked_cells = book.cells(dict(book.sheets)['阻塞与延期'])
     bhead = row_values(blocked_cells, 1, 16)
@@ -314,31 +331,47 @@ def check_daily(export, snapshot):
     else:
         bad('「阻塞与延期」未按阻塞优先排序', str(groups))
 
-    change_cells = book.cells(dict(book.sheets)['当日变更'])
-    chead = row_values(change_cells, 1, 9)
-    if chead == ['一级', '二级', '任务项', '负责人', '改动字段', '旧值', '新值', '时间', '操作身份']:
-        ok('「当日变更」字段级明细列齐备', ' / '.join(chead))
+    # CH-12：日报导出不再含「当日变更」sheet；旧表头与组装代码已从导出路径移除。
+    sheet_names = [s[0] for s in book.sheets]
+    if '当日变更' not in sheet_names and len(sheet_names) == 2:
+        ok('日报导出不含「当日变更」sheet（CH-12：仅今日摘要 + 阻塞与延期）', ' / '.join(sheet_names))
     else:
-        bad('「当日变更」表头异常', str(chead))
-    crows = []
-    rn = 2
-    while change_cells.get('A' + str(rn)) is not None:
-        crows.append(row_values(change_cells, rn, 9))
-        rn += 1
-    pool = [r for r in crows if r[4] == '人员池' and r[6] == '赵新']
-    if pool and pool[0][5] == '' and pool[0][8] == '项目负责人':
-        ok('「当日变更」含 CH-7 新增人员审计行（任务项=新增人员 赵新 / 改动字段=人员池 / 旧值空 / 新值姓名 / 操作身份照实）',
-           str(pool[0]))
+        bad('日报导出仍含第三个 sheet', str(sheet_names))
+    old_headers = set(['改动字段', '旧值', '新值', '操作身份', '重要度', '依据'])
+    leftovers = []
+    for name, path in book.sheets:
+        cells = book.cells(path)
+        for row in range(1, 3):
+            for value in row_values(cells, row, 20):
+                if value in old_headers:
+                    leftovers.append('%s!%s' % (name, value))
+    if not leftovers:
+        ok('旧「当日变更」表头与「今日摘要」辅助表头均不出现在任何 sheet', '扫描 2 sheet × 20 列')
     else:
-        bad('「当日变更」缺少 CH-7 新增人员行', str(crows[-2:]))
-    if len(crows) == len(payload['changes']):
-        ok('「当日变更」行数 = /api/daily 明细数', '%d 行' % len(crows))
+        bad('导出中残留旧表头', str(leftovers))
+    changes = payload.get('changes') or []
+    pool = [r for r in changes if r.get('field') == '人员池' and r.get('new') == '赵新']
+    if pool and pool[0].get('old') == '' and pool[0].get('identity') == '项目负责人' and \
+            not [r for r in changes if r.get('field') == 'status']:
+        ok('CH-7 新增人员审计行仍保留在服务端数据源（/api/daily changes：人员池 / 旧值空 / 新值姓名 / 操作身份照实）',
+           'changes=%d 行' % len(changes))
     else:
-        bad('「当日变更」行数不一致', '导出 %d vs API %d' % (len(crows), len(payload['changes'])))
-    if all('status' not in json.dumps(r, ensure_ascii=False) for r in crows) and not any(r[4] == '状态' for r in crows):
-        ok('「当日变更」不引用旧全局 status', '改动字段集合 %s' % sorted(set(r[4] for r in crows)))
+        bad('服务端数据源缺少 CH-7 新增人员行或引用了旧 status', str(changes[-2:]))
+
+    # 原始 XML 扫描：任一 sheet 部件里都不得残留旧表头字样或「当日变更」sheet 名。
+    removed_tokens = ['当日变更', '改动字段', '操作身份', '重要度', '依据', '微信文本行\t重要度']
+    hits = []
+    for part in book.zf.namelist():
+        if not part.startswith('xl/worksheets/') and part not in ('xl/workbook.xml', 'xl/sharedStrings.xml'):
+            continue
+        raw = book.zf.read(part).decode('utf-8', 'replace')
+        for token in removed_tokens:
+            if token in raw:
+                hits.append('%s:%s' % (part, token))
+    if not hits:
+        ok('全部 sheet/workbook 部件无旧「当日变更」表头字样（导出路径已移除）', '扫描 %d 个部件' % len(book.zf.namelist()))
     else:
-        bad('「当日变更」疑似引用旧 status', str([r[4] for r in crows]))
+        bad('导出中残留旧表头字样', str(hits))
     return PASS[0], FAIL[0]
 
 

@@ -1,0 +1,9 @@
+=== 自测矩阵 07 · 保存 / 409 / 重启持久 / 健康探针 / 无外部请求不回归 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage13/browser.log' 'PASS  矩阵07a' 'PASS  矩阵07b' 'PASS  矩阵07c' 'PASS  矩阵07d'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵07a
+OK    PASS  矩阵07b
+OK    PASS  矩阵07c
+OK    PASS  矩阵07d
+PASS=4 FAIL=0

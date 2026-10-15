@@ -101,12 +101,12 @@ run_item 06 "保存与 409（阶段状态字段级 audit + 并发非覆盖 + 非
   "require '$BROWSER_LOG' 'PASS  矩阵06 并发保存 409' && require '$SERVER_LOG' 'PASS  矩阵06a' 'PASS  矩阵06b' 'PASS  矩阵06c'"
 run_item 07 "WBS 导出：A–K 保真 + 五进度列文字与颜色读回 + 导出日期标签右移到 Q1" \
   "require '$BROWSER_LOG' 'PASS  矩阵07a' 'PASS  矩阵07b' && require '$READBACK_WBS' 'WBS A–K 数据区逐字段与 JSON 一致' 'WBS 五进度列数据区状态文字与 JSON 一致' 'WBS 五进度列颜色填充存在' '原「导出日期」标签右移到 Q1' 'WBS 导出保留 A1:C1 合并' 'WBS 导出不含旧全局 status'"
-run_item 08 "今日摘要格式逐字断言（含 @ 与风险前缀）与重要度排序" \
-  "require '$BROWSER_LOG' 'PASS  矩阵08a' 'PASS  矩阵08b' 'PASS  矩阵08c' 'PASS  矩阵08d' && require '$SERVER_LOG' 'PASS  矩阵08' && require '$READBACK_DAILY' '「今日摘要」行格式逐字符合' '「今日摘要」按重要度排序'"
+run_item 08 "今日摘要格式逐字断言（含 @ 与风险前缀）与重要度排序；仅 A 列（CH-11 分列已删）" \
+  "require '$BROWSER_LOG' 'PASS  矩阵08a' 'PASS  矩阵08b' 'PASS  矩阵08c' 'PASS  矩阵08d' && require '$SERVER_LOG' 'PASS  矩阵08' && require '$READBACK_DAILY' '「今日摘要」只有 A 列' '「今日摘要」逐字 = ' '「今日摘要」按重要度排序'"
 run_item 09 "到期未更新判定 与「当天已更新则不判定」两条构造用例" \
   "require '$BROWSER_LOG' 'PASS  矩阵09a' 'PASS  矩阵09b' && require '$SERVER_LOG' 'PASS  矩阵09a' 'PASS  矩阵09b'"
-run_item 10 "日报三 sheet 与 CH-7 新增人员审计" \
-  "require '$BROWSER_LOG' 'PASS  矩阵10a' 'PASS  矩阵10b' 'PASS  矩阵10c' && require '$READBACK_DAILY' '日报为单 workbook 三 sheet' '「阻塞与延期」保留 A–K 与 是否演示范围' '「当日变更」含 CH-7 新增人员审计行' '「当日变更」不引用旧全局 status'"
+run_item 10 "日报两 sheet（CH-12 删除当日变更）与 CH-7 新增人员审计（保留在服务端数据源）" \
+  "require '$BROWSER_LOG' 'PASS  矩阵10a' 'PASS  矩阵10b' 'PASS  矩阵10c' && require '$READBACK_DAILY' '日报为单 workbook 两 sheet' '「阻塞与延期」保留 A–K 与 是否演示范围' '日报导出不含「当日变更」sheet' '旧「当日变更」表头与「今日摘要」辅助表头均不出现在任何 sheet' 'CH-7 新增人员审计行仍保留在服务端数据源'"
 run_item 11 "回归：CH-1…CH-8（含 CH-9/CH-10）/ D-3 / 验收 1–10 / Markdown / 重启持久 / 无外部请求" \
   "require '$BROWSER_LOG' 'PASS  矩阵11a' 'PASS  矩阵11b' 'PASS  矩阵11c' 'PASS  矩阵11d' 'PASS  矩阵11e' 'PASS  矩阵11f' 'PASS  矩阵11g' 'PASS  矩阵11h' 'PASS  矩阵11i' 'PASS  矩阵11j' && require '$SERVER_LOG' 'PASS  矩阵10b 旧 status 保留原值但不被日报引用' 'PASS  矩阵07（前置）CH-9'"
 run_item 12 "既有 18 项矩阵回归（JS/DOM/导出；按当前部署口径跳过容器附加项）" \

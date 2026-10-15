@@ -86,10 +86,10 @@ run_item 05 "负责人下拉＝人员池；项目负责人可改派、普通负�
   "require '$BROWSER_LOG' 'PASS  矩阵5 负责人列为下拉、选项＝当前人员池' 'PASS  矩阵5b 项目负责人改派负责人' 'PASS  矩阵5d 普通负责人负责人列只读'"
 run_item 06 "新增人员：非空/去重/1–20 校验；立即生效；返回首页同步；落盘" \
   "require '$BROWSER_LOG' 'PASS  矩阵6a 项目负责人可见「新增人员」入口' 'PASS  矩阵6b 姓名非空校验' 'PASS  矩阵6c 姓名长度 1–20 校验' 'PASS  矩阵6d 姓名去重校验' 'PASS  矩阵6e 合法姓名加入成功' 'PASS  矩阵6f 新增人员立即出现在身份切换' 'PASS  矩阵6g 新增人员已落盘 wbs.json' 'PASS  矩阵6h 返回首页后身份列表同步' 'PASS  矩阵6i 返回首页后可用新增身份重进工作台' && require '$SERVER_LOG' 'PASS  矩阵6a 人员池新增落盘' 'PASS  矩阵6b 服务端拒绝空白 / 重复 / 超长'"
-run_item 07 "日报「阻塞与延期」sheet：仅延期/阻塞行，A–K + 五进度列" \
-  "require '$BROWSER_LOG' 'PASS  矩阵7a 日报文件名与日期口径正确' 'PASS  矩阵7b 日报为单个 workbook、三个 sheet' 'PASS  矩阵7c 阻塞与延期表头' 'PASS  矩阵7d 阻塞与延期 sheet 恰好'"
-run_item 08 "日报「当日变更」sheet：字段级逐行、旧值→新值、时间、操作身份" \
-  "require '$BROWSER_LOG' 'PASS  矩阵8a 当日变更表头正确' 'PASS  矩阵8b 当日变更每行 = 一个被改动的字段' 'PASS  矩阵8c 当日变更同一任务按时间升序' && require '$SERVER_LOG' 'PASS  矩阵8a audit.log 每条记录带 old/new 映射' 'PASS  矩阵8b GET /api/history 字段级记录' 'PASS  矩阵8c 自然日口径 [00:00:00, 次日 00:00:00) 开区间'"
+run_item 07 "日报「阻塞与延期」sheet：仅延期/阻塞行，A–K + 五进度列（两 sheet 口径）" \
+  "require '$BROWSER_LOG' 'PASS  矩阵7a 日报文件名与日期口径正确' 'PASS  矩阵7b 日报为单个 workbook、两个 sheet' 'PASS  矩阵7c 阻塞与延期表头' 'PASS  矩阵7d 阻塞与延期 sheet 恰好'"
+run_item 08 "字段级改动证据：日报不再含「当日变更」sheet（CH-12），逐行 old→new 仍由 /api/history 承载" \
+  "require '$BROWSER_LOG' 'PASS  矩阵8a 日报导出的 sheet 仅今日摘要/阻塞与延期' 'PASS  矩阵8b 每行改动仍可从 /api/history 读到字段级' 'PASS  矩阵8c 同一任务的字段级记录按时间升序' && require '$SERVER_LOG' 'PASS  矩阵8a audit.log 每条记录带 old/new 映射' 'PASS  矩阵8b GET /api/history 字段级记录' 'PASS  矩阵8c 自然日口径 [00:00:00, 次日 00:00:00) 开区间'"
 run_item 09 "原 WBS 导出不含 status、第 1/2 行 A–K 逐字一致、A–K 保真" \
   "require '$BROWSER_LOG' 'PASS  矩阵9a 原 WBS 导出文件名保持' 'PASS  矩阵9b 原 WBS 导出第 1/2 行 A–K 逐字与源模板一致' 'PASS  矩阵9c 原 WBS 导出数据区不含 status' && python3 tests/export_verify.py '$BROWSER_OUT/蓉城战役WBS-'\"\$(date +%Y%m%d)\"'.xlsx' public/template.xlsx '$BROWSER_OUT/wbs-at-export.json' 36"
 run_item 10 "旧数据兼容：老 wbs.json 可读可保存；老/损坏 audit.log 不报错" \
@@ -101,7 +101,7 @@ run_item 12 "回归子集：D-3 遮罩级联 / 验收1 / 验收3 / 验收4 / 无
 
 run_item 13 "CH-10 导出 Q1 日期标签（Asia/Shanghai，仅新增 Q1，不改原文）" \
   "require '$BROWSER_LOG' 'PASS  矩阵13a（CH-10）' 'PASS  矩阵13b（CH-10）' && python3 tests/export_verify.py '$BROWSER_OUT/蓉城战役WBS-'\"\$(date +%Y%m%d)\"'.xlsx' public/template.xlsx '$BROWSER_OUT/wbs-at-export.json' 36"
-run_item 14 "CH-7 新增人员写 identity_added 审计 + 日报「当日变更」含该行 + 越权被拒" \
+run_item 14 "CH-7 新增人员写 identity_added 审计 + 日报数据源含该行（导出不含当日变更 sheet）+ 越权被拒" \
   "require '$BROWSER_LOG' 'PASS  矩阵14a（CH-7）' 'PASS  矩阵14b（CH-7）' 'PASS  矩阵14c（CH-7）' && require '$SERVER_LOG' 'PASS  矩阵14a（CH-7）' 'PASS  矩阵14b（CH-7）' 'PASS  矩阵14c（CH-7）' 'PASS  矩阵14d（CH-7）'"
 
 echo | tee -a "$SUMMARY"

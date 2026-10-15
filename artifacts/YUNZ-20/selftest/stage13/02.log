@@ -1,0 +1,12 @@
+=== 自测矩阵 02 · 今日摘要仅 A 列有值（列数 1 / 无辅助表头）与 A 列宽 + 自动换行（CH-11） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage13/browser.log' 'PASS  矩阵02 今日摘要仅 A 列有值' 'PASS  矩阵02b' && require '/opt/wbs-rongcheng/tests/.tmp/stage13/readback-daily.log' '「今日摘要」只有 A 列' '「今日摘要」A 列之外无任何值' '「今日摘要」A 列列宽足够' '「今日摘要」单元格套用自动换行样式'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵02 今日摘要仅 A 列有值
+OK    PASS  矩阵02b
+PASS=2 FAIL=0
+OK    「今日摘要」只有 A 列
+OK    「今日摘要」A 列之外无任何值
+OK    「今日摘要」A 列列宽足够
+OK    「今日摘要」单元格套用自动换行样式
+PASS=4 FAIL=0

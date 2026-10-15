@@ -1,0 +1,14 @@
+=== 自测矩阵 05 · WBS 导出不回归：五色填充 / A–K 保真 / L–P 五进度列 / Q1 导出日期标签 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage13/browser.log' 'PASS  矩阵05a' && require '/opt/wbs-rongcheng/tests/.tmp/stage13/readback-wbs.log' 'WBS 第 1/2 行 A–K 与源模板逐字一致' 'WBS A–K 数据区逐字段与 JSON 一致' 'WBS 五进度列数据区状态文字与 JSON 一致' 'WBS 五进度列颜色填充存在且与五色映射一致' '原「导出日期」标签右移到 Q1' 'WBS 导出保留 A1:C1 合并' 'WBS 导出不含旧全局 status'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵05a
+PASS=1 FAIL=0
+OK    WBS 第 1/2 行 A–K 与源模板逐字一致
+OK    WBS A–K 数据区逐字段与 JSON 一致
+OK    WBS 五进度列数据区状态文字与 JSON 一致
+OK    WBS 五进度列颜色填充存在且与五色映射一致
+OK    原「导出日期」标签右移到 Q1
+OK    WBS 导出保留 A1:C1 合并
+OK    WBS 导出不含旧全局 status
+PASS=7 FAIL=0

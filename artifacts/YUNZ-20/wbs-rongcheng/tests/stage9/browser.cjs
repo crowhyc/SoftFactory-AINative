@@ -894,7 +894,6 @@ function trackPage(page, list) {
     results.daily = { name: daily.name, sheets: daily.sheets ? daily.sheets.map((s) => s.name) : null };
     if (daily.base64) fs.writeFileSync(path.join(OUTDIR, daily.name), Buffer.from(daily.base64, 'base64'));
     const blockedSheet = (daily.sheets || [])[1];
-    const changeSheet = (daily.sheets || [])[2];
     const blockedHeader = blockedSheet ? blockedSheet.rows[0] : null;
     const blockedRank9 = (task) => (PHASE_KEYS.some((k) => task.phases[k] === '阻塞') ? 0 : 1);
     const expectedBlocked = currentDoc.tasks
@@ -908,21 +907,22 @@ function trackPage(page, list) {
           .concat([task.note])
           .concat(PHASE_KEYS.map((key) => phases[key] || ''));
       });
-    check('矩阵11g 回归(CH-5) 日报为单 workbook 三 sheet，阻塞与延期行 = 任一阶段 ∈ {延期, 阻塞}（A–K + 五进度列）',
-      !!daily.sheets && daily.sheets.length === 3 && (daily.sheets || [])[0].name === '今日摘要' &&
-      blockedSheet.name === '阻塞与延期' && changeSheet.name === '当日变更' &&
+    check('矩阵11g 回归(CH-5) 日报为单 workbook 两 sheet（今日摘要 / 阻塞与延期），阻塞与延期行 = 任一阶段 ∈ {延期, 阻塞}（A–K + 五进度列）',
+      !!daily.sheets && daily.sheets.length === 2 && (daily.sheets || [])[0].name === '今日摘要' &&
+      blockedSheet.name === '阻塞与延期' &&
       blockedHeader.length === 16 && blockedHeader[10] === '进展说明' && blockedHeader[11] === '设计进度' && blockedHeader[15] === '演示准备进度' &&
       JSON.stringify(blockedSheet.rows.slice(1)) === JSON.stringify(expectedBlocked),
       { sheets: daily.sheets ? daily.sheets.map((s) => s.name) : null, blocked: blockedSheet ? blockedSheet.rows.length - 1 : null });
-    const changeHeader = changeSheet ? changeSheet.rows[0] : [];
-    const changeBody = changeSheet ? changeSheet.rows.slice(1) : [];
-    const noteChangeRows = changeBody.filter((row) => row[4] === '进展说明');
-    check('矩阵11h 回归(CH-5/CH-8-7) 日报「当日变更」字段级明细（9 列，去 id）且包含 note 字段级 old→new',
-      JSON.stringify(changeHeader) === JSON.stringify(['一级', '二级', '任务项', '负责人', '改动字段', '旧值', '新值', '时间', '操作身份']) &&
-      changeBody.every((row) => row.length === 9) &&
-      noteChangeRows.some((row) => row[5] === '' && row[6] === consistentNote && row[8] === '项目负责人') &&
-      changeBody.some((row) => row[4] === '人员池' && row[6] === '赵新'),
-      { header: changeHeader, noteRows: noteChangeRows.length, total: changeBody.length });
+    /* CH-12：当日变更 sheet 已从导出移除；note 字段级 old→new 与 CH-7 新增人员行改由服务端数据源承载。 */
+    const historyForNote = (await api('/api/history?tz=' + encodeURIComponent(TZ) + '&date=' + today())).body.records || [];
+    const noteRecords11 = historyForNote.filter((r) => r.field === 'note');
+    const poolRecords = historyForNote.filter((r) => r.field === '人员池');
+    check('矩阵11h 回归(CH-5/CH-8-7) 日报导出不再含「当日变更」sheet（今日摘要仅 A 列），note 字段级 old→new 与新增人员行仍可从 /api/history 读到',
+      (daily.sheets || []).every((s) => s.name !== '当日变更') &&
+      (daily.sheets || [])[0].rows.every((row) => row.length === 1) &&
+      noteRecords11.some((r) => r.old === '' && r.new === consistentNote && r.identity === '项目负责人') &&
+      poolRecords.some((r) => r.new === '赵新'),
+      { sheets: daily.sheets ? daily.sheets.map((s) => s.name) : null, noteRows: noteRecords11.length, poolRows: poolRecords.length, summaryWidth: (daily.sheets || [])[0].rows[0].length });
 
     const wbsExport = await capture('#export-btn');
     results.wbsExport = { name: wbsExport.name, sheets: wbsExport.sheets ? wbsExport.sheets.map((s) => s.name) : null };

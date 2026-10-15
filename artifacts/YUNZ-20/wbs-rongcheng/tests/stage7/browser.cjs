@@ -81,7 +81,7 @@ function stopServer() {
     fs.rmSync(path.join(DATA_DIR, 'audit.log'), { force: true });
     await startServer();
     console.log('[env] 被测服务 ' + BASE + '（data: ' + DATA_DIR + '）');
-    /* ---------- 准备：一次可追溯的当日改动（供日报「当日变更」） ---------- */
+    /* ---------- 准备：一次可追溯的当日改动（供 /api/history 字段级与日报摘要） ---------- */
     const doc0 = (await api('/api/wbs')).body;
     const prepared = {
       meta: { name: doc0.meta.name },
@@ -332,7 +332,7 @@ function stopServer() {
     });
     check('矩阵3e 再点「完成」退出行编辑态', rowEditOff.row_editing === false && rowEditOff.label === '编辑', rowEditOff);
 
-    /* ---------- 矩阵7 / 8：日报导出（阻塞与延期 + 当日变更） ---------- */
+    /* ---------- 矩阵7 / 8：日报导出（阻塞与延期；CH-12 起不含当日变更） ---------- */
     await page.screenshot({ path: path.join(OUTDIR, 'pm-workbench.png'), fullPage: false });
     const capture = async (buttonId) => {
       await page.evaluate(() => {
@@ -370,8 +370,8 @@ function stopServer() {
     check('矩阵7a 日报文件名与日期口径正确', dailyNameOk, { name: daily.name, today: today() });
     results.daily = { name: daily.name, sheets: daily.sheets };
     if (!daily.sheets) throw new Error('日报未产出文件');
-    check('矩阵7b 日报为单个 workbook、三个 sheet（今日摘要 / 阻塞与延期 / 当日变更）',
-      daily.sheets.length === 3 && daily.sheets.map((s) => s.name).join('/') === '今日摘要/阻塞与延期/当日变更',
+    check('矩阵7b 日报为单个 workbook、两个 sheet（今日摘要 / 阻塞与延期；CH-12 起不再含当日变更）',
+      daily.sheets.length === 2 && daily.sheets.map((s) => s.name).join('/') === '今日摘要/阻塞与延期',
       daily.sheets.map((s) => s.name));
 
     const blockedRows = daily.sheets[1].rows;
@@ -397,32 +397,33 @@ function stopServer() {
       JSON.stringify(blockedBody) === JSON.stringify(expectedBlocked) && blockedBody.length >= 2,
       { expected: expectedBlocked, actual: blockedBody });
 
-    const changeRowsOut = daily.sheets[2].rows;
-    const changeHeader = changeRowsOut[0];
-    const changeBody = changeRowsOut.slice(1);
-    check('矩阵8a 当日变更表头正确（一级/二级/任务项/负责人/改动字段/旧值/新值/时间/操作身份）',
-      JSON.stringify(changeHeader) === JSON.stringify(['一级', '二级', '任务项', '负责人', '改动字段', '旧值', '新值', '时间', '操作身份']),
-      changeHeader);
+    /* CH-12：日报导出不再含「当日变更」sheet；字段级证据改由 /api/history（服务端保留）承载。 */
+    check('矩阵8a 日报导出的 sheet 仅今日摘要/阻塞与延期，不含「当日变更」（CH-12）',
+      daily.sheets.map((s) => s.name).indexOf('当日变更') === -1 && daily.sheets.length === 2 &&
+      daily.sheets[0].rows[0].length === 1,
+      daily.sheets.map((s) => s.name));
+    const history = (await api('/api/history?tz=' + TZ + '&date=' + today())).body;
     const nameById = {};
     prepared.tasks.forEach((t) => { nameById[t.id] = t.task; });
     const beforeById = {};
     doc0.tasks.forEach((t) => { beforeById[t.id] = t; });
     const expectedChanges = [
-      [nameById.T003, '进展说明', '', '日报自测：等待外部依赖'],
-      [nameById.T003, '测试进度', beforeById.T003.phases.test, '阻塞'],
-      [nameById.T004, '开发进度', beforeById.T004.phases.dev, '延期'],
-      [nameById.T005, '产品进度', beforeById.T005.phases.product, '已完成']
+      [nameById.T003, 'note', '', '日报自测：等待外部依赖'],
+      [nameById.T003, 'phases.test.status', beforeById.T003.phases.test, '阻塞'],
+      [nameById.T004, 'phases.dev.status', beforeById.T004.phases.dev, '延期'],
+      [nameById.T005, 'phases.product.status', beforeById.T005.phases.product, '已完成']
     ];
-    const actualChanges = changeBody.map((row) => [row[2], row[4], row[5], row[6]]);
-    const shapeOk = changeBody.every((row) => row.length === 9 && row[8] === '项目负责人' &&
-      /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(row[7]) && row[7].slice(0, 10) === today() &&
-      row[1] !== '' && row[3] !== '');
+    const actualChanges = history.records.map((row) => [row.task, row.field, row.old, row.new]);
+    const fromMs = Date.parse(history.from);
+    const toMs = Date.parse(history.to);
+    const shapeOk = history.records.every((row) => row.identity === '项目负责人' &&
+      Number.isFinite(Date.parse(row.at)) && Date.parse(row.at) >= fromMs && Date.parse(row.at) < toMs);
     const setEqual = (a, b) => JSON.stringify(a.slice().sort()) === JSON.stringify(b.slice().sort());
-    check('矩阵8b 当日变更每行 = 一个被改动的字段，旧值→新值/时间/操作身份正确（自然日口径）',
-      shapeOk && changeBody.length === expectedChanges.length && setEqual(actualChanges, expectedChanges),
+    check('矩阵8b 每行改动仍可从 /api/history 读到字段级 旧值→新值/时间/操作身份（自然日口径）',
+      shapeOk && history.records.length === expectedChanges.length && setEqual(actualChanges, expectedChanges),
       { expected: expectedChanges, actual: actualChanges });
-    const times = changeBody.map((row) => Date.parse(row[7].replace(' ', 'T') + '+08:00'));
-    check('矩阵8c 当日变更同一任务按时间升序', times.every((t, i) => i === 0 || t >= times[i - 1]), times);
+    const times = history.records.map((row) => Date.parse(row.at));
+    check('矩阵8c 同一任务的字段级记录按时间升序（/api/history）', times.every((t, i) => i === 0 || t >= times[i - 1]), times);
     if (daily.base64) fs.writeFileSync(path.join(OUTDIR, daily.name), Buffer.from(daily.base64, 'base64'));
 
     /* ---------- 矩阵9：原 WBS 导出仍不含 status、A–K 11 列、第 1/2 行不变 ---------- */
@@ -612,7 +613,7 @@ function stopServer() {
     check('矩阵6g 新增人员已落盘 wbs.json（可通过 API / 磁盘复核）',
       persisted.identities.indexOf('赵新') !== -1 && diskDoc().identities.indexOf('赵新') !== -1, persisted.identities);
 
-    /* ---------- 矩阵14（CH-7）：新增人员写 identity_added 审计 + 日报「当日变更」含该行 ---------- */
+    /* ---------- 矩阵14（CH-7）：新增人员写 identity_added 审计 + 日报数据源含该行（导出已不含当日变更 sheet） ---------- */
     const auditEntries = fs.readFileSync(path.join(DATA_DIR, 'audit.log'), 'utf8').trim().split('\n')
       .map((line) => { try { return JSON.parse(line); } catch (e) { return null; } }).filter(Boolean);
     const identityAdds = auditEntries.filter((e) => e && e.type === 'identity_added');
@@ -628,18 +629,17 @@ function stopServer() {
       addEvents.length === 1 && addEvents[0].old === '' && addEvents[0].task === '新增人员 赵新' && addEvents[0].identity === '项目负责人',
       addEvents[0]);
 
+    /* CH-12：当日变更 sheet 已从日报导出移除，CH-7 新增人员行改由 /api/daily 的 changes 数据 + /api/history 保留。 */
     const daily2 = await capture('#daily-btn');
     const daily2Name = String(daily2.name || 'daily-after-add.xlsx').replace(/\.xlsx$/, '-含新增人员.xlsx');
     if (daily2.base64) fs.writeFileSync(path.join(OUTDIR, daily2Name), Buffer.from(daily2.base64, 'base64'));
-    const changeSheet2 = (daily2.sheets || []).find((sheet) => sheet.name === '当日变更');
-    const addRow2 = changeSheet2 ? changeSheet2.rows.find((row) => row[4] === '人员池' && row[6] === '赵新') : null;
-    const poolRows2 = changeSheet2 ? changeSheet2.rows.filter((row) => row[4] === '人员池') : [];
-    check('矩阵14c（CH-7）日报「当日变更」sheet 含「新增人员 赵新」一行（任务项=新增人员 赵新 / 改动字段=人员池 / 旧值空 / 新值=姓名 / 操作身份照实）',
-      !!addRow2 && addRow2[0] === '' && addRow2[1] === '' && addRow2[2] === '新增人员 赵新' &&
-      addRow2[3] === '' && addRow2[4] === '人员池' && addRow2[5] === '' && addRow2[6] === '赵新' &&
-      /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(String(addRow2[7])) && addRow2[8] === '项目负责人' &&
-      poolRows2.length === 1,
-      addRow2);
+    const dailyApi2 = (await api('/api/daily?tz=' + encodeURIComponent(TZ) + '&date=' + today())).body;
+    const poolChanges = (dailyApi2.changes || []).filter((row) => row.field === '人员池');
+    const addChange = poolChanges.find((row) => row.new === '赵新');
+    check('矩阵14c（CH-7）CH-7 新增人员行仍在服务端审计/日报数据源中（改动字段=人员池 / 旧值空 / 新值=姓名 / 操作身份照实），且不再出现在日报导出的 sheet 中',
+      !!addChange && addChange.old === '' && addChange.task === '新增人员 赵新' && addChange.identity === '项目负责人' &&
+      poolChanges.length === 1 && daily2.sheets.length === 2 && daily2.sheets.every((sheet) => sheet.name !== '当日变更'),
+      { change: addChange, sheets: daily2.sheets.map((sheet) => sheet.name) });
 
     await page.click('#home-btn');
     await page.waitForTimeout(400);

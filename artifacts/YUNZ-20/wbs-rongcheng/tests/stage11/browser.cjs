@@ -389,12 +389,17 @@ function craftedSeed(today) {
       ranks.join(',') === ranks.slice().sort((a, b) => a - b).join(',') &&
       daily.summary.filter((row) => row.task === '详细设计与评审').length === 2,
       { ranks: ranks, t004: daily.summary.filter((row) => row.task === '详细设计与评审').map((r) => r.conclusion) });
-    check('矩阵08d 分列结构 重要度/结论/一级/二级/任务项/负责人/时间/依据 齐备',
-      daily.summary.every((row) => ['importance', 'conclusion', 'level1', 'level2', 'task', 'owner', 'basis'].every((key) => typeof row[key] === 'string')) &&
+    /* CH-11：分列结构已删除，今日摘要只保留 A 列微信文本行（数据源仍带这些字段，供排序与追溯）。 */
+    const summaryRowsLayout = await page.evaluate((payload) => window.WBSCore.summaryRows(payload), daily.summary);
+    check('矩阵08d 今日摘要导出只保留 A 列（分列结构已删除：行宽=1，表头仅「微信文本行」）',
+      summaryRowsLayout.every((row) => row.length === 1) &&
+      JSON.stringify(summaryRowsLayout[0]) === JSON.stringify(['微信文本行']) &&
+      summaryRowsLayout.length === daily.summary.length + 1 &&
+      summaryRowsLayout.slice(1).map((row) => row[0]).join('\n') === lines.join('\n') &&
       daily.summary.some((row) => row.at && /^\d{4}-\d{2}-\d{2}T/.test(row.at)),
-      daily.summary[0]);
+      { rows: summaryRowsLayout.length, width: summaryRowsLayout[0].length });
 
-    /* CH-7：新增人员 → 当日变更含「人员池」行 */
+    /* CH-7：新增人员 → 服务端审计/日报数据源含「人员池」行（CH-12 起不再进日报导出） */
     await page.click('#add-person-btn');
     await page.waitForTimeout(200);
     await page.fill('#new-person-name', '赵新');
@@ -403,10 +408,10 @@ function craftedSeed(today) {
     await page.waitForTimeout(400);
     const daily2 = (await api('/api/daily?tz=' + TZ + '&date=' + today)).body;
     const poolRow = daily2.changes.filter((row) => row.field === '人员池' && row.new === '赵新');
-    check('矩阵10c 日报「当日变更」含 CH-7 新增人员审计行（改动字段 人员池 / 旧值空 / 新值姓名）',
+    check('矩阵10c CH-7 新增人员审计行仍在 /api/daily changes 数据源中（改动字段 人员池 / 旧值空 / 新值姓名）',
       poolRow.length === 1 && poolRow[0].old === '' && poolRow[0].identity === '项目负责人',
       poolRow[0]);
-    check('矩阵10a 日报为单 workbook 三 sheet（今日摘要 / 阻塞与延期 / 当日变更）',
+    check('矩阵10a 日报为单 workbook 两 sheet（今日摘要 / 阻塞与延期；CH-12 起不含当日变更）',
       true, '浏览器侧 sheet 结构由 xlsx 读回断言（见 07/10b）');
 
     /* ============ 矩阵07 / 10：导出真实产物（xlsx 读回在宿主 python 侧完成） ============ */

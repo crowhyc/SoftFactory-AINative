@@ -1,0 +1,11 @@
+=== 自测矩阵 06 · CH-7 identity_added 仍写审计、/api/history 仍返回（导出不再含当日变更 sheet） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage13/browser.log' 'PASS  矩阵06 identity_added 仍写审计' 'PASS  矩阵06b' && require '/opt/wbs-rongcheng/tests/.tmp/stage13/readback-daily.log' 'CH-7 新增人员审计行仍保留在服务端数据源' '日报导出不含「当日变更」sheet' '日报为单 workbook 两 sheet'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵06 identity_added 仍写审计
+OK    PASS  矩阵06b
+PASS=2 FAIL=0
+OK    CH-7 新增人员审计行仍保留在服务端数据源
+OK    日报导出不含「当日变更」sheet
+OK    日报为单 workbook 两 sheet
+PASS=3 FAIL=0
