@@ -1,0 +1,9 @@
+=== 自测矩阵 04 · 原始 HTML 转义不执行 / 远程图片不解析不加载 / 无外部资源请求 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage9/browser.log' 'PASS  矩阵4a 原始 HTML 转义后原样显示、不执行' 'PASS  矩阵4b 远程图片不解析不加载' 'PASS  矩阵4c 打开面板与渲染预览期间无任何外部资源请求' 'PASS  矩阵4d Markdown 子集渲染生效'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵4a 原始 HTML 转义后原样显示、不执行
+OK    PASS  矩阵4b 远程图片不解析不加载
+OK    PASS  矩阵4c 打开面板与渲染预览期间无任何外部资源请求
+OK    PASS  矩阵4d Markdown 子集渲染生效
+PASS=4 FAIL=0

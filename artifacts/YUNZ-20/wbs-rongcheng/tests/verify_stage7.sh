@@ -97,7 +97,7 @@ run_item 10 "旧数据兼容：老 wbs.json 可读可保存；老/损坏 audit.l
 run_item 11 "三端一致 + 刷新持久 + 409 非覆盖 + 重启持久 + health" \
   "require '$BROWSER_LOG' 'PASS  矩阵11f 三端一致' 'PASS  矩阵11g 刷新持久' && require '$SERVER_LOG' 'PASS  矩阵11a GET /api/health' 'PASS  矩阵11b 保存成功（原子写，revision +1）' 'PASS  矩阵11c 并发旧版本保存 409 非覆盖' 'PASS  矩阵11d /api/history 参数校验与 405' 'PASS  矩阵11e 服务重启后数据与人员池仍在'"
 run_item 12 "回归子集：D-3 遮罩级联 / 验收1 / 验收3 / 验收4 / 无 pageerror" \
-  "require '$BROWSER_LOG' 'PASS  回归(D-3) 进入工作台后身份遮罩 [hidden] 级联生效' 'PASS  回归(D-3) 工作台可见并渲染 36 行' 'PASS  验收1a 身份选择页渲染九身份' 'PASS  验收1b 刷新（localStorage 记忆）后身份保持' 'PASS  验收3 普通负责人本人行（行编辑态）可编辑并保存' 'PASS  验收4 他人行只读' 'PASS  全程无 pageerror' 'PASS  全程无 console error'"
+  "require '$BROWSER_LOG' 'PASS  回归(D-3) 进入工作台后身份遮罩 [hidden] 级联生效' 'PASS  回归(D-3) 工作台可见并渲染 36 行' 'PASS  验收1a 身份选择页渲染九身份' 'PASS  验收1b 刷新（localStorage 记忆）后身份保持' 'PASS  验收3 普通负责人本人行可编辑并保存（CH-8：K 列经大尺寸面板保存）' 'PASS  验收4 他人行只读' 'PASS  全程无 pageerror' 'PASS  全程无 console error'"
 
 run_item 13 "CH-6 导出 M1 日期标签（Asia/Shanghai，仅新增 M1，不改原文）" \
   "require '$BROWSER_LOG' 'PASS  矩阵13a（CH-6）' 'PASS  矩阵13b（CH-6）' && python3 tests/export_verify.py '$BROWSER_OUT/蓉城战役WBS-'\"\$(date +%Y%m%d)\"'.xlsx' public/template.xlsx '$BROWSER_OUT/wbs-at-export.json' 36"

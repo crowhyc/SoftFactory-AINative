@@ -1,0 +1,7 @@
+=== 矩阵 13 · 导出第 1/2 行逐字一致 / 非数据单元格不变 ===
+$ grep -E '逐字一致' /opt/wbs-rongcheng/tests/.tmp/stage9/legacy-matrix/12.log >/dev/null && grep -E '非数据单元格内容保持原样' /opt/wbs-rongcheng/tests/.tmp/stage9/legacy-matrix/12.log && echo 'PASS=2 FAIL=0'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  数据区（A3:K38）之外的非数据单元格内容保持原样  :: 420 个模板单元格核对
+PASS  数据区（A3:K38）之外的非数据单元格内容保持原样  :: 420 个模板单元格核对
+PASS=2 FAIL=0

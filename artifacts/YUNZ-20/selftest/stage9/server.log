@@ -1,0 +1,14 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+数据目录: /opt/wbs-rongcheng/tests/.tmp/stage9-data  端口: 4225  tz: Asia/Shanghai  今天: 2026-10-15
+PASS  矩阵08 服务端拒绝 note > 20000（400 + 中文错误 + 不落盘）  :: note 长度超过上限 20000
+PASS  矩阵08 服务端接受 note = 20000（revision +1、API 与磁盘一致）  :: [object Object]
+PASS  矩阵05 审计记录 note 字段级 old→new（old 为空基线、new 为本次 Markdown 原文）  :: {"old":{"note":""},"fields":["note"]}
+PASS  矩阵05 审计记录时间与操作身份（ISO 时间 + X-Identity 原样记录）  :: {"ts":"2026-10-15T02:47:53.537Z","identity":"王言","revision":2}
+PASS  矩阵05 /api/history 仍为既有字段集（task_id/field/at/identity/level1/level2/task/owner/old/new）  :: at,field,identity,level1,level2,new,old,owner,task,task_id
+PASS  矩阵09 并发旧版本保存 409 且不覆盖（current = 服务器版本、磁盘保留先到者）  :: {"status":409,"current":3}
+PASS  矩阵02/06 note 允许为空（清空后 API 与磁盘均为空字符串、revision 正常递增）  :: HTTP 200
+PASS  矩阵10 服务重启后 note 与人员池仍在（磁盘持久、revision 不回退）  :: {"revision":5,"people":9}
+PASS  矩阵11 服务端返回的 index.html / app.js / styles.css 与源码运行目录一致（HTTP 200、字节一致）  :: {"appBytes":63423,"cssBytes":14795,"same":true}
+PASS  矩阵11 回归(CH-7) 非项目负责人通过 API 新增人员被拒（403、不落盘、不写审计）  :: HTTP 403
+---
+PASS=10 FAIL=0

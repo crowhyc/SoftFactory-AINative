@@ -1,0 +1,9 @@
+=== 自测矩阵 10 · 重启后 note 与人员池持久（前端 + 服务端） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage9/browser.log' 'PASS  矩阵10a 服务重启后 note 与人员池仍在' 'PASS  矩阵10b 重启后页面重新加载' && require '/opt/wbs-rongcheng/tests/.tmp/stage9/server.log' 'PASS  矩阵10 服务重启后 note 与人员池仍在'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵10a 服务重启后 note 与人员池仍在
+OK    PASS  矩阵10b 重启后页面重新加载
+PASS=2 FAIL=0
+OK    PASS  矩阵10 服务重启后 note 与人员池仍在
+PASS=1 FAIL=0

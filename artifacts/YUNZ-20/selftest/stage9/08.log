@@ -1,0 +1,11 @@
+=== 自测矩阵 08 · note 超 20000 拒绝并有中文提示（前端 + 服务端） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage9/browser.log' 'PASS  矩阵8a 超过 20000 字符时前端实时提示超长' 'PASS  矩阵8b 超长保存被前端拒绝并有中文提示、未发出 PUT' 'PASS  矩阵8c 恰好 20000 字符可正常保存' && require '/opt/wbs-rongcheng/tests/.tmp/stage9/server.log' 'PASS  矩阵08 服务端拒绝 note > 20000' 'PASS  矩阵08 服务端接受 note = 20000'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵8a 超过 20000 字符时前端实时提示超长
+OK    PASS  矩阵8b 超长保存被前端拒绝并有中文提示、未发出 PUT
+OK    PASS  矩阵8c 恰好 20000 字符可正常保存
+PASS=3 FAIL=0
+OK    PASS  矩阵08 服务端拒绝 note > 20000
+OK    PASS  矩阵08 服务端接受 note = 20000
+PASS=2 FAIL=0

@@ -1,0 +1,14 @@
+=== 自测矩阵 03 · 桌面 90vw×80vh 双栏 / 手机全屏标签切换（视口与布局属性断言） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage9/browser.log' 'PASS  矩阵3a 桌面面板约 90vw × 80vh' 'PASS  矩阵3b 桌面左「编辑」右「预览」双栏' 'PASS  矩阵3c 桌面不显示「编辑 / 预览」标签' 'PASS  矩阵3d 手机面板全屏' 'PASS  矩阵3e 手机显示「编辑 / 预览」标签、默认编辑页' 'PASS  矩阵3f 手机点「预览」标签切换为预览页' 'PASS  矩阵3g 手机可切回「编辑」标签' 'PASS  矩阵3h 手机只读模式' 'PASS  矩阵3i 手机只读面板 Esc 关闭'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵3a 桌面面板约 90vw × 80vh
+OK    PASS  矩阵3b 桌面左「编辑」右「预览」双栏
+OK    PASS  矩阵3c 桌面不显示「编辑 / 预览」标签
+OK    PASS  矩阵3d 手机面板全屏
+OK    PASS  矩阵3e 手机显示「编辑 / 预览」标签、默认编辑页
+OK    PASS  矩阵3f 手机点「预览」标签切换为预览页
+OK    PASS  矩阵3g 手机可切回「编辑」标签
+OK    PASS  矩阵3h 手机只读模式
+OK    PASS  矩阵3i 手机只读面板 Esc 关闭
+PASS=9 FAIL=0

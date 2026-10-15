@@ -107,6 +107,51 @@
   </div>
 </div>
 
+<div id="note-panel" class="note-panel" hidden>
+  <div id="note-dialog" class="note-dialog" role="dialog" aria-modal="true" aria-labelledby="note-title">
+    <header class="note-head">
+      <h2 id="note-title">进展说明</h2>
+      <span id="note-meta" class="note-meta"></span>
+      <button id="note-close" type="button" class="btn btn-mini">关闭</button>
+    </header>
+    <div id="note-tabs" class="note-tabs" hidden>
+      <button id="note-tab-edit" type="button" class="note-tab active">编辑</button>
+      <button id="note-tab-preview" type="button" class="note-tab">预览</button>
+    </div>
+    <div class="note-body">
+      <section id="note-edit-pane" class="note-pane note-pane-edit">
+        <div class="note-pane-title">编辑（Markdown 子集）</div>
+        <textarea id="note-input" class="note-input" spellcheck="false"
+          placeholder="支持 # 标题、**粗体**、*斜体*、~~删除线~~、行内代码、代码块、引用、列表与 [链接](地址)"></textarea>
+        <div class="note-foot-inline">
+          <span id="note-count" class="note-count">0 / 20000 字符</span>
+          <span class="note-tip">Ctrl / Cmd + Enter 快捷保存</span>
+        </div>
+      </section>
+      <section id="note-preview-pane" class="note-pane note-pane-preview">
+        <div class="note-pane-title">预览</div>
+        <div id="note-preview" class="note-preview markdown-body"></div>
+      </section>
+    </div>
+    <footer class="note-actions">
+      <span id="note-msg" class="note-msg" hidden></span>
+      <button id="note-cancel" type="button" class="btn">取消</button>
+      <button id="note-save" type="button" class="btn btn-primary">保存</button>
+    </footer>
+  </div>
+</div>
+
+<div id="note-confirm" class="modal note-confirm" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="note-confirm-title">
+    <h2 id="note-confirm-title">有未保存的修改</h2>
+    <p class="modal-sub">关闭「进展说明」面板会丢弃这些改动（仅点“保存”才会提交到服务器）。</p>
+    <div class="modal-actions">
+      <button id="note-confirm-cancel" type="button" class="btn">取消</button>
+      <button id="note-confirm-exit" type="button" class="btn btn-primary">继续退出</button>
+    </div>
+  </div>
+</div>
+
 <script src="vendor/xlsx.full.min.js" defer></script>
 <script src="app.js" defer></script>
 </body>

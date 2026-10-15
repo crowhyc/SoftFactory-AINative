@@ -1,0 +1,616 @@
+{
+  "base": "http://127.0.0.1:4224",
+  "tz": "Asia/Shanghai",
+  "started_at": "2026-10-15T02:47:23.286Z",
+  "checks": [
+    {
+      "id": "矩阵1a K 列显示纯文本摘要单元格（CH-8 后无内联 textarea/输入控件）",
+      "ok": true,
+      "detail": {
+        "classes": "cell cell-note editable note-editable",
+        "hasInlineEditor": false,
+        "text": "点击打开编辑",
+        "cursor": "pointer",
+        "summaryWhiteSpace": "nowrap",
+        "hasActionHint": true,
+        "summaryHasNewline": false
+      }
+    },
+    {
+      "id": "矩阵1b 有编辑权限的行给出「点击打开编辑」样式（cursor: pointer + 文案提示）",
+      "ok": true,
+      "detail": {
+        "classes": "cell cell-note editable note-editable",
+        "cursor": "pointer",
+        "hint": true
+      }
+    },
+    {
+      "id": "矩阵1c 点击 K 单元格打开大尺寸编辑面板（面板可见、标题含行号）",
+      "ok": true,
+      "detail": {
+        "title": "进展说明 · T001 业需导入",
+        "task": "T001",
+        "readonly": false
+      }
+    },
+    {
+      "id": "矩阵1d 面板编辑区初始值 = 该行 note，可编辑（textarea + 保存按钮可见）",
+      "ok": true,
+      "detail": {
+        "value": ""
+      }
+    },
+    {
+      "id": "矩阵1e 整格可视区域可点击（点击摘要文字/提示同样打开面板）",
+      "ok": true,
+      "detail": {
+        "clickTarget": "td 内的 .note-summary 与 .note-action 均在 td 内"
+      }
+    },
+    {
+      "id": "矩阵1f 面板「关闭」按钮可关闭面板（无未保存内容时直接关闭、无确认框）",
+      "ok": true,
+      "detail": "已关闭进展说明面板（未保存的编辑内容已丢弃）。"
+    },
+    {
+      "id": "矩阵2a 摘要为去 Markdown 的纯文本（标题/粗体/斜体/删除线/行内代码/列表/引用/链接只留文字）",
+      "ok": true,
+      "detail": "标题 加粗 与 斜体 与 删除 与 code 甲 乙 引用 链接"
+    },
+    {
+      "id": "矩阵2b 摘要按约 80 字符截断（超长加省略号、合并为单行）",
+      "ok": true,
+      "detail": {
+        "limit": 80,
+        "length": 81,
+        "tail": "xxx…"
+      }
+    },
+    {
+      "id": "矩阵2c 短摘要不截断、空 note 摘要为空（由单元格给占位提示）",
+      "ok": true,
+      "detail": {
+        "plain": "普通一行进展说明",
+        "empty": "",
+        "fence": "var a = 1;"
+      }
+    },
+    {
+      "id": "矩阵2d 页面 K 单元格显示该 note 的去 Markdown 摘要（与纯逻辑同口径、单行、无换行）",
+      "ok": true,
+      "detail": {
+        "text": "摘要用例 加粗 甲 乙 引用 链接",
+        "title": "摘要用例 加粗 甲 乙 引用 链接",
+        "oneLine": true,
+        "whiteSpace": "nowrap",
+        "overflow": "hidden",
+        "textOverflow": "ellipsis",
+        "clientHeight": 20,
+        "action": true
+      }
+    },
+    {
+      "id": "矩阵2e 单元格摘要按单行截断渲染（nowrap + hidden + ellipsis，行高单行）",
+      "ok": true,
+      "detail": {
+        "whiteSpace": "nowrap",
+        "overflow": "hidden",
+        "textOverflow": "ellipsis",
+        "h": 20
+      }
+    },
+    {
+      "id": "矩阵2f 超长 note 在单元格内单行截断（文本 ≤ 81 字符 + CSS 省略号裁剪）",
+      "ok": true,
+      "detail": {
+        "length": 81,
+        "clipped": true,
+        "clientWidth": 244
+      }
+    },
+    {
+      "id": "矩阵3a 桌面面板约 90vw × 80vh（1440×900 → 1296×720，居中弹层）",
+      "ok": true,
+      "detail": {
+        "w": 1296,
+        "h": 720,
+        "vw": 1440,
+        "vh": 900,
+        "top": 90
+      }
+    },
+    {
+      "id": "矩阵3b 桌面左「编辑」右「预览」双栏（两列网格 + x 坐标顺序）",
+      "ok": true,
+      "detail": {
+        "display": "grid",
+        "columns": 2,
+        "editX": 89,
+        "previewX": 726
+      }
+    },
+    {
+      "id": "矩阵3c 桌面不显示「编辑 / 预览」标签（窄视口专用）",
+      "ok": true,
+      "detail": {
+        "hidden": true,
+        "display": "none",
+        "narrow": "false"
+      }
+    },
+    {
+      "id": "矩阵3d 手机面板全屏（100vw × 100vh → 390×844，无圆角边距）",
+      "ok": true,
+      "detail": {
+        "w": 390,
+        "h": 844,
+        "vw": 390,
+        "vh": 844
+      }
+    },
+    {
+      "id": "矩阵3e 手机显示「编辑 / 预览」标签、默认编辑页（单栏）",
+      "ok": true,
+      "detail": [
+        {
+          "text": "编辑",
+          "active": true
+        },
+        {
+          "text": "预览",
+          "active": false
+        }
+      ]
+    },
+    {
+      "id": "矩阵3f 手机点「预览」标签切换为预览页（编辑页隐藏、标签高亮切换、预览内容 = 该行 note）",
+      "ok": true,
+      "detail": {
+        "active": [
+          "预览"
+        ],
+        "dataTab": "preview",
+        "preview": "（暂无进展说明）"
+      }
+    },
+    {
+      "id": "矩阵3g 手机可切回「编辑」标签",
+      "ok": true,
+      "detail": false
+    },
+    {
+      "id": "矩阵3h 手机只读模式：全屏预览、不显示标签与编辑页、无保存按钮",
+      "ok": true,
+      "detail": {
+        "readonly": true,
+        "tabsHidden": true,
+        "editPaneHidden": true,
+        "previewPaneHidden": false,
+        "saveHidden": true,
+        "display": "block"
+      }
+    },
+    {
+      "id": "矩阵3i 手机只读面板 Esc 关闭",
+      "ok": true,
+      "detail": "已关闭进展说明面板（未保存的编辑内容已丢弃）。"
+    },
+    {
+      "id": "矩阵4a 原始 HTML 转义后原样显示、不执行（无 script/img 节点、无副作用）",
+      "ok": true,
+      "detail": {
+        "pwned": "undefined",
+        "scriptNodes": 0,
+        "imgNodes": 0
+      }
+    },
+    {
+      "id": "矩阵4b 远程图片不解析不加载：Markdown 图片语法按安全文本显示，且未发出任何图片请求",
+      "ok": true,
+      "detail": {
+        "imageRequests": [],
+        "text": "安全用例 <script>window.__pwned = 1;</script><img src=\"http://12"
+      }
+    },
+    {
+      "id": "矩阵4c 打开面板与渲染预览期间无任何外部资源请求（全部同源 / 仅本站）",
+      "ok": true,
+      "detail": {
+        "newRequests": [],
+        "externalResources": []
+      }
+    },
+    {
+      "id": "矩阵4d Markdown 子集渲染生效：H1/粗体/代码块可见，链接带 target=_blank + rel=noopener noreferrer",
+      "ok": true,
+      "detail": {
+        "links": [
+          {
+            "href": "https://example.com/x",
+            "target": "_blank",
+            "rel": "noopener noreferrer"
+          }
+        ],
+        "h1": 1,
+        "strong": 1,
+        "pre": 1
+      }
+    },
+    {
+      "id": "矩阵5a 编辑区输入即时驱动预览渲染（仅本地渲染，不发请求）",
+      "ok": true,
+      "detail": "三端一致 20261015024734-dleb粗体 与 链接"
+    },
+    {
+      "id": "矩阵5b 仅点「保存」（Ctrl/Cmd+Enter）提交到服务端，revision 正常递增",
+      "ok": true,
+      "detail": {
+        "revision": 4,
+        "from": 3
+      }
+    },
+    {
+      "id": "矩阵5c 三端一致：页面摘要 / GET /api/wbs / 磁盘 JSON 都是同一次编辑结果",
+      "ok": true,
+      "detail": {
+        "summary": "三端一致 20261015024734-dleb 粗体 与 链接",
+        "api": "# 三端一致 20261015024734-dl"
+      }
+    },
+    {
+      "id": "矩阵5d 保存成功有中文提示且面板提示区同步（页面提示 + 面板内提示）",
+      "ok": true,
+      "detail": "第 T005 行进展说明已保存，服务器版本号已更新为 4。（页面、API、磁盘三端一致）"
+    },
+    {
+      "id": "矩阵5e 刷新后 K 列摘要与面板内容仍为该 note（草稿来源＝服务端）",
+      "ok": true,
+      "detail": {
+        "summary": "三端一致 20261015024734-dleb 粗体 与 链接",
+        "same": true
+      }
+    },
+    {
+      "id": "矩阵5f 审计沿用既有 audit line：note 字段级 old→new / 时间 / 操作身份（/api/history 不引入新字段）",
+      "ok": true,
+      "detail": "task_id,field,at,identity,level1,level2,task,owner,old,new"
+    },
+    {
+      "id": "矩阵6a 无权限行 K 列仍显示摘要，样式为只读（locked/note-locked）",
+      "ok": true,
+      "detail": {
+        "classes": "cell cell-note locked note-locked",
+        "text": "只读预览用 内容点击查看",
+        "cursor": "auto"
+      }
+    },
+    {
+      "id": "矩阵6b 无权限行点击 K 单元格同样打开面板，以预览只读展示（无编辑区、无保存按钮、无标签）",
+      "ok": true,
+      "detail": {
+        "meta": "只读预览（当前身份「王言」对第 T001 行无编辑权限）",
+        "strong": 1
+      }
+    },
+    {
+      "id": "矩阵6c 只读行无法提交：saveNote 被拒绝、未发出 PUT、服务端数据未变",
+      "ok": true,
+      "detail": {
+        "result": {
+          "ok": false,
+          "error": "readonly"
+        },
+        "puts": 0,
+        "msg": "当前身份「王言」对该行只读，无法提交进展说明。"
+      }
+    },
+    {
+      "id": "矩阵6d 只读模式给出中文提示（面板提示区说明当前身份只读）",
+      "ok": true,
+      "detail": "当前身份「王言」对该行只读，无法提交进展说明。"
+    },
+    {
+      "id": "矩阵6e 只读面板支持「关闭」按钮与 Esc 关闭",
+      "ok": true,
+      "detail": "已关闭进展说明面板（未保存的编辑内容已丢弃）。"
+    },
+    {
+      "id": "矩阵7a 输入后标记为有未保存内容（面板脏标记，未提交）",
+      "ok": true,
+      "detail": {
+        "dirty": true,
+        "puts": 0
+      }
+    },
+    {
+      "id": "矩阵7b 有未保存内容时关闭面板须确认（面板不关、弹出中文确认框、两条路径按钮）",
+      "ok": true,
+      "detail": {
+        "confirmHidden": false,
+        "panelHidden": false,
+        "title": "有未保存的修改",
+        "buttons": [
+          "取消",
+          "继续退出"
+        ],
+        "inputValue": "未保存草稿 20261015024739-ws5t"
+      }
+    },
+    {
+      "id": "矩阵7c「取消」路径：确认框关闭、面板与未保存内容保留、未提交",
+      "ok": true,
+      "detail": {
+        "confirmHidden": true,
+        "panelHidden": false,
+        "inputValue": "未保存草稿 20261015024739-ws5t"
+      }
+    },
+    {
+      "id": "矩阵7d 确认框内 Esc 走「取消」路径（面板仍打开、内容保留）",
+      "ok": true,
+      "detail": {
+        "panelHidden": false,
+        "dialogRect": {
+          "w": 1296,
+          "h": 720,
+          "x": 72,
+          "y": 90
+        },
+        "viewport": {
+          "w": 1440,
+          "h": 900,
+          "clientW": 1440,
+          "clientH": 900
+        },
+        "readonly": false,
+        "dirtyClass": true,
+        "dataTask": "T001",
+        "dataTab": "edit",
+        "dataNarrow": "false",
+        "bodyDisplay": "grid",
+        "bodyColumns": "625px 625px",
+        "tabsHidden": true,
+        "tabsDisplay": "none",
+        "editPaneHidden": false,
+        "previewPaneHidden": false,
+        "saveHidden": false,
+        "confirmHidden": true,
+        "inputValue": "未保存草稿 20261015024739-ws5t",
+        "inputType": "textarea",
+        "countText": "25 / 20000 字符",
+        "msg": "",
+        "meta": "可编辑（当前身份：项目负责人）",
+        "title": "进展说明 · T001 业需导入"
+      }
+    },
+    {
+      "id": "矩阵7e「继续退出」路径：面板关闭、未保存内容丢弃、未向服务端提交",
+      "ok": true,
+      "detail": {
+        "puts": 0
+      }
+    },
+    {
+      "id": "矩阵7f 重新打开面板：内容回到服务端值（未保存草稿未落盘）",
+      "ok": true,
+      "detail": {
+        "value": "只读预览用 **内容**",
+        "expect": "只读预览用 **内容**"
+      }
+    },
+    {
+      "id": "矩阵7g 无未保存内容时关闭不再弹确认框（直接关闭）",
+      "ok": true,
+      "detail": "已关闭进展说明面板（未保存的编辑内容已丢弃）。"
+    },
+    {
+      "id": "矩阵8a 超过 20000 字符时前端实时提示超长（计数 + 超长样式）",
+      "ok": true,
+      "detail": "20001 / 20000 字符（超长，无法提交）"
+    },
+    {
+      "id": "矩阵8b 超长保存被前端拒绝并有中文提示、未发出 PUT",
+      "ok": true,
+      "detail": {
+        "msg": "进展说明长度超过 20000 个字符（当前 20001 个），未提交。",
+        "puts": 0
+      }
+    },
+    {
+      "id": "矩阵8c 恰好 20000 字符可正常保存（服务端上限同步为 20000、磁盘一致）",
+      "ok": true,
+      "detail": {
+        "length": 20000,
+        "revision": 6
+      }
+    },
+    {
+      "id": "矩阵9a 并发旧版本 PUT 返回 409：给出中文冲突提示、不覆盖他人落盘结果",
+      "ok": true,
+      "detail": {
+        "revision": 8,
+        "winner": 8,
+        "note": "只读预览用 **内容**"
+      }
+    },
+    {
+      "id": "矩阵9b 409 后未保存内容仍保留在面板中（可重新加载后再改），且提示区说明冲突",
+      "ok": true,
+      "detail": {
+        "dirty": true,
+        "msg": "版本冲突，未提交（服务器版本 8）；请先关闭面板，再点横幅「重新加载」后重做修改。"
+      }
+    },
+    {
+      "id": "矩阵9c 退出面板后点横幅「重新加载」可用新版本继续（页面版本号 = 服务器版本号）",
+      "ok": true,
+      "detail": "身份：项目负责人 · 版本：8 · 已与服务器一致"
+    },
+    {
+      "id": "矩阵10a 服务重启后 note 与人员池仍在（磁盘持久，revision 不回退）",
+      "ok": true,
+      "detail": {
+        "note": "# 重启持久 20261015024747-mopy",
+        "identities": 9,
+        "revision": 9
+      }
+    },
+    {
+      "id": "矩阵10b 重启后页面重新加载：K 列摘要仍显示该 note（页面 / API 一致）",
+      "ok": true,
+      "detail": "重启持久 20261015024747-mopy"
+    },
+    {
+      "id": "矩阵11a 回归(D-3/验收1) 身份遮罩 [hidden] 级联生效、工作台渲染 36 行",
+      "ok": true,
+      "detail": {
+        "rows": 36,
+        "layer": "none"
+      }
+    },
+    {
+      "id": "矩阵11b 回归(CH-1) 操作列每行常显「编辑」+ 项目负责人「删除」；K 列改为摘要、无内联编辑器",
+      "ok": true,
+      "detail": {
+        "edit": 36,
+        "del": 36,
+        "noteInputs": 0
+      }
+    },
+    {
+      "id": "矩阵11c 回归(CH-2) 五列日期常显 type=date 且可交互、状态列常显五枚举下拉",
+      "ok": true,
+      "detail": {
+        "dates": 5,
+        "status": [
+          "未开始",
+          "进行中",
+          "已完成",
+          "已延期",
+          "被阻塞"
+        ]
+      }
+    },
+    {
+      "id": "矩阵11d 回归(CH-3) 负责人列为下拉、选项＝当前人员池",
+      "ok": true,
+      "detail": [
+        "项目负责人",
+        "李欢",
+        "王言",
+        "张航瑞",
+        "郑述文",
+        "崔文建",
+        "余宇",
+        "黄逸偲",
+        "陈江"
+      ]
+    },
+    {
+      "id": "矩阵11e 回归(CH-2/验收4) 他人行日期与状态控件 disabled、K 列只读且点击给中文只读提示",
+      "ok": true,
+      "detail": {
+        "id": "T001",
+        "hint": "当前身份「王言」对第 T001 行的「状态」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"
+      }
+    },
+    {
+      "id": "矩阵11f 回归(CH-4/CH-7) 新增人员立即生效、落盘、写 identity_added 审计",
+      "ok": true,
+      "detail": {
+        "n": 10,
+        "events": 1
+      }
+    },
+    {
+      "id": "矩阵11g 回归(CH-5) 日报为单 workbook 双 sheet，阻塞与延期行 = status ∈ {被阻塞, 已延期}",
+      "ok": true,
+      "detail": {
+        "sheets": [
+          "阻塞与延期",
+          "当日变更"
+        ],
+        "blocked": 0
+      }
+    },
+    {
+      "id": "矩阵11h 回归(CH-5/CH-8-7) 日报「当日变更」不引入新字段（10 列）且包含 note 字段级 old→new",
+      "ok": true,
+      "detail": {
+        "header": [
+          "id",
+          "一级",
+          "二级",
+          "任务项",
+          "负责人",
+          "改动字段",
+          "旧值",
+          "新值",
+          "时间",
+          "操作身份"
+        ],
+        "noteRows": 3,
+        "total": 10
+      }
+    },
+    {
+      "id": "矩阵11i 回归(导出) K 列仍导出 note 原始 Markdown；A–K 11 列逐字段与当前数据一致、不含 status",
+      "ok": true,
+      "detail": {
+        "rows": 36,
+        "expect": 36,
+        "notePreview": "# 三端一致 20261015024734-dl"
+      }
+    },
+    {
+      "id": "矩阵11j 回归(导出/CH-6) 第 1/2 行 A–K 与源模板逐字一致，M1 写入导出日期标签（唯一新增单元格）",
+      "ok": true,
+      "detail": {
+        "m1": "导出日期：2026-10-15 10:47",
+        "templateRows": 38
+      }
+    },
+    {
+      "id": "矩阵11k 回归：全程无外部资源请求（页面资源全本地，无 CDN / 外链 / 外部图片）",
+      "ok": true,
+      "detail": {
+        "total": 64,
+        "external": []
+      }
+    },
+    {
+      "id": "矩阵11l 全程无 pageerror；console error 仅 409 用例的浏览器网络日志（无脚本异常）",
+      "ok": true,
+      "detail": {
+        "pageErrors": [],
+        "consoleErrors": [
+          "Failed to load resource: the server responded with a status of 409 (Conflict)"
+        ],
+        "unexpected": []
+      }
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "requests": [],
+  "browser_version": "140.0.7339.16",
+  "daily": {
+    "name": "蓉城战役日报-20261015.xlsx",
+    "sheets": [
+      "阻塞与延期",
+      "当日变更"
+    ]
+  },
+  "wbsExport": {
+    "name": "蓉城战役WBS-20261015.xlsx",
+    "sheets": [
+      "工作表1"
+    ]
+  },
+  "pass": 63,
+  "fail": 0,
+  "finished_at": "2026-10-15T02:47:52.859Z"
+}

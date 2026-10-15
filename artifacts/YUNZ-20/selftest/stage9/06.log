@@ -1,0 +1,10 @@
+=== 自测矩阵 06 · 无权限行只读预览且无法提交 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage9/browser.log' 'PASS  矩阵6a 无权限行 K 列仍显示摘要' 'PASS  矩阵6b 无权限行点击 K 单元格同样打开面板，以预览只读展示' 'PASS  矩阵6c 只读行无法提交' 'PASS  矩阵6d 只读模式给出中文提示' 'PASS  矩阵6e 只读面板支持「关闭」按钮与 Esc 关闭'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵6a 无权限行 K 列仍显示摘要
+OK    PASS  矩阵6b 无权限行点击 K 单元格同样打开面板，以预览只读展示
+OK    PASS  矩阵6c 只读行无法提交
+OK    PASS  矩阵6d 只读模式给出中文提示
+OK    PASS  矩阵6e 只读面板支持「关闭」按钮与 Esc 关闭
+PASS=5 FAIL=0

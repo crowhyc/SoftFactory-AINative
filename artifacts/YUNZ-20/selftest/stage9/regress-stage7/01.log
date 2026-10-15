@@ -1,0 +1,8 @@
+=== 自测矩阵 01 · 日期五列与状态列常显为可交互控件（非点击才出现） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage9/regress-stage7/browser.log' 'PASS  矩阵1a 项目负责人可见五列日期常显 type=date' 'PASS  矩阵1b 状态列常显五枚举下拉' 'PASS  矩阵2e 本人行日期/状态控件可交互'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵1a 项目负责人可见五列日期常显 type=date
+OK    PASS  矩阵1b 状态列常显五枚举下拉
+OK    PASS  矩阵2e 本人行日期/状态控件可交互
+PASS=3 FAIL=0

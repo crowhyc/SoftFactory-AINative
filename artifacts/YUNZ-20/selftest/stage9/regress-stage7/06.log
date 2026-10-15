@@ -1,0 +1,17 @@
+=== 自测矩阵 06 · 新增人员：非空/去重/1–20 校验；立即生效；返回首页同步；落盘 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage9/regress-stage7/browser.log' 'PASS  矩阵6a 项目负责人可见「新增人员」入口' 'PASS  矩阵6b 姓名非空校验' 'PASS  矩阵6c 姓名长度 1–20 校验' 'PASS  矩阵6d 姓名去重校验' 'PASS  矩阵6e 合法姓名加入成功' 'PASS  矩阵6f 新增人员立即出现在身份切换' 'PASS  矩阵6g 新增人员已落盘 wbs.json' 'PASS  矩阵6h 返回首页后身份列表同步' 'PASS  矩阵6i 返回首页后可用新增身份重进工作台' && require '/opt/wbs-rongcheng/tests/.tmp/stage9/regress-stage7/server.log' 'PASS  矩阵6a 人员池新增落盘' 'PASS  矩阵6b 服务端拒绝空白 / 重复 / 超长'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵6a 项目负责人可见「新增人员」入口
+OK    PASS  矩阵6b 姓名非空校验
+OK    PASS  矩阵6c 姓名长度 1–20 校验
+OK    PASS  矩阵6d 姓名去重校验
+OK    PASS  矩阵6e 合法姓名加入成功
+OK    PASS  矩阵6f 新增人员立即出现在身份切换
+OK    PASS  矩阵6g 新增人员已落盘 wbs.json
+OK    PASS  矩阵6h 返回首页后身份列表同步
+OK    PASS  矩阵6i 返回首页后可用新增身份重进工作台
+PASS=9 FAIL=0
+OK    PASS  矩阵6a 人员池新增落盘
+OK    PASS  矩阵6b 服务端拒绝空白 / 重复 / 超长
+PASS=2 FAIL=0

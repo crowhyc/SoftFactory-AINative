@@ -1,0 +1,10 @@
+=== 矩阵 07 · 刷新持久 ===
+$ node tests/domcheck.mjs --only ownedit
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  矩阵3 普通负责人本人行可编辑并保存（页面/API/磁盘三端一致）  :: T002 note + status，revision 2
+PASS  矩阵6b 保存后 API 与磁盘逐字段一致  :: {"note":"# DOM 自测 2026-10-15T02:48:12.814Z","status":"进行中"}
+PASS  矩阵7 刷新持久：重新加载页面仍显示已保存内容  :: DOM 自测 2026-10-15T02:48:
+---
+PASS=3 FAIL=0

@@ -1,0 +1,9 @@
+=== 自测矩阵 07 · 日报「阻塞与延期」sheet：仅阻塞/延期行，A–K + 状态 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage9/regress-stage7/browser.log' 'PASS  矩阵7a 日报文件名与日期口径正确' 'PASS  矩阵7b 日报为单个 workbook、两个 sheet' 'PASS  矩阵7c 阻塞与延期表头' 'PASS  矩阵7d 阻塞与延期 sheet 恰好'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵7a 日报文件名与日期口径正确
+OK    PASS  矩阵7b 日报为单个 workbook、两个 sheet
+OK    PASS  矩阵7c 阻塞与延期表头
+OK    PASS  矩阵7d 阻塞与延期 sheet 恰好
+PASS=4 FAIL=0

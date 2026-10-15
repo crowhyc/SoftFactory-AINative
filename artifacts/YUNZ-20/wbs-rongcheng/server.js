@@ -104,7 +104,7 @@ function validateDocument(body) {
         push(id, field, field + ' 必须是字符串');
         return;
       }
-      const limits = { level1: 200, level2: 200, task: 300, owner: 40, demo: 20, note: 2000 };
+      const limits = { level1: 200, level2: 200, task: 300, owner: 40, demo: 20, note: 20000 };
       if (value.length > limits[field]) {
         push(id, field, field + ' 长度超过上限 ' + limits[field]);
       }

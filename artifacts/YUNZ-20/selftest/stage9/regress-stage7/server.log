@@ -1,0 +1,22 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+数据目录: /opt/wbs-rongcheng/tests/.tmp/stage7-data  端口: 4222  tz: Asia/Shanghai  今天: 2026-10-15
+PASS  矩阵11a GET /api/health 返回 ok  :: {"ok":true,"service":"wbs-rongcheng","revision":0}
+PASS  矩阵11b 保存成功（原子写，revision +1）  :: T002 revision 1
+PASS  矩阵8a audit.log 每条记录带 old/new 映射与改动后快照  :: 字段 dates.design,dates.test,note,status；old.status=未开始
+PASS  矩阵8b GET /api/history 字段级记录（旧值→新值/时间/操作身份）  :: 4 条：dates.design,dates.test,note,status；2026-10-14T16:00:00.000Z → 2026-10-15T16:00:00.000Z
+PASS  矩阵8c 自然日口径 [00:00:00, 次日 00:00:00) 开区间（Asia/Shanghai）  :: 当日含 00:00:01 不含 23:59:59；2026-10-14 单独可取
+PASS  矩阵10a 旧格式（无 old/new）行与损坏行被跳过，接口不报错  :: records=5
+PASS  矩阵6a 人员池新增落盘（PUT /api/wbs，原子写 + revision 保护）  :: revision 2
+PASS  矩阵6b 服务端拒绝空白 / 重复 / 超长（>20）身份并给中文提示  :: dup400 / blank400 / len400
+PASS  矩阵14a（CH-7）非项目负责人通过 API 新增人员被拒（403，不落盘、不写审计）  :: HTTP 403
+PASS  矩阵14b（CH-7）项目负责人新增人员追加 identity_added 审计（identity/name/at）  :: {"type":"identity_added","identity":"项目负责人","name":"孙悦","at":"2026-10-15T02:48:42.345Z"}
+PASS  矩阵14c（CH-7）GET /api/history 返回新增人员事件（改动字段 人员池、旧值空、新值姓名、操作身份照实）  :: {"field":"人员池","old":"","new":"孙悦","task":"新增人员 孙悦","identity":"项目负责人"}
+PASS  矩阵14d（CH-7）重复 / 超长 / 空白新增均被拒且不写审计  :: audit 行数不变=8
+PASS  矩阵11c 并发旧版本保存 409 非覆盖（API 与磁盘一致）  :: current=4
+PASS  矩阵10b 老 wbs.json（无新增字段）可读、可保存  :: revision 7 → 8
+PASS  矩阵11d /api/history 参数校验与 405  :: date/tz 400，POST 405
+PASS  矩阵11e 服务重启后数据与人员池仍在（含 /api/history）  :: identities=9 revision=8
+---
+ARTIFACT data_sha256=c08ffe94509b4eba4d3e6a39fef242c0f6d8cd36f4ab0c22d3f469e0e6bc493d
+ARTIFACT audit_lines=11
+PASS=16 FAIL=0

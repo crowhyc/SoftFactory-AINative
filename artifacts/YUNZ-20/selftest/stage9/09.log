@@ -1,0 +1,10 @@
+=== 自测矩阵 09 · 并发 PUT 409 不覆盖（前端 + 服务端） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage9/browser.log' 'PASS  矩阵9a 并发旧版本 PUT 返回 409' 'PASS  矩阵9b 409 后未保存内容仍保留在面板中' 'PASS  矩阵9c 退出面板后点横幅「重新加载」可用新版本继续' && require '/opt/wbs-rongcheng/tests/.tmp/stage9/server.log' 'PASS  矩阵09 并发旧版本保存 409 且不覆盖'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵9a 并发旧版本 PUT 返回 409
+OK    PASS  矩阵9b 409 后未保存内容仍保留在面板中
+OK    PASS  矩阵9c 退出面板后点横幅「重新加载」可用新版本继续
+PASS=3 FAIL=0
+OK    PASS  矩阵09 并发旧版本保存 409 且不覆盖
+PASS=1 FAIL=0

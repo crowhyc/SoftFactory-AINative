@@ -1,0 +1,7 @@
+=== 矩阵 14 · 导出不含 status ===
+$ grep -E "不含字面量 'status'" /opt/wbs-rongcheng/tests/.tmp/stage9/legacy-matrix/12.log >/dev/null && grep -E '数据区不含任何 status 取值' /opt/wbs-rongcheng/tests/.tmp/stage9/legacy-matrix/12.log && echo 'PASS=2 FAIL=0'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  数据区不含任何 status 取值  :: （第 1 行 D1:H1 的模板原文颜色说明属于原表内容，未改动）
+PASS  数据区不含任何 status 取值  :: （第 1 行 D1:H1 的模板原文颜色说明属于原表内容，未改动）
+PASS=2 FAIL=0

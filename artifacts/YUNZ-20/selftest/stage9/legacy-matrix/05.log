@@ -1,0 +1,12 @@
+=== 矩阵 05 · 新增/删除仅项目负责人（带确认） ===
+$ node tests/domcheck.mjs --only adddelete
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  矩阵5 普通负责人不可新增/删除行  :: 仅「项目负责人」可以新增行。
+PASS  矩阵5b 项目负责人可新增行（自动生成独立 id）  :: T037，页面 37 行
+PASS  矩阵5c 新增在保存前不落盘  :: API/磁盘仍为 36 行
+PASS  矩阵5d 删除带确认框，取消则不删  :: 确认删除任务 T037（未命名）？该操作需保存后生效。
+PASS  矩阵5e 项目负责人删除行（确认后）并保存生效  :: 页面/API/磁盘回到 36 行
+---
+PASS=5 FAIL=0

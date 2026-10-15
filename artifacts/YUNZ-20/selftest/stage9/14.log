@@ -1,0 +1,25 @@
+=== 自测矩阵 14 · 部署与镜像自检（BIND_HOST=0.0.0.0 / 双端 health / 无 node_modules / 资源与源码一致） ===
+$ bash tests/stage9/deploy_check.sh
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+=== 部署/镜像自检 2026-10-15T10:48:43+0800 ===
+容器：wbs-rongcheng  端口：4180  BIND_HOST：0.0.0.0  APP_DIR：/opt/wbs-rongcheng
+PASS  现场容器存在并运行（镜像 wbs-rongcheng:20261015104003，网络 host，挂载 /opt/wbs-rongcheng/data->/app/data）
+PASS  容器进程绑定 0.0.0.0（D-0006 授权对外暴露口径）
+PASS  运行数据挂载 = /opt/wbs-rongcheng/data（现场数据未改挂载）
+PASS  本机 http://127.0.0.1:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":5}
+PASS  http://0.0.0.0:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":5}
+PASS  宿主监听包含 0.0.0.0:4180（按 D-0006 授权对外暴露）
+PASS  公网 http://47.108.129.157:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":5}
+PASS  镜像内无 node_modules / package-lock.json（零运行时依赖）
+镜像 /app 内容：data package.json public server.js 
+PASS  服务端返回 /app.js 与运行目录源码一致（sha256 daca670bbedb09fc7a1d8845f6dca3a6c6d095375e9fb0e17c0747aa037faab8）
+PASS  服务端返回 /styles.css 与运行目录源码一致（sha256 7ca05a04818400625641a1f88803381040a712eb1ec4433ac943adf2a8d2edb8）
+PASS  服务端返回 / 与运行目录 index.html 一致（sha256 dad8722de63f35dbd7018d0fdb8c408e92e043d685958124aaa00791006eebaf）
+PASS  容器内 /app/public/app.js == 运行目录（sha256 daca670bbedb09fc7a1d8845f6dca3a6c6d095375e9fb0e17c0747aa037faab8）
+PASS  容器内 /app/public/index.html == 运行目录（sha256 dad8722de63f35dbd7018d0fdb8c408e92e043d685958124aaa00791006eebaf）
+PASS  容器内 /app/public/styles.css == 运行目录（sha256 7ca05a04818400625641a1f88803381040a712eb1ec4433ac943adf2a8d2edb8）
+PASS  容器内 /app/server.js == 运行目录（sha256 96363df49c12d4961ac8d14fc9e2cbc9e014a3d964d92b92f53235ff2c01b41a）
+---
+PASS=15 FAIL=0

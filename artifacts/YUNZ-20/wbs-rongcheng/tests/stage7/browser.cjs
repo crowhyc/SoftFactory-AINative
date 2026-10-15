@@ -230,6 +230,16 @@ function stopServer() {
     check('验收4 他人行只读（点击进展说明有中文提示、不进入编辑态）',
       othersHint.indexOf('只读') !== -1 && !(await page.evaluate((id) => !!document.querySelector('#wbs-body tr[data-id="' + id + '"] td[data-field="note"] input, #wbs-body tr[data-id="' + id + '"] td[data-field="note"] textarea'), foreignId)),
       othersHint);
+    /* CH-8：只读行的 K 列点击改为打开「只读预览面板」（不再只是内联提示），断言后关闭面板继续后续用例。 */
+    const readonlyPanel = await page.evaluate(() => ({
+      open: !document.getElementById('note-panel').hidden,
+      readonly: document.getElementById('note-dialog').classList.contains('readonly'),
+      saveHidden: document.getElementById('note-save').hidden
+    }));
+    check('验收4（CH-8）他人行只读补充：K 列打开只读预览面板（无保存按钮）',
+      readonlyPanel.open === true && readonlyPanel.readonly === true && readonlyPanel.saveHidden === true, readonlyPanel);
+    await page.click('#note-close');
+    await page.waitForTimeout(200);
 
     /* ---------- 矩阵3b / 矩阵5c：操作列（普通负责人） ---------- */
     const opNormal = await page.evaluate(() => {
@@ -294,12 +304,12 @@ function stopServer() {
         row_editing: tr.classList.contains('row-editing'),
         label: tr.querySelector('button[data-edit-row]').textContent.trim(),
         l1_editor: !!tr.querySelector('td[data-field="level1"] input'),
-        note_editor: !!tr.querySelector('td[data-field="note"] textarea'),
+        note_summary_only: !tr.querySelector('td[data-field="note"] textarea') && !!tr.querySelector('td[data-field="note"] .note-summary'),
         hint: document.getElementById('hint').hidden ? '' : document.getElementById('hint').textContent.trim()
       };
     });
-    check('矩阵3d 点「编辑」进入该行行编辑态（可编辑文本列常显编辑器）',
-      rowEditOn.row_editing && rowEditOn.label === '完成' && rowEditOn.l1_editor && rowEditOn.note_editor, rowEditOn);
+    check('矩阵3d 点「编辑」进入该行行编辑态（可编辑文本列常显编辑器；CH-8 后 K 列仍为摘要单元格、不再有内联 textarea）',
+      rowEditOn.row_editing && rowEditOn.label === '完成' && rowEditOn.l1_editor && rowEditOn.note_summary_only, rowEditOn);
     await page.click('#wbs-body tr[data-id="T001"] button[data-edit-row]');
     await page.waitForTimeout(250);
     const rowEditOff = await page.evaluate(() => {
@@ -472,26 +482,24 @@ function stopServer() {
       const tr = Array.from(document.querySelectorAll('#wbs-body tr')).find((row) => row.querySelector('td[data-field="owner"]').textContent.trim() === '王言');
       return tr.getAttribute('data-id');
     });
-    const noteText = 'stage7 浏览器自测 ' + new Date().toISOString();
-    await page.evaluate(([rowId]) => {
-      const tr = document.querySelector('#wbs-body tr[data-id="' + rowId + '"]');
-      tr.querySelector('button[data-edit-row]').click();
-    }, [ownRowId]);
-    await page.waitForTimeout(300);
-    await page.evaluate(([rowId, text]) => {
-      const tr = document.querySelector('#wbs-body tr[data-id="' + rowId + '"]');
-      const input = tr.querySelector('td[data-field="note"] textarea');
-      input.value = text;
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-    }, [ownRowId, noteText]);
-    await page.waitForTimeout(300);
-    await page.click('#save-btn');
+    /* CH-8：K 列改为「摘要单元格 + 大尺寸 Markdown 面板」，本人行的编辑入口随之改为面板内保存。 */
+    const noteText = 'stage7 回归（CH-8 面板） ' + new Date().toISOString();
+    await page.click('#wbs-body tr[data-id="' + ownRowId + '"] td[data-field="note"]');
+    await page.waitForFunction(() => !document.getElementById('note-panel').hidden, null, { timeout: 10000 });
+    await page.fill('#note-input', noteText);
+    await page.click('#note-save');
     await page.waitForFunction(() => !document.getElementById('banner').hidden && document.getElementById('banner-text').textContent.indexOf('保存成功') !== -1, null, { timeout: 15000 });
+    await page.click('#note-close');
     const savedDoc = (await api('/api/wbs')).body;
     const savedRow = savedDoc.tasks.find((task) => task.id === ownRowId);
-    check('验收3 普通负责人本人行（行编辑态）可编辑并保存，页面/API/磁盘三端一致',
-      savedRow.note === noteText && diskDoc().tasks.find((t) => t.id === ownRowId).note === noteText && (await cellValue(ownRowId, 'note')) === noteText,
-      { row: ownRowId, note: noteText.slice(0, 24) });
+    const ownNoteSummary = await page.evaluate((rowId) => {
+      const td = document.querySelector('#wbs-body tr[data-id="' + rowId + '"] td[data-field="note"]');
+      const span = td.querySelector('.note-summary');
+      return span ? span.textContent : td.textContent.trim();
+    }, ownRowId);
+    check('验收3 普通负责人本人行可编辑并保存（CH-8：K 列经大尺寸面板保存），页面/API/磁盘三端一致',
+      savedRow.note === noteText && diskDoc().tasks.find((t) => t.id === ownRowId).note === noteText && ownNoteSummary === noteText,
+      { row: ownRowId, note: noteText.slice(0, 24), summary: ownNoteSummary.slice(0, 24) });
 
     /* ---------- 矩阵5（只读侧）：普通负责人负责人列只读 ---------- */
     const ownerReadOnly = await page.evaluate((rowId) => {

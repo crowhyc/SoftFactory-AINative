@@ -1,0 +1,17 @@
+=== 矩阵 01 · 读取/渲染 36 行 ===
+$ node tests/selfcheck.js --only render36 && node tests/domcheck.mjs --only render36
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+数据目录: /opt/wbs-rongcheng/tests/.tmp/api  端口: 4199
+PASS  GET /api/wbs 返回 36 行，顺序与 seed 完全一致  :: ids T001..T036
+PASS  GET / 返回工作台页面  :: HTTP 200, 含 #wbs-body
+PASS  静态目录路径穿越被拒绝  :: HTTP 404
+---
+PASS=3 FAIL=0
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  矩阵1 页面渲染 36 行，顺序与 seed 一致  :: 首行 客户端/业需导入/李欢，末行 AI 能力引擎/研发产物沉淀
+PASS  矩阵1b 一级/二级分组视觉按连续段标记（未改行序）  :: l1-start 3 处 / l2-start 9 处
+PASS  矩阵15b 健康探针显示服务正常  :: 探针：服务正常 · v0
+---
+PASS=3 FAIL=0

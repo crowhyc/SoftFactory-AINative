@@ -207,19 +207,32 @@ async function openPage(options) {
     if (want('ownedit')) {
       const page = await openPage({ identity: '王言' });
       assert(await page.waitFor(() => page.rows().length === 36), '页面未就绪');
-      const note = 'DOM 自测 ' + new Date().toISOString();
-      page.click(page.cellOf('T002', 'note'));
-      const editor = page.cellOf('T002', 'note').querySelector('textarea');
-      assert(editor, '点击本人行进展说明未进入编辑态');
-      editor.value = note;
-      page.change(editor);
-      assert(page.$('save-btn').disabled === false, '保存按钮应可用');
-      assert(page.$('session-status').textContent.includes('有未保存修改'), '会话状态未提示未保存');
+      /* CH-8：K 列改为「摘要单元格 + 大尺寸 Markdown 面板」，内联 textarea 已移除；
+         本人行的进展说明改在面板内编辑、仅面板「保存」提交到服务端。 */
+      const note = '# DOM 自测 ' + new Date().toISOString();
+      const noteCell = page.cellOf('T002', 'note');
+      assert(noteCell.querySelector('textarea') === null, 'CH-8 后 K 列不应再有内联 textarea');
+      assert(noteCell.classList.contains('editable') && noteCell.classList.contains('note-editable'), '本人行 K 列应为可点击编辑样式');
+      page.click(noteCell);
+      assert(await page.waitFor(() => !page.$('note-panel').hidden), '点击本人行 K 列未打开进展说明面板');
+      assert(page.$('note-dialog').classList.contains('readonly') === false, '本人行面板不应是只读模式');
+      const noteInput = page.$('note-input');
+      assert(noteInput, '面板缺少 Markdown 编辑区');
+      noteInput.value = note;
+      page.input(noteInput);
+      assert(await page.waitFor(() => page.$('note-preview').querySelector('h1') !== null), '面板预览未按 Markdown 子集渲染标题');
+      page.click(page.$('note-save'));
+      assert(await page.waitFor(() => page.banner().includes('保存成功'), 8000), '面板保存未成功：' + page.banner());
+      assert(page.$('session-status').textContent.includes('已与服务器一致'), '面板保存后会话状态未更新');
+      page.click(page.$('note-close'));
+      assert(page.$('note-panel').hidden === true, '面板未关闭');
       const statusCell = page.cellOf('T002', 'status');
       page.click(statusCell);
       const select = statusCell.querySelector('select');
       select.value = '进行中';
       page.change(select);
+      assert(page.$('save-btn').disabled === false, '保存按钮应可用');
+      assert(page.$('session-status').textContent.includes('有未保存修改'), '会话状态未提示未保存');
       page.click(page.$('save-btn'));
       assert(await page.waitFor(() => page.banner().includes('保存成功'), 8000), '保存未成功：' + page.banner());
       const apiDoc = await getDoc();
@@ -228,15 +241,15 @@ async function openPage(options) {
       const diskRow = diskDoc.tasks.find((t) => t.id === 'T002');
       assert(apiRow.note === note && diskRow.note === note, 'API/磁盘 note 不一致');
       assert(apiRow.status === '进行中' && diskRow.status === '进行中', 'API/磁盘 status 不一致');
-      assert(page.cellOf('T002', 'note').textContent.includes('DOM 自测'), '页面未回显新值');
+      assert(page.cellOf('T002', 'note').querySelector('.note-summary').textContent.includes('DOM 自测'), '页面未回显新值');
       ok('矩阵3 普通负责人本人行可编辑并保存（页面/API/磁盘三端一致）', 'T002 note + status，revision ' + apiDoc.meta.revision);
       ok('矩阵6b 保存后 API 与磁盘逐字段一致', JSON.stringify({ note: diskRow.note, status: diskRow.status }));
       page.close();
 
       const fresh = await openPage({ identity: '王言' });
       assert(await fresh.waitFor(() => fresh.rows().length === 36), '刷新后未渲染');
-      assert(fresh.cellOf('T002', 'note').textContent.includes('DOM 自测'), '刷新后数据丢失');
-      ok('矩阵7 刷新持久：重新加载页面仍显示已保存内容', fresh.cellOf('T002', 'note').textContent.slice(0, 24));
+      assert(fresh.cellOf('T002', 'note').querySelector('.note-summary').textContent.includes('DOM 自测'), '刷新后数据丢失');
+      ok('矩阵7 刷新持久：重新加载页面仍显示已保存内容', fresh.cellOf('T002', 'note').querySelector('.note-summary').textContent.slice(0, 24));
       fresh.close();
     }
 
@@ -277,11 +290,24 @@ async function openPage(options) {
       assert(!idCell.querySelector('input,textarea,select'), '序号列不应进入编辑态');
       ok('矩阵4d 序号列点击给出中文只读提示', idHint);
 
-      page.click(page.cellOf('T001', 'note'));
-      const noteHint = page.hint();
-      assert(idHint.replace('序号', '进展说明') === noteHint,
-        '序号列提示与相邻只读单元格不一致：' + idHint + ' vs ' + noteHint);
-      ok('矩阵4d 与相邻只读单元格行为一致（同文案模板，仅列名不同）', noteHint);
+      /* CH-8 后 K 列不再是「点击给只读提示」的普通只读单元格（改为打开只读预览面板），
+         因此改与同为结构性只读的「任务项」列比较（D-2 关注的是只读提示文案模板一致）。 */
+      page.click(page.cellOf('T001', 'task'));
+      const taskHint = page.hint();
+      assert(idHint.replace('序号', '任务项') === taskHint,
+        '序号列提示与相邻只读单元格不一致：' + idHint + ' vs ' + taskHint);
+      ok('矩阵4d 与相邻只读单元格行为一致（同文案模板，仅列名不同）', taskHint);
+
+      const roNote = page.cellOf('T001', 'note');
+      assert(roNote.classList.contains('locked') && roNote.classList.contains('note-locked'), '他人行 K 列应为只读样式');
+      page.click(roNote);
+      assert(await page.waitFor(() => !page.$('note-panel').hidden), '他人行 K 列未打开只读预览面板');
+      assert(page.$('note-dialog').classList.contains('readonly'), '他人行面板应为只读模式');
+      assert(page.$('note-save').hidden === true, '只读面板不应出现保存按钮');
+      assert(roNote.querySelector('input,textarea,select') === null, '他人行不应进入内联编辑态');
+      ok('矩阵4d（CH-8）他人行 K 列打开只读预览面板（无保存按钮、无内联编辑器）', page.$('note-meta').textContent);
+      page.click(page.$('note-close'));
+      assert(page.$('note-panel').hidden === true, '只读面板未关闭');
 
       page.click(idCell);
       assert(page.hint().includes('序号'), '序号列重复点击无提示');

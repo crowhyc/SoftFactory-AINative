@@ -1,0 +1,10 @@
+=== 矩阵 04 · 他人行只读 ===
+$ node tests/domcheck.mjs --only others
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  矩阵4 他人行只读且点击有提示  :: 第 T001 行对当前身份只读，以预览方式展示进展说明。
+PASS  矩阵4b 本人行结构性字段（任务项）仍只读  :: 当前身份「王言」对第 T001 行的「任务项」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）
+PASS  矩阵4c 负责人字段对普通负责人只读  :: 当前身份「王言」对第 T002 行的「负责人」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）
+---
+PASS=3 FAIL=0

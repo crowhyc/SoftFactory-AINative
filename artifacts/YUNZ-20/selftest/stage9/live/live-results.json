@@ -1,0 +1,38 @@
+{
+  "base": "http://127.0.0.1:4180",
+  "revision_before": 5,
+  "row": "T001",
+  "panel": {
+    "w": 1296,
+    "h": 720,
+    "vw": 1440,
+    "vh": 900,
+    "columns": 2,
+    "tabsHidden": true,
+    "saveHidden": false,
+    "readonly": false,
+    "inputMatches": true,
+    "previewHtml": "<p class=\"note-preview-empty\">（暂无进展说明）</p>"
+  },
+  "readonly": {
+    "readonly": true,
+    "saveHidden": true,
+    "editPaneHidden": true,
+    "meta": "只读预览（当前身份「王言」对第 T004 行无编辑权限）"
+  },
+  "requests": [
+    "http://127.0.0.1:4180/",
+    "http://127.0.0.1:4180/styles.css",
+    "http://127.0.0.1:4180/vendor/xlsx.full.min.js",
+    "http://127.0.0.1:4180/app.js",
+    "http://127.0.0.1:4180/api/wbs",
+    "http://127.0.0.1:4180/api/health",
+    "http://127.0.0.1:4180/api/health"
+  ],
+  "page_errors": [],
+  "data_sha256": "ef74c4c0d4a105d8f21d5a67106a6101f541c86581286b5d9e329d35e92b4b70",
+  "audit_sha256": "a40175a4f4c8bc0a001e8bffdf8ef749d1f22b81cabc41a3b98ce227157fb3e2",
+  "data_unchanged": true,
+  "pass": 7,
+  "fail": 0
+}

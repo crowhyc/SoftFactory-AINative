@@ -1,0 +1,20 @@
+=== 自测矩阵 11 · 回归：M1 标签 / 日报双 sheet / WBS 导出 A–K / D-3 / CH-1…CH-7 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage9/browser.log' 'PASS  矩阵11a 回归(D-3/验收1)' 'PASS  矩阵11b 回归(CH-1)' 'PASS  矩阵11c 回归(CH-2)' 'PASS  矩阵11d 回归(CH-3)' 'PASS  矩阵11e 回归(CH-2/验收4)' 'PASS  矩阵11f 回归(CH-4/CH-7)' 'PASS  矩阵11g 回归(CH-5)' 'PASS  矩阵11h 回归(CH-5/CH-8-7)' 'PASS  矩阵11i 回归(导出)' 'PASS  矩阵11j 回归(导出/CH-6)' 'PASS  矩阵11k 回归：全程无外部资源请求' 'PASS  矩阵11l 全程无 pageerror' && require '/opt/wbs-rongcheng/tests/.tmp/stage9/server.log' 'PASS  矩阵11 服务端返回的 index.html / app.js / styles.css 与源码运行目录一致' 'PASS  矩阵11 回归(CH-7) 非项目负责人通过 API 新增人员被拒'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵11a 回归(D-3/验收1)
+OK    PASS  矩阵11b 回归(CH-1)
+OK    PASS  矩阵11c 回归(CH-2)
+OK    PASS  矩阵11d 回归(CH-3)
+OK    PASS  矩阵11e 回归(CH-2/验收4)
+OK    PASS  矩阵11f 回归(CH-4/CH-7)
+OK    PASS  矩阵11g 回归(CH-5)
+OK    PASS  矩阵11h 回归(CH-5/CH-8-7)
+OK    PASS  矩阵11i 回归(导出)
+OK    PASS  矩阵11j 回归(导出/CH-6)
+OK    PASS  矩阵11k 回归：全程无外部资源请求
+OK    PASS  矩阵11l 全程无 pageerror
+PASS=12 FAIL=0
+OK    PASS  矩阵11 服务端返回的 index.html / app.js / styles.css 与源码运行目录一致
+OK    PASS  矩阵11 回归(CH-7) 非项目负责人通过 API 新增人员被拒
+PASS=2 FAIL=0

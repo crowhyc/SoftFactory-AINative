@@ -80,6 +80,13 @@ run_item 18 "产物与仓库不含凭据字符串" \
   "node tests/selfcheck.js --only secrets && bash tests/scan_secrets.sh"
 
 echo | tee -a "$SUMMARY"
+if [ "${WBS_SKIP_CONTAINER_ITEMS:-0}" = "1" ]; then
+  # YUNZ-29：容器附加项会重建/替换现场容器，并按旧口径断言「仅绑定回环」，与 D-0006 授权的
+  # BIND_HOST=0.0.0.0 冲突；本开关用于只跑 01–18 的 JS/DOM/导出回归，容器与部署由 Stage9
+  # 自测的 tests/stage9/deploy_check.sh 按当前口径覆盖。
+  echo "=== 附加项：容器部署（WBS_SKIP_CONTAINER_ITEMS=1，跳过 19/20/16b/21） ===" | tee -a "$SUMMARY"
+else
+echo "=== 附加项：容器部署（契约 I 部署要求） ===" | tee -a "$SUMMARY"
 echo "=== 附加项：容器部署（契约 I 部署要求） ===" | tee -a "$SUMMARY"
 
 run_item 19 "docker build --network none 构建（构建期无网络）+ deploy.sh 部署自检" \
@@ -90,6 +97,7 @@ run_item 16b "容器重启后数据仍在（docker restart）" \
   "bash tests/deploy_selftest.sh restart"
 run_item 21 "rollback.sh 回滚语义（上一镜像 + 上一 data 备份 + health）" \
   "bash tests/deploy_selftest.sh rollback"
+fi
 
 echo | tee -a "$SUMMARY"
 if [ "$FAILED" -eq 0 ]; then

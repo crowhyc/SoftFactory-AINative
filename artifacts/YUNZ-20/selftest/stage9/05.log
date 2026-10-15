@@ -1,0 +1,15 @@
+=== 自测矩阵 05 · 编辑保存后页面/API/磁盘三端一致 + 审计字段级 old→new ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage9/browser.log' 'PASS  矩阵5a 编辑区输入即时驱动预览渲染' 'PASS  矩阵5b 仅点「保存」（Ctrl/Cmd+Enter）提交到服务端' 'PASS  矩阵5c 三端一致' 'PASS  矩阵5d 保存成功有中文提示' 'PASS  矩阵5e 刷新后 K 列摘要与面板内容仍为该 note' 'PASS  矩阵5f 审计沿用既有 audit line' && require '/opt/wbs-rongcheng/tests/.tmp/stage9/server.log' 'PASS  矩阵05 审计记录 note 字段级 old→new' 'PASS  矩阵05 审计记录时间与操作身份' 'PASS  矩阵05 /api/history 仍为既有字段集'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵5a 编辑区输入即时驱动预览渲染
+OK    PASS  矩阵5b 仅点「保存」（Ctrl/Cmd+Enter）提交到服务端
+OK    PASS  矩阵5c 三端一致
+OK    PASS  矩阵5d 保存成功有中文提示
+OK    PASS  矩阵5e 刷新后 K 列摘要与面板内容仍为该 note
+OK    PASS  矩阵5f 审计沿用既有 audit line
+PASS=6 FAIL=0
+OK    PASS  矩阵05 审计记录 note 字段级 old→new
+OK    PASS  矩阵05 审计记录时间与操作身份
+OK    PASS  矩阵05 /api/history 仍为既有字段集
+PASS=3 FAIL=0

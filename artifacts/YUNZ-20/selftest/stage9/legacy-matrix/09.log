@@ -1,0 +1,10 @@
+=== 矩阵 09 · 并发保存 409 不覆盖 ===
+$ node tests/selfcheck.js --only conflict
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+数据目录: /opt/wbs-rongcheng/tests/.tmp/api  端口: 4199
+PASS  旧版本并发保存收到 409 conflict  :: {"ok":false,"reason":"conflict","current":1}
+PASS  数据以先到者为准，后到者未覆盖
+---
+PASS=2 FAIL=0

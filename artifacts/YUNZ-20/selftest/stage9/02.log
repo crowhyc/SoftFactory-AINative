@@ -1,0 +1,13 @@
+=== 自测矩阵 02 · 摘要去 Markdown 与截断（纯逻辑 + DOM 单行省略） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage9/browser.log' 'PASS  矩阵2a 摘要为去 Markdown 的纯文本' 'PASS  矩阵2b 摘要按约 80 字符截断' 'PASS  矩阵2c 短摘要不截断' 'PASS  矩阵2d 页面 K 单元格显示该 note 的去 Markdown 摘要' 'PASS  矩阵2e 单元格摘要按单行截断渲染' 'PASS  矩阵2f 超长 note 在单元格内单行截断' && require '/opt/wbs-rongcheng/tests/.tmp/stage9/server.log' 'PASS  矩阵02/06 note 允许为空'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵2a 摘要为去 Markdown 的纯文本
+OK    PASS  矩阵2b 摘要按约 80 字符截断
+OK    PASS  矩阵2c 短摘要不截断
+OK    PASS  矩阵2d 页面 K 单元格显示该 note 的去 Markdown 摘要
+OK    PASS  矩阵2e 单元格摘要按单行截断渲染
+OK    PASS  矩阵2f 超长 note 在单元格内单行截断
+PASS=6 FAIL=0
+OK    PASS  矩阵02/06 note 允许为空
+PASS=1 FAIL=0

@@ -1,0 +1,10 @@
+=== 矩阵 12b · 页面导出入口保留模板列宽（D-1 回归） ===
+$ node tests/domcheck.mjs --only exportpage
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+ARTIFACT page_export_file=/opt/wbs-rongcheng/tests/.tmp/page-export.xlsx
+ARTIFACT page_export_sha256=c46215712c3e93d2ce054cb8ecb2ce7fa2deb6128bbc00ddd59b823a6c0cfb6c
+PASS  矩阵12b 页面「导出 Excel」入口产物含 <cols> 且 A–K 列宽与模板逐列一致  :: 蓉城战役WBS-20261015.xlsx · K=47.2592592592593 · 1172811 字节 · <col> 16384 条 · sha256 c46215712c3e93d2…
+---
+PASS=1 FAIL=0

@@ -1,0 +1,11 @@
+=== 自测矩阵 01 · K 列点击打开编辑面板（摘要单元格、整格可点、面板初始值） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage9/browser.log' 'PASS  矩阵1a K 列显示纯文本摘要单元格' 'PASS  矩阵1b 有编辑权限的行给出「点击打开编辑」样式' 'PASS  矩阵1c 点击 K 单元格打开大尺寸编辑面板' 'PASS  矩阵1d 面板编辑区初始值 = 该行 note' 'PASS  矩阵1e 整格可视区域可点击' 'PASS  矩阵1f 面板「关闭」按钮可关闭面板'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵1a K 列显示纯文本摘要单元格
+OK    PASS  矩阵1b 有编辑权限的行给出「点击打开编辑」样式
+OK    PASS  矩阵1c 点击 K 单元格打开大尺寸编辑面板
+OK    PASS  矩阵1d 面板编辑区初始值 = 该行 note
+OK    PASS  矩阵1e 整格可视区域可点击
+OK    PASS  矩阵1f 面板「关闭」按钮可关闭面板
+PASS=6 FAIL=0
