@@ -1,0 +1,27 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+--- 容器与绑定 ---
+PASS  D-01 现场容器 wbs-rongcheng 运行中
+      running image: wbs-rongcheng:20261015181021
+PASS  D-02 网络模式为 host（宿主 0.0.0.0:4180）
+PASS  D-03 容器健康状态 healthy
+PASS  D-04 宿主监听 :4180（监听套接字存在）
+--- 三端 health ---
+PASS  D-05 127.0.0.1:4180/api/health ok
+PASS  D-06 0.0.0.0:4180/api/health ok
+      公网实测: {"ok":true,"service":"wbs-rongcheng","revision":10}
+PASS  D-07 公网 health（安全组未放行不据此判缺陷，仅记录实测）
+--- 镜像内容 ---
+PASS  D-08 镜像内无 node_modules / package-lock.json
+--- 资源 sha256 三方一致（服务端返回 / 运行目录 / 源码快照）---
+PASS  D-09 server.js 运行目录 == 源码快照 == 容器（服务端不对外返回）
+PASS  D-09 public/app.js 运行目录 == 源码快照 == 服务端返回 == 容器
+PASS  D-09 public/index.html 运行目录 == 源码快照 == 服务端返回 == 容器
+PASS  D-09 public/styles.css 运行目录 == 源码快照 == 服务端返回 == 容器
+PASS  D-09 public/vendor/xlsx.full.min.js 运行目录 == 源码快照 == 服务端返回 == 容器
+PASS  D-09 public/template.xlsx 运行目录 == 源码快照 == 服务端返回 == 容器
+--- 现场数据未被本轮改动 ---
+PASS  D-10 现场 revision 仍为 10（复验窗口无写入）
+--- 静态补充：日报 xlsx 组装代码已移除 ---
+PASS  D-11 前端 app.js 无日报 xlsx 组装符号（buildDailyWorkbook/dailyBytes/DAILY_SHEET_NAMES）
+
+[deploy-consistency] PASS=16 FAIL=0

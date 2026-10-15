@@ -1,0 +1,47 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  ISOA-01 点「导出日报」打开弹层（可见 + role=dialog + aria-modal=true）  :: {"panelVisible":true,"roleAttr":"dialog","modal":"true"}
+PASS  ISOA-02 弹层文本 == /api/daily text.body 逐字一致  :: null
+PASS  ISOA-03 弹层文本 == 独立构造的期望文本逐字一致  :: null
+PASS  ISOA-04 文本块为只读展示（PRE + pre-wrap + 非 contenteditable + 可聚焦）  :: {"tag":"PRE","ws":"pre-wrap","ce":false,"tabindex":"0"}
+PASS  ISOA-05 文本块可聚焦（focus 后 activeElement 命中自身）  :: {"focusOk":true}
+PASS  ISOA-06 打开弹层不产生任何下载（无 createObjectURL / 无 a[download] 点击 / 无 download 事件）  :: {"blob":0,"anchor":0,"downloads":[]}
+PASS  ISOA-07 全程无 xlsx / octet-stream 响应（无日报文件下载）  :: []
+PASS  ISOA-08 前端不再暴露日报 xlsx 组装 API（buildDailyWorkbook / dailyBytes 均为 undefined）  :: {"build":"undefined","bytes":"undefined"}
+PASS  ISOA-09 概况行计数与事件行数一致（延期/阻塞）  :: {"first":"今日延期 5 项 / 阻塞 3 项","lineCount":9,"exp":{"overview":"今日延期 5 项 / 阻塞 3 项","delayedCount":5,"blockedCount":3,"lines":["【延期·高风险】甲级 / 甲子 / 设计任务 @王言：设计 10-12 到期未更新，判定延期。","【延期·高风险】甲级 / 甲子 / 设计任务 @王言：开发延期。","【延期·高风险】乙级 / 乙子 / 开发任务 @李明：测试延期。","【延期·高风险】丁级 / 丁子 / 多事件任务 @郑述文：设计延期。","【延期·高风险】丁级 / 丁子 / 多事件任务 @郑述文：开发延期。","【阻塞·高风险】乙级 / 乙子 / 开发任务 @李明：设计更新为阻塞。","【阻塞·高风险】乙级 / 乙子 / 开发任务 @李明：开发阻塞。","【阻塞·高风险】丁级 / 丁子 / 多事件任务 @郑述文：测试更新为阻塞。"],"body":"今日延期 5 项 / 阻塞 3 项\n【延期·高风险】甲级 / 甲子 / 设计任务 @王言：设计 10-12 到期未更新，判定延期。\n【延期·高风险】甲级 / 甲子 / 设计任务 @王言：开发延期。\n【延期·高风险】乙级 / 乙子 / 开发任务 @李明：测试延期。\n【延期·高风险】丁级 / 丁子 / 多事件任务 @郑述文：设计延期。\n【延期·高风险】丁级 / 丁子 / 多事件任务 @郑述文：开发延期。\n【阻塞·高风险】乙级 / 乙子 / 开发任务 @李明：设计更新为阻塞。\n【阻塞·高风险】乙级 / 乙子 / 开发任务 @李明：开发阻塞。\n【阻塞·高风险】丁级 / 丁子 / 多事件任务 @郑述文：测试更新为阻塞。"}}
+PASS  ISOA-10 无事件兜底不出现（isoA 有事件）  :: "今日延期 5 项 / 阻塞 3 项"
+PASS  ISOA-11 文本不含「完成」「普通」类条目  :: []
+PASS  ISOA-12 排序：延期条目全部在阻塞条目之前  :: ["延期·高风险","延期·高风险","延期·高风险","延期·高风险","延期·高风险","阻塞·高风险","阻塞·高风险","阻塞·高风险"]
+PASS  ISOA-13 事件行逐字模板【前缀】一级 / 二级 / 任务项 @负责人：结论。  :: []
+PASS  ISOA-14 弹层文本行 == /api/daily text.lines 逐行一致  :: null
+PASS  ISOA-15 路径① navigator.clipboard 成功并给出中文提示「已复制，可直接粘贴到微信」  :: {"msg1":"已复制，可直接粘贴到微信","msg1Visible":true,"calls":1}
+PASS  ISOA-16 路径① 剪贴板文本 == 弹层文本（逐字，含换行）  :: null
+PASS  ISOA-17 路径① 写入剪贴板的入参与弹层文本逐字一致  :: null
+PASS  ISOA-18 路径② navigator.clipboard 不可用时回退 execCommand("copy")（未调用 writeText）  :: {"execs":1,"clipCalls":0}
+PASS  ISOA-19 路径② 成功并给出中文提示「已复制，可直接粘贴到微信」  :: {"msg2":"已复制，可直接粘贴到微信","msg2Visible":true}
+PASS  ISOA-20 路径② execCommand 时选中的文本 == 弹层文本（逐字）  :: null
+PASS  ISOA-21 路径② 剪贴板读回文本 == 弹层文本（逐字）  :: null
+PASS  ISOA-22 关闭按钮与 Esc 均可关闭弹层  :: {"closedByButton":true,"reopened":true,"closedByEsc":true}
+PASS  ISOB-01 点「导出日报」打开弹层（可见 + role=dialog + aria-modal=true）  :: {"panelVisible":true,"roleAttr":"dialog","modal":"true"}
+PASS  ISOB-02 弹层文本 == /api/daily text.body 逐字一致  :: null
+PASS  ISOB-03 弹层文本 == 独立构造的期望文本逐字一致  :: null
+PASS  ISOB-04 文本块为只读展示（PRE + pre-wrap + 非 contenteditable + 可聚焦）  :: {"tag":"PRE","ws":"pre-wrap","ce":false,"tabindex":"0"}
+PASS  ISOB-05 文本块可聚焦（focus 后 activeElement 命中自身）  :: {"focusOk":true}
+PASS  ISOB-06 打开弹层不产生任何下载（无 createObjectURL / 无 a[download] 点击 / 无 download 事件）  :: {"blob":0,"anchor":0,"downloads":[]}
+PASS  ISOB-07 全程无 xlsx / octet-stream 响应（无日报文件下载）  :: []
+PASS  ISOB-08 前端不再暴露日报 xlsx 组装 API（buildDailyWorkbook / dailyBytes 均为 undefined）  :: {"build":"undefined","bytes":"undefined"}
+PASS  ISOB-09 概况行计数与事件行数一致（延期/阻塞）  :: {"first":"今日无阻塞、延期。","lineCount":1,"exp":{"overview":"今日无阻塞、延期。","delayedCount":0,"blockedCount":0,"lines":[],"body":"今日无阻塞、延期。"}}
+PASS  ISOB-10 无事件时整体文本仅一行「今日无阻塞、延期。」（无概况行）  :: ["今日无阻塞、延期。"]
+PASS  ISOB-11 文本不含「完成」「普通」类条目  :: []
+PASS  ISOB-12 排序：延期条目全部在阻塞条目之前  :: []
+PASS  ISOB-13 事件行逐字模板【前缀】一级 / 二级 / 任务项 @负责人：结论。  :: []
+PASS  ISOB-14 弹层文本行 == /api/daily text.lines 逐行一致  :: null
+PASS  ISOB-15 路径① navigator.clipboard 成功并给出中文提示「已复制，可直接粘贴到微信」  :: {"msg1":"已复制，可直接粘贴到微信","msg1Visible":true,"calls":1}
+PASS  ISOB-16 路径① 剪贴板文本 == 弹层文本（逐字，含换行）  :: null
+PASS  ISOB-17 路径① 写入剪贴板的入参与弹层文本逐字一致  :: null
+PASS  ISOB-18 路径② navigator.clipboard 不可用时回退 execCommand("copy")（未调用 writeText）  :: {"execs":1,"clipCalls":0}
+PASS  ISOB-19 路径② 成功并给出中文提示「已复制，可直接粘贴到微信」  :: {"msg2":"已复制，可直接粘贴到微信","msg2Visible":true}
+PASS  ISOB-20 路径② execCommand 时选中的文本 == 弹层文本（逐字）  :: null
+PASS  ISOB-21 路径② 剪贴板读回文本 == 弹层文本（逐字）  :: null
+PASS  ISOB-22 关闭按钮与 Esc 均可关闭弹层  :: {"closedByButton":true,"reopened":true,"closedByEsc":true}
+
+[iso-browser] PASS=44 FAIL=0

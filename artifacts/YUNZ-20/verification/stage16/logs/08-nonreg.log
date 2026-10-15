@@ -1,0 +1,18 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  N01 CH-9：进入工作台后 #identity-layer 隐藏（hidden + display:none + 无尺寸）  :: {"hidden":true,"display":"none","w":0}
+PASS  N02 CH-3：每行 5 个阶段下拉（总 20）  :: {"rows":4,"selects":20}
+PASS  N03 CH-3：阶段下拉五色映射（未开始灰/已开始蓝/已完成绿/延期红/阻塞黄）与页面一致  :: {"got":{"未开始":"rgb(158, 158, 158)","已开始":"rgb(47, 128, 237)","已完成":"rgb(39, 174, 96)","延期":"rgb(231, 76, 60)","阻塞":"rgb(255, 212, 0)"},"exp":{"未开始":"rgb(158, 158, 158)","已开始":"rgb(47, 128, 237)","已完成":"rgb(39, 174, 96)","延期":"rgb(231, 76, 60)","阻塞":"rgb(255, 212, 0)"}}
+PASS  N05 CH-5：页面不出现「是否演示范围」列/入口（导出保留见读回 ISOA-W-11）  :: {"nodes":0}
+PASS  N06 CH-6：普通负责人本人行可编辑（日期输入未 disabled）  :: {"id":"T-A1","owner":"王言","disabled":false}
+PASS  N07 CH-6：他人行只读（日期输入 disabled）  :: {"id":"T-A2","owner":"李明","disabled":true}
+PASS  N08 CH-6：点击只读单元格给出明确中文提示（无静默无反应）  :: {"hint":"当前身份「王言」对第 T-A2 行的「设计」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"}
+PASS  N09 CH-2：新增人员入口仅项目负责人可见（普通负责人不可见）  :: {"leader":true,"normal":false}
+PASS  N10 CH-1：Markdown 预览渲染（标题 / 粗体生效）  :: {"html":"<h1>标题 &lt;img src=x onerror=alert(1)&gt; &lt;script&gt;alert(1)&lt;/script&gt; <strong>粗体</strong></h1>","scripts":0,"imgs":0,"hasH1":1,"hasStrong":1}
+PASS  N11 CH-1：预览转义安全（无 script 元素、无 img 元素、注入文本按字面显示）  :: {"html":"<h1>标题 &lt;img src=x onerror=alert(1)&gt; &lt;script&gt;alert(1)&lt;/script&gt; <strong>粗体</strong></h1>","scripts":0,"imgs":0,"hasH1":1,"hasStrong":1}
+PASS  N11b CH-1：窄视口显示「编辑 / 预览」页签，切预览后编辑区隐藏、预览区显示且仍无脚本注入  :: {"tab":"preview","previewVisible":true,"editHidden":true,"scripts":0}
+PASS  N12 CH-1：关闭编辑器可正常退出（含未保存确认路径）  :: {"closed":true}
+PASS  N13 验收 10：页面无外部请求  :: []
+PASS  N14 无 pageerror  :: []
+PASS  N15 抽样全程只读（未发出任何 PUT /api/wbs）  :: []
+
+[nonreg-browser] PASS=15 FAIL=0

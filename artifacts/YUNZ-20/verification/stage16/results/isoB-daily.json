@@ -1,0 +1,35 @@
+{
+  "ok": true,
+  "date": "2026-10-15",
+  "tz": "Asia/Shanghai",
+  "summary": [
+    {
+      "line": "今日无阻塞、延期或变更。",
+      "importance": "",
+      "conclusion": "",
+      "level1": "",
+      "level2": "",
+      "task": "",
+      "owner": "",
+      "at": "",
+      "basis": ""
+    }
+  ],
+  "blocked": [],
+  "changes": [],
+  "text": {
+    "date": "2026-10-15",
+    "tz": "Asia/Shanghai",
+    "delayedCount": 0,
+    "blockedCount": 0,
+    "overview": "今日无阻塞、延期。",
+    "lines": [],
+    "events": [],
+    "body": "今日无阻塞、延期。"
+  },
+  "counts": {
+    "summary": 1,
+    "blocked": 0,
+    "changes": 0
+  }
+}

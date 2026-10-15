@@ -1,0 +1,19 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+--- 自报 sha256 独立复算 ---
+PASS  A-claim server.js == 自报值（运行目录）
+PASS  A-claim server.js 运行目录 == 源码快照
+PASS  A-claim public/index.html == 自报值（运行目录）
+PASS  A-claim public/index.html 运行目录 == 源码快照
+PASS  A-claim public/app.js == 自报值（运行目录）
+PASS  A-claim public/app.js 运行目录 == 源码快照
+PASS  A-claim public/styles.css == 自报值（运行目录）
+PASS  A-claim public/styles.css 运行目录 == 源码快照
+--- 交付目录与自测证据 ---
+PASS  A-01 自测目录 artifacts/YUNZ-20/selftest/stage15 存在且含 README + 01..10.log
+PASS  A-02 运行目录 public/ 与源码快照逐字一致（diff -rq）
+--- 提交范围 ---
+PASS  A-03 提交 b25996c 只改 artifacts/YUNZ-20（范围外文件数 0）
+PASS  A-04 提交 b25996c 存在（变更包 #6 实现与自测）
+PASS  A-05 提交内 SHA256SUMS 含 stage15 条目（>=10）
+
+[author-claims] PASS=13 FAIL=0

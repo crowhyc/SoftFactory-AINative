@@ -1,0 +1,28 @@
+{
+  "pass": 22,
+  "fail": 0,
+  "log": [
+    "PASS  API-01 现场 /api/health ok 且带 revision  :: {\"ok\": true, \"service\": \"wbs-rongcheng\", \"revision\": 10}",
+    "PASS  API-02 现场 /api/history 仍可用（ok + records）  :: {\"count\": 236}",
+    "PASS  API-03 现场 /api/daily 返回 text.body 单字符串（与弹层同源）  :: {\"len\": 2018}",
+    "PASS  API-04 现场 text.lines 数 == delayedCount + blockedCount == 事件行数  :: {\"lines\": 51, \"delayed\": 51, \"blocked\": 0, \"bodyLines\": 52}",
+    "PASS  API-05 现场 text.overview == body 首行  :: {\"first\": \"今日延期 51 项 / 阻塞 0 项\", \"overview\": \"今日延期 51 项 / 阻塞 0 项\"}",
+    "PASS  API-06 现场 /api/daily 不含任何文件 / 下载字段（无 fileName / bytes / xlsx）  :: null",
+    "PASS  API-07 现场不再存在日报文件端点（/api/daily.xlsx 非 200）  :: {\"code\": 404}",
+    "PASS  API-08 隔离实例启动（WBS_HOST=0.0.0.0，绑 127.0.0.1:4263）  :: null",
+    "PASS  API-09 隔离实例初始 revision == 10  :: {\"revision\": 10}",
+    "PASS  API-10 缺 If-Match → 409 conflict  :: {\"code\": 409, \"r\": {\"ok\": false, \"reason\": \"conflict\", \"current\": 10}}",
+    "PASS  API-11 过期 If-Match → 409 且不覆盖  :: {\"code\": 409, \"r\": {\"ok\": false, \"reason\": \"conflict\", \"current\": 10}}",
+    "PASS  API-12 非法 payload → 400 且不落盘（wbs.json 逐字节不变）  :: {\"code\": 400, \"errors\": [{\"id\": \"T-A1\", \"field\": \"phases.design\", \"message\": \"阶段进度必须是 未开始 / 已开始 / 已完成 / 延期 / 阻塞 之一\"}], \"unchanged\": true}",
+    "PASS  API-13 合法 PUT → 200 {ok, revision}  :: {\"code\": 200, \"r\": {\"ok\": true, \"revision\": 11}}",
+    "PASS  API-14 保留项：服务端审计继续写入（audit.log 新增一条含 old/new/snapshot）  :: {\"added\": 1, \"keys\": [\"added\", \"changed\", \"identity\", \"new\", \"old\", \"removed\", \"revision\", \"snapshot\", \"ts\"]}",
+    "PASS  API-15 /api/history 反映本次变更（T-A2 phases.design.status → 已完成）  :: {\"matched\": 1}",
+    "PASS  API-16 变更后 dailyText 即时重算：T-A2 设计行消失（已完成不判延期 / 不判阻塞）  :: [\"今日延期 5 项 / 阻塞 2 项\", \"【延期·高风险】甲级 / 甲子 / 设计任务 @王言：设计 10-12 到期未更新，判定延期。\", \"【延期·高风险】甲级 / 甲子 / 设计任务 @王言：开发延期。\", \"【延期·高风险】乙级 / 乙子 / 开发任务 @李明：测试延期。\"]",
+    "PASS  API-17 项目负责人新增人员 → 200  :: {\"code\": 200, \"r\": {\"ok\": true, \"revision\": 12}}",
+    "PASS  API-18 保留项：identity_added 审计仍写入  :: {\"added\": 2}",
+    "PASS  API-19 /api/history 含身份新增记录（field=人员池）  :: {\"matched\": 2}",
+    "PASS  API-20 非项目负责人新增人员 → 403 且不落盘  :: {\"code\": 403, \"r\": {\"ok\": false, \"reason\": \"forbidden\", \"message\": \"仅项目负责人可以新增人员\", \"errors\": [{\"id\": null, \"field\": \"identities\", \"message\": \"仅项目负责人可以新增人员\"}]}}",
+    "PASS  API-21 原子写无 .tmp 残留  :: []",
+    "PASS  API-22 重启后数据持久（revision=12、T-A2 设计=已完成、新增人员仍在）  :: {\"revision\": 12, \"tasks\": 4}"
+  ]
+}

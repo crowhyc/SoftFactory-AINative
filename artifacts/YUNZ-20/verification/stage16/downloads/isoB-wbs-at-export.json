@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "name": "1023 蓉城战役 WBS 清单",
+    "revision": 10,
+    "updated_at": "2026-10-15T04:04:05.369Z",
+    "source": "1023 蓉城战役 WBS 清单.xlsx"
+  },
+  "identities": [
+    "项目负责人",
+    "王言",
+    "李明",
+    "张航瑞",
+    "郑述文",
+    "系统迁移"
+  ],
+  "tasks": [
+    {
+      "id": "T-B1",
+      "level1": "戊级",
+      "level2": "戊子",
+      "task": "未来任务",
+      "owner": "王言",
+      "demo": "",
+      "dates": {
+        "design": "2026-11-14",
+        "dev": "2026-11-17",
+        "test": "2026-11-20",
+        "product": "2026-11-23",
+        "demo_prep": "2026-11-26"
+      },
+      "note": "",
+      "status": "进行中",
+      "phases": {
+        "design": "未开始",
+        "dev": "已开始",
+        "test": "未开始",
+        "product": "未开始",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "T-B2",
+      "level1": "己级",
+      "level2": "己子",
+      "task": "空日期任务",
+      "owner": "李明",
+      "demo": "",
+      "dates": {
+        "design": "",
+        "dev": "",
+        "test": "",
+        "product": "",
+        "demo_prep": ""
+      },
+      "note": "",
+      "status": "进行中",
+      "phases": {
+        "design": "未开始",
+        "dev": "未开始",
+        "test": "未开始",
+        "product": "未开始",
+        "demo_prep": "未开始"
+      }
+    }
+  ]
+}

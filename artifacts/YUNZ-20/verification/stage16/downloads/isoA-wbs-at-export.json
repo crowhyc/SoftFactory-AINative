@@ -1,0 +1,114 @@
+{
+  "meta": {
+    "name": "1023 蓉城战役 WBS 清单",
+    "revision": 10,
+    "updated_at": "2026-10-15T04:04:05.369Z",
+    "source": "1023 蓉城战役 WBS 清单.xlsx"
+  },
+  "identities": [
+    "项目负责人",
+    "王言",
+    "李明",
+    "张航瑞",
+    "郑述文",
+    "系统迁移"
+  ],
+  "tasks": [
+    {
+      "id": "T-A1",
+      "level1": "甲级",
+      "level2": "甲子",
+      "task": "设计任务",
+      "owner": "王言",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-12",
+        "dev": "2026-10-13",
+        "test": "2026-10-14",
+        "product": "2026-10-06",
+        "demo_prep": ""
+      },
+      "note": "",
+      "status": "进行中",
+      "phases": {
+        "design": "未开始",
+        "dev": "延期",
+        "test": "未开始",
+        "product": "已完成",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "T-A2",
+      "level1": "乙级",
+      "level2": "乙子",
+      "task": "开发任务",
+      "owner": "李明",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-10",
+        "dev": "",
+        "test": "2026-10-20",
+        "product": "2026-10-22",
+        "demo_prep": ""
+      },
+      "note": "",
+      "status": "进行中",
+      "phases": {
+        "design": "阻塞",
+        "dev": "阻塞",
+        "test": "延期",
+        "product": "未开始",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "T-A3",
+      "level1": "丙级",
+      "level2": "丙子",
+      "task": "已完结任务",
+      "owner": "张航瑞",
+      "demo": "",
+      "dates": {
+        "design": "2026-09-25",
+        "dev": "2026-09-27",
+        "test": "2026-09-30",
+        "product": "2026-10-03",
+        "demo_prep": "2026-10-05"
+      },
+      "note": "",
+      "status": "进行中",
+      "phases": {
+        "design": "已完成",
+        "dev": "已完成",
+        "test": "已完成",
+        "product": "已完成",
+        "demo_prep": "已完成"
+      }
+    },
+    {
+      "id": "T-A4",
+      "level1": "丁级",
+      "level2": "丁子",
+      "task": "多事件任务",
+      "owner": "郑述文",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-18",
+        "dev": "2026-10-14",
+        "test": "",
+        "product": "",
+        "demo_prep": ""
+      },
+      "note": "",
+      "status": "进行中",
+      "phases": {
+        "design": "延期",
+        "dev": "延期",
+        "test": "阻塞",
+        "product": "未开始",
+        "demo_prep": "未开始"
+      }
+    }
+  ]
+}

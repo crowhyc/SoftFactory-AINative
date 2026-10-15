@@ -1,0 +1,166 @@
+{
+  "base": "http://127.0.0.1:4265",
+  "checks": [
+    {
+      "id": "N01 CH-9：进入工作台后 #identity-layer 隐藏（hidden + display:none + 无尺寸）",
+      "ok": true,
+      "detail": {
+        "hidden": true,
+        "display": "none",
+        "w": 0
+      }
+    },
+    {
+      "id": "N02 CH-3：每行 5 个阶段下拉（总 20）",
+      "ok": true,
+      "detail": {
+        "rows": 4,
+        "selects": 20
+      }
+    },
+    {
+      "id": "N03 CH-3：阶段下拉五色映射（未开始灰/已开始蓝/已完成绿/延期红/阻塞黄）与页面一致",
+      "ok": true,
+      "detail": {
+        "got": {
+          "未开始": "rgb(158, 158, 158)",
+          "已开始": "rgb(47, 128, 237)",
+          "已完成": "rgb(39, 174, 96)",
+          "延期": "rgb(231, 76, 60)",
+          "阻塞": "rgb(255, 212, 0)"
+        },
+        "exp": {
+          "未开始": "rgb(158, 158, 158)",
+          "已开始": "rgb(47, 128, 237)",
+          "已完成": "rgb(39, 174, 96)",
+          "延期": "rgb(231, 76, 60)",
+          "阻塞": "rgb(255, 212, 0)"
+        }
+      }
+    },
+    {
+      "id": "N05 CH-5：页面不出现「是否演示范围」列/入口（导出保留见读回 ISOA-W-11）",
+      "ok": true,
+      "detail": {
+        "nodes": 0
+      }
+    },
+    {
+      "id": "N06 CH-6：普通负责人本人行可编辑（日期输入未 disabled）",
+      "ok": true,
+      "detail": {
+        "id": "T-A1",
+        "owner": "王言",
+        "disabled": false
+      }
+    },
+    {
+      "id": "N07 CH-6：他人行只读（日期输入 disabled）",
+      "ok": true,
+      "detail": {
+        "id": "T-A2",
+        "owner": "李明",
+        "disabled": true
+      }
+    },
+    {
+      "id": "N08 CH-6：点击只读单元格给出明确中文提示（无静默无反应）",
+      "ok": true,
+      "detail": {
+        "hint": "当前身份「王言」对第 T-A2 行的「设计」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"
+      }
+    },
+    {
+      "id": "N09 CH-2：新增人员入口仅项目负责人可见（普通负责人不可见）",
+      "ok": true,
+      "detail": {
+        "leader": true,
+        "normal": false
+      }
+    },
+    {
+      "id": "N10 CH-1：Markdown 预览渲染（标题 / 粗体生效）",
+      "ok": true,
+      "detail": {
+        "html": "<h1>标题 &lt;img src=x onerror=alert(1)&gt; &lt;script&gt;alert(1)&lt;/script&gt; <strong>粗体</strong></h1>",
+        "scripts": 0,
+        "imgs": 0,
+        "hasH1": 1,
+        "hasStrong": 1
+      }
+    },
+    {
+      "id": "N11 CH-1：预览转义安全（无 script 元素、无 img 元素、注入文本按字面显示）",
+      "ok": true,
+      "detail": {
+        "html": "<h1>标题 &lt;img src=x onerror=alert(1)&gt; &lt;script&gt;alert(1)&lt;/script&gt; <strong>粗体</strong></h1>",
+        "scripts": 0,
+        "imgs": 0,
+        "hasH1": 1,
+        "hasStrong": 1
+      }
+    },
+    {
+      "id": "N11b CH-1：窄视口显示「编辑 / 预览」页签，切预览后编辑区隐藏、预览区显示且仍无脚本注入",
+      "ok": true,
+      "detail": {
+        "tab": "preview",
+        "previewVisible": true,
+        "editHidden": true,
+        "scripts": 0
+      }
+    },
+    {
+      "id": "N12 CH-1：关闭编辑器可正常退出（含未保存确认路径）",
+      "ok": true,
+      "detail": {
+        "closed": true
+      }
+    },
+    {
+      "id": "N13 验收 10：页面无外部请求",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "id": "N14 无 pageerror",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "id": "N15 抽样全程只读（未发出任何 PUT /api/wbs）",
+      "ok": true,
+      "detail": []
+    }
+  ],
+  "page_errors": [],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4265/",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/styles.css",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/vendor/xlsx.full.min.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/app.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/api/wbs",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/api/health",
+      "method": "GET"
+    }
+  ],
+  "puts": [],
+  "pass": 15,
+  "fail": 0
+}
