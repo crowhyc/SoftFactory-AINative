@@ -107,6 +107,42 @@ button, input, select { font: inherit; color: inherit; }
   padding: 20px;
   box-shadow: 0 18px 40px rgba(31, 36, 48, .22);
 }
+/* CH-13：日报「一键可复制关键信息文本」弹层（沿用 modal 视觉体系；只读文本块保留换行）。 */
+.daily-card { max-width: 760px; }
+.daily-text {
+  margin: 0;
+  max-height: 46vh;
+  overflow: auto;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.daily-text:focus { outline: 2px solid var(--brand); outline-offset: 1px; }
+/* 复制结果提示：成功=绿、失败=红（与 .banner.ok / .banner.error 同一色系）。 */
+.daily-msg {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 12px;
+}
+.daily-msg.error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
 .modal-card h2 { margin: 0 0 4px; font-size: 17px; }
 .modal-sub { margin: 0 0 12px; color: var(--muted); font-size: 12px; }
 .modal-card input {

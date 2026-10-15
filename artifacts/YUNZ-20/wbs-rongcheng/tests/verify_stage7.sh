@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # YUNZ-27 / 变更包 #2：新增作者自测矩阵（01–14）总入口。
 # 覆盖变更 CH-1…CH-7：操作列/日期状态常显/负责人池化/新增人员/日报导出/导出日期标签/新增人员写审计。
+# CH-13 同步（YUNZ-35 / 变更包 #6）：日报条目由 xlsx 口径同步为「一键可复制关键信息文本」弹层（矩阵7 / 8a / 14c）。
 # 浏览器项跑在 playwright Chromium 容器内（宿主 CentOS 7 无法直接跑 Chromium），
 # 服务端项用 Node 标准库脚本；每项留独立日志，完整输出见 $OUT。
 # 用法：bash tests/verify_stage7.sh [输出目录]
@@ -86,10 +87,10 @@ run_item 05 "负责人下拉＝人员池；项目负责人可改派、普通负�
   "require '$BROWSER_LOG' 'PASS  矩阵5 负责人列为下拉、选项＝当前人员池' 'PASS  矩阵5b 项目负责人改派负责人' 'PASS  矩阵5d 普通负责人负责人列只读'"
 run_item 06 "新增人员：非空/去重/1–20 校验；立即生效；返回首页同步；落盘" \
   "require '$BROWSER_LOG' 'PASS  矩阵6a 项目负责人可见「新增人员」入口' 'PASS  矩阵6b 姓名非空校验' 'PASS  矩阵6c 姓名长度 1–20 校验' 'PASS  矩阵6d 姓名去重校验' 'PASS  矩阵6e 合法姓名加入成功' 'PASS  矩阵6f 新增人员立即出现在身份切换' 'PASS  矩阵6g 新增人员已落盘 wbs.json' 'PASS  矩阵6h 返回首页后身份列表同步' 'PASS  矩阵6i 返回首页后可用新增身份重进工作台' && require '$SERVER_LOG' 'PASS  矩阵6a 人员池新增落盘' 'PASS  矩阵6b 服务端拒绝空白 / 重复 / 超长'"
-run_item 07 "日报「阻塞与延期」sheet：仅延期/阻塞行，A–K + 五进度列（两 sheet 口径）" \
-  "require '$BROWSER_LOG' 'PASS  矩阵7a 日报文件名与日期口径正确' 'PASS  矩阵7b 日报为单个 workbook、两个 sheet' 'PASS  矩阵7c 阻塞与延期表头' 'PASS  矩阵7d 阻塞与延期 sheet 恰好'"
-run_item 08 "字段级改动证据：日报不再含「当日变更」sheet（CH-12），逐行 old→new 仍由 /api/history 承载" \
-  "require '$BROWSER_LOG' 'PASS  矩阵8a 日报导出的 sheet 仅今日摘要/阻塞与延期' 'PASS  矩阵8b 每行改动仍可从 /api/history 读到字段级' 'PASS  矩阵8c 同一任务的字段级记录按时间升序' && require '$SERVER_LOG' 'PASS  矩阵8a audit.log 每条记录带 old/new 映射' 'PASS  矩阵8b GET /api/history 字段级记录' 'PASS  矩阵8c 自然日口径 [00:00:00, 次日 00:00:00) 开区间'"
+run_item 07 "日报弹层（CH-13）：点「导出日报」打开只读文本弹层、只体现阻塞与延期、不再产出/下载 xlsx" \
+  "require '$BROWSER_LOG' 'PASS  矩阵7a 点「导出日报」打开只读文本弹层' 'PASS  矩阵7b 弹层只读文本块' 'PASS  矩阵7c 弹层事件行逐字' 'PASS  矩阵7d 延期条目在前' 'PASS  矩阵7e Esc 关闭日报弹层'"
+run_item 08 "字段级改动证据：日报弹层只体现阻塞/延期（CH-13 起不含当日变更明细），逐行 old→new 仍由 /api/history 承载" \
+  "require '$BROWSER_LOG' 'PASS  矩阵8a 日报弹层只体现阻塞、延期' 'PASS  矩阵8b 每行改动仍可从 /api/history 读到字段级' 'PASS  矩阵8c 同一任务的字段级记录按时间升序' && require '$SERVER_LOG' 'PASS  矩阵8a audit.log 每条记录带 old/new 映射' 'PASS  矩阵8b GET /api/history 字段级记录' 'PASS  矩阵8c 自然日口径 [00:00:00, 次日 00:00:00) 开区间'"
 run_item 09 "原 WBS 导出不含 status、第 1/2 行 A–K 逐字一致、A–K 保真" \
   "require '$BROWSER_LOG' 'PASS  矩阵9a 原 WBS 导出文件名保持' 'PASS  矩阵9b 原 WBS 导出第 1/2 行 A–K 逐字与源模板一致' 'PASS  矩阵9c 原 WBS 导出数据区不含 status' && python3 tests/export_verify.py '$BROWSER_OUT/蓉城战役WBS-'\"\$(date +%Y%m%d)\"'.xlsx' public/template.xlsx '$BROWSER_OUT/wbs-at-export.json' 36"
 run_item 10 "旧数据兼容：老 wbs.json 可读可保存；老/损坏 audit.log 不报错" \

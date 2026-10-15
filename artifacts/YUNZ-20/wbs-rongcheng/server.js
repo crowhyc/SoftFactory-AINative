@@ -598,6 +598,95 @@ function dailyOverview(doc, dateStr, tz) {
   return { date: dateStr, tz, summary, blocked: blockedTasks, changes };
 }
 
+/* ------------------------------------------------ CH-13 日报关键信息文本 */
+
+/* CH-13：日报不再产出 xlsx，改为「一键可复制的关键信息文本」，只体现阻塞与延期。
+   判定范围（服务端为准，按 tz 自然日）：
+   - 阻塞：任一阶段当前状态 = 阻塞（含当天新出现与仍处于阻塞）；
+   - 延期：任一阶段当前状态 = 延期；
+   - 派生延期：该阶段计划日期 < 今天，且今天 0 点至今该阶段未被更新（日期或状态都不是今天改的）
+     → 结论带计划日「{阶段} MM-DD 到期未更新，判定延期。」；该派生结论优先于「{阶段}延期。」。
+   同日更新过的阶段按其当前（最新）状态归类，不再派生「到期未更新」；已完成阶段不判延期、也不派生；
+   一任务多事件允许多行，各自标签与结论独立。
+   排序：延期条目在前、阻塞条目在后；同类内按任务顺序（一级 / 二级 / 任务项）与阶段顺序
+   （设计 → 开发 → 测试 → 产品 → 演示准备）稳定排列。 */
+function dailyText(doc, dateStr, tz) {
+  const records = historyRecords(dateStr, tz).filter((record) => record.field !== 'status');
+  const tasks = (doc && Array.isArray(doc.tasks)) ? doc.tasks : [];
+
+  /* 今日被更新过的阶段（dates.<key> 或 phases.<key>.status 有当日审计）。 */
+  const touched = new Map();
+  records.forEach((record) => {
+    const day = /^dates\.(.+)$/.exec(record.field);
+    const phase = /^phases\.(.+)\.status$/.exec(record.field);
+    const key = day ? day[1] : (phase ? phase[1] : null);
+    if (!key || PHASE_KEYS.indexOf(key) === -1) return;
+    if (!touched.has(record.task_id)) touched.set(record.task_id, new Set());
+    touched.get(record.task_id).add(key);
+  });
+
+  const delayed = [];
+  const blocked = [];
+  tasks.forEach((task, index) => {
+    const phases = isPlainObject(task.phases) ? task.phases : {};
+    const dates = isPlainObject(task.dates) ? task.dates : {};
+    const touchedKeys = touched.get(task.id) || new Set();
+    const base = {
+      level1: task.level1 == null ? '' : String(task.level1),
+      level2: task.level2 == null ? '' : String(task.level2),
+      task: task.task == null ? '' : String(task.task),
+      owner: task.owner == null ? '' : String(task.owner),
+      index
+    };
+    PHASE_KEYS.forEach((key, phaseIndex) => {
+      const label = PHASE_LABELS[key] || key;
+      const status = phases[key] == null ? '' : String(phases[key]);
+      const planned = dates[key] == null ? '' : String(dates[key]);
+      const event = Object.assign({}, base, { phase: key, phaseIndex, phaseLabel: label, at: '' });
+      if (status === '阻塞') {
+        const fresh = touchedKeys.has(key);
+        blocked.push(Object.assign(event, {
+          category: '阻塞',
+          conclusion: label + (fresh ? '更新为阻塞' : '阻塞'),
+          basis: fresh ? '当日阶段状态变更（阻塞）' : '当前仍处于阻塞'
+        }));
+        return;
+      }
+      /* 已完成不判延期、也不派生（阶段已收口）。 */
+      if (status === '已完成') return;
+      /* 派生优先：计划日期已过且今日 0 点至今该阶段无人更新 → 用带 MM-DD 的派生结论。 */
+      if (isValidDateString(planned) && planned < dateStr && !touchedKeys.has(key)) {
+        delayed.push(Object.assign(event, {
+          category: '延期',
+          conclusion: label + ' ' + mmdd(planned) + ' 到期未更新，判定延期',
+          basis: '计划日期早于今天且今日未更新'
+        }));
+        return;
+      }
+      if (status === '延期') {
+        delayed.push(Object.assign(event, { category: '延期', conclusion: label + '延期', basis: '当前状态为延期（计划日期未过或今日已更新）' }));
+      }
+    });
+  });
+
+  const events = delayed.concat(blocked);
+  const lines = events.map((event) => '【' + DAILY_PREFIX[event.category] + '】' + event.level1 + ' / ' + event.level2 + ' / ' +
+    event.task + ' @' + event.owner + '：' + event.conclusion + '。');
+  const overview = events.length
+    ? '今日延期 ' + delayed.length + ' 项 / 阻塞 ' + blocked.length + ' 项'
+    : '今日无阻塞、延期。';
+  return {
+    date: dateStr,
+    tz,
+    delayedCount: delayed.length,
+    blockedCount: blocked.length,
+    overview,
+    lines,
+    events,
+    body: [overview].concat(lines).join('\n')
+  };
+}
+
 /* -------------------------------------------------------------- 静态资源 */
 
 function resolveStatic(urlPath) {
@@ -822,7 +911,10 @@ function handler(req, res) {
       return;
     }
     const overview = dailyOverview(doc, date, tz);
+    /* CH-13：同一响应内追加「一键可复制的关键信息文本」（只含阻塞、延期）；旧三数据源原样保留。 */
+    const text = dailyText(doc, date, tz);
     sendJson(res, 200, Object.assign({ ok: true }, overview, {
+      text,
       counts: { summary: overview.summary.length, blocked: overview.blocked.length, changes: overview.changes.length }
     }));
     return;
@@ -864,5 +956,5 @@ module.exports = {
   handler, validateDocument, atomicWriteJson, loadDocument, STATUS_ENUM,
   diffFields, historyRecords, dayBounds, todayInTimeZone, DEFAULT_TZ
   , isValidDateString, PHASE_KEYS, PHASE_ENUM, PHASE_LABELS, MIGRATION_IDENTITY,
-  needsMigration, migrateDocument, dailyOverview, changeCategory, mmdd, compactStamp
+  needsMigration, migrateDocument, dailyOverview, dailyText, changeCategory, mmdd, compactStamp
 };

@@ -1,0 +1,24 @@
+YUNZ-33 变更包 #5（CH-11 + CH-12）作者自测开始 2026-10-15T18:38:53+0800
+node: /bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+v24.21.0  python3: Python 3.6.8  docker: Docker version 26.1.4, build 5650f9b  today: 2026-10-15
+
+--- 准备 A：真实浏览器（Chromium 容器）用例集（日报文本弹层 / WBS 不回归 / 409 / 重启） ---
+浏览器用例集退出码 0（完整输出：/opt/wbs-rongcheng/tests/.tmp/stage15/regress-stage13/browser.log）
+--- 准备 B：导出产物宿主 python 独立读回（zip/XML，不依赖 openpyxl） ---
+WBS 读回退出码 0（/opt/wbs-rongcheng/tests/.tmp/stage15/regress-stage13/readback-wbs.log） 日报已改为弹层文本（CH-13）：无日报 xlsx 读回，弹层文本断言在浏览器侧逐字比对 /api/daily.text
+
+01   日报弹层（CH-13）：点「导出日报」打开只读文本弹层（role=dialog / 复制 + 关闭），且不再产出与下载日报 xlsx 通过（PASS=1 FAIL=0）
+02   弹层文本 = /api/daily 的关键信息文本（同一份字符串）；概况行「今日延期 X 项 / 阻塞 Y 项」计数与事件行数一致，且只体现阻塞与延期 通过（PASS=3 FAIL=0）
+03   事件行逐字模板（含 @ 与高风险前缀）/ 延期在前阻塞在后 / 派生到期未更新与当天已更新不重复判定 / 无事件兜底 通过（PASS=5 FAIL=0）
+04   弹层文本不残留旧日报口径字样（当日变更 / 改动字段 / 旧值 / 新值 / 操作身份 / 重要度 / 依据） 通过（PASS=1 FAIL=0）
+05   WBS 导出不回归：五色填充 / A–K 保真 / L–P 五进度列 / Q1 导出日期标签 通过（PASS=7 FAIL=0）
+06   CH-7 identity_added 仍写审计、/api/history 与 /api/daily 数据源仍返回（CH-13 起只留在服务端、不进日报文本） 通过（PASS=2 FAIL=0）
+07   保存 / 409 / 重启持久 / 健康探针 / 无外部请求不回归 通过（PASS=4 FAIL=0）
+08   回归：既有 18 项矩阵（JS/DOM/导出；按当前部署口径跳过容器附加项） 通过（PASS=1 FAIL=0）
+09   回归：Stage7 矩阵 01–14（CH-1…CH-7 真实浏览器深度复跑） 通过（PASS=1 FAIL=0）
+10   回归：Stage9 矩阵 01–14（CH-8 大尺寸 Markdown 编辑器） 通过（PASS=1 FAIL=0）
+11   回归：Stage11 矩阵 01–14（CH-9 / CH-10 五阶段与日报重构） 通过（PASS=1 FAIL=0）
+12   部署与镜像自检（BIND_HOST=0.0.0.0 / 双端+公网 health / 无 node_modules / 资源与源码一致 / 新基线 live 冒烟） 通过（PASS=9 FAIL=0）
+
+结论：变更包 #5（CH-11 + CH-12，日报口径已由 CH-13 同步为文本弹层）作者自测矩阵 01–07 与回归项 08–12 全部通过（浏览器用例集 0）
+输出目录：/opt/wbs-rongcheng/tests/.tmp/stage15/regress-stage13

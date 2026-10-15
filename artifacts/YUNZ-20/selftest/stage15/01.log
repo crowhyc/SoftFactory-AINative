@@ -1,0 +1,7 @@
+=== 自测矩阵 01 · 弹层入口（CH-13）：点「导出日报」打开只读文本弹层（role=dialog / 复制 + 关闭），无 blob / a[download] / xlsx 组装调用 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage15/browser.log' 'PASS  矩阵01a 页面「导出日报」打开只读文本弹层' 'PASS  矩阵01b 「导出日报」不再有下载行为'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵01a 页面「导出日报」打开只读文本弹层
+OK    PASS  矩阵01b 「导出日报」不再有下载行为
+PASS=2 FAIL=0

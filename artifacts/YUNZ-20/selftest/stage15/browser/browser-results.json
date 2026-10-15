@@ -1,0 +1,328 @@
+{
+  "base": "http://127.0.0.1:4265",
+  "tz": "Asia/Shanghai",
+  "started_at": "2026-10-15T10:35:19.728Z",
+  "checks": [
+    {
+      "id": "矩阵01a 页面「导出日报」打开只读文本弹层（点击前 hidden，点击后可见；沿用 modal 视觉体系：role=dialog / aria-modal）",
+      "ok": true,
+      "detail": {
+        "panelHiddenBefore": true,
+        "hidden": false,
+        "role": "dialog",
+        "copy": true,
+        "close": true
+      }
+    },
+    {
+      "id": "矩阵01b 「导出日报」不再有下载行为：无 WBS_DOWNLOAD_HOOK 调用、无 createObjectURL、无 a[download]、无日报 xlsx 组装 API",
+      "ok": true,
+      "detail": {
+        "hook": null,
+        "objectUrls": 0,
+        "anchorDownloads": 0,
+        "xlsxApi": "undefined/undefined"
+      }
+    },
+    {
+      "id": "矩阵06 弹层只读文本块内容 = /api/daily 返回的同一份字符串（逐字一致，保留换行的 pre-wrap 只读展示）",
+      "ok": true,
+      "detail": {
+        "display": [
+          "今日延期 2 项 / 阻塞 2 项",
+          "【延期·高风险】客户端 / 业务工作台 / 业需导入 @李欢：设计 10-14 到期未更新，判定延期。",
+          "【延期·高风险】客户端 / 业务工作台 / 需求拆分 @王言：开发 10-14 到期未更新，判定延期。",
+          "【阻塞·高风险】客户端 / 业务工作台 / 需求拆分 @王言：测试阻塞。",
+          "【阻塞·高风险】客户端 / 业务工作台 / 概要设计&评审 @王言：测试更新为阻塞。"
+        ],
+        "api": [
+          "今日延期 2 项 / 阻塞 2 项",
+          "【延期·高风险】客户端 / 业务工作台 / 业需导入 @李欢：设计 10-14 到期未更新，判定延期。",
+          "【延期·高风险】客户端 / 业务工作台 / 需求拆分 @王言：开发 10-14 到期未更新，判定延期。",
+          "【阻塞·高风险】客户端 / 业务工作台 / 需求拆分 @王言：测试阻塞。",
+          "【阻塞·高风险】客户端 / 业务工作台 / 概要设计&评审 @王言：测试更新为阻塞。"
+        ],
+        "whiteSpace": "pre-wrap"
+      }
+    },
+    {
+      "id": "矩阵02 顶部概况行 = 「今日延期 X 项 / 阻塞 Y 项」，X/Y 与弹层内事件行数一致（且与 /api/daily text 计数一致）",
+      "ok": true,
+      "detail": {
+        "first": "今日延期 2 项 / 阻塞 2 项",
+        "lines": 4,
+        "counts": {
+          "delayed": 2,
+          "blocked": 2
+        }
+      }
+    },
+    {
+      "id": "矩阵06 事件行逐字命中「【延期·高风险】/【阻塞·高风险】一级 / 二级 / 任务项 @负责人：结论。」（@ 与高风险前缀保留；只含阻塞、延期）",
+      "ok": true,
+      "detail": {
+        "expect": [
+          "今日延期 2 项 / 阻塞 2 项",
+          "【延期·高风险】客户端 / 业务工作台 / 业需导入 @李欢：设计 10-14 到期未更新，判定延期。",
+          "【延期·高风险】客户端 / 业务工作台 / 需求拆分 @王言：开发 10-14 到期未更新，判定延期。",
+          "【阻塞·高风险】客户端 / 业务工作台 / 需求拆分 @王言：测试阻塞。",
+          "【阻塞·高风险】客户端 / 业务工作台 / 概要设计&评审 @王言：测试更新为阻塞。"
+        ],
+        "actual": [
+          "今日延期 2 项 / 阻塞 2 项",
+          "【延期·高风险】客户端 / 业务工作台 / 业需导入 @李欢：设计 10-14 到期未更新，判定延期。",
+          "【延期·高风险】客户端 / 业务工作台 / 需求拆分 @王言：开发 10-14 到期未更新，判定延期。",
+          "【阻塞·高风险】客户端 / 业务工作台 / 需求拆分 @王言：测试阻塞。",
+          "【阻塞·高风险】客户端 / 业务工作台 / 概要设计&评审 @王言：测试更新为阻塞。"
+        ]
+      }
+    },
+    {
+      "id": "矩阵03 弹层内延期条目在前、阻塞条目在后（同类内按任务与阶段顺序稳定排列）",
+      "ok": true,
+      "detail": [
+        "【延期·高风险】客户端 / 业务工作台 / 业需导入 @李欢：设计 10-14 到期未更新，判定延期。",
+        "【延期·高风险】客户端 / 业务工作台 / 需求拆分 @王言：开发 10-14 到期未更新，判定延期。",
+        "【阻塞·高风险】客户端 / 业务工作台 / 需求拆分 @王言：测试阻塞。",
+        "【阻塞·高风险】客户端 / 业务工作台 / 概要设计&评审 @王言：测试更新为阻塞。"
+      ]
+    },
+    {
+      "id": "矩阵04 派生「到期未更新，判定延期」入弹层（当前状态=延期但计划日期已过且今日未更新时同样用派生结论）；当天已更新过的阶段（T003 测试 / T005 设计 / T006 开发）不重复判定",
+      "ok": true,
+      "detail": {
+        "derived": [
+          "【延期·高风险】客户端 / 业务工作台 / 业需导入 @李欢：设计 10-14 到期未更新，判定延期。",
+          "【延期·高风险】客户端 / 业务工作台 / 需求拆分 @王言：开发 10-14 到期未更新，判定延期。"
+        ]
+      }
+    },
+    {
+      "id": "矩阵07a 复制成功路径：navigator.clipboard 写入真实剪贴板内容 = 弹层文本逐字一致，并提示「已复制，可直接粘贴到微信」",
+      "ok": true,
+      "detail": {
+        "clipboard": [
+          "今日延期 2 项 / 阻塞 2 项",
+          "【延期·高风险】客户端 / 业务工作台 / 业需导入 @李欢：设计 10-14 到期未更新，判定延期。"
+        ],
+        "msg": "已复制，可直接粘贴到微信"
+      }
+    },
+    {
+      "id": "矩阵07b 兜底路径：navigator.clipboard 失败时走「选择 + document.execCommand('copy')」，仍提示复制成功",
+      "ok": true,
+      "detail": {
+        "execCalls": [
+          "copy"
+        ],
+        "selectedLen": 201,
+        "msg": "已复制，可直接粘贴到微信"
+      }
+    },
+    {
+      "id": "矩阵07c 两条路径都失败时给出中文失败提示（不静默、不报错中断）",
+      "ok": true,
+      "detail": {
+        "msg": "复制失败：请手动选择文本后复制。",
+        "hidden": false
+      }
+    },
+    {
+      "id": "矩阵08a 关闭按钮可关闭弹层（并清掉复制提示）",
+      "ok": true,
+      "detail": {
+        "hidden": true,
+        "msgHidden": true
+      }
+    },
+    {
+      "id": "矩阵08b Esc 可关闭弹层（只读展示、无未保存内容，不弹确认框）",
+      "ok": true,
+      "detail": {
+        "hidden": true,
+        "confirmHidden": true,
+        "notePanelHidden": true
+      }
+    },
+    {
+      "id": "矩阵08c 打开/关闭日报弹层不影响工作台未保存编辑状态（草稿值保留、行编辑态保留、未触发任何保存、未改动磁盘）",
+      "ok": true,
+      "detail": {
+        "draft": "2026-10-12",
+        "editing": true,
+        "revision": [
+          1,
+          1
+        ],
+        "session": "身份：项目负责人 · 版本：1 · 有未保存修改"
+      }
+    },
+    {
+      "id": "矩阵05 无任何阻塞/延期时弹层整体文本只有一行「今日无阻塞、延期。」（无概况行；与 /api/daily 一致）",
+      "ok": true,
+      "detail": {
+        "display": "今日无阻塞、延期。",
+        "api": {
+          "date": "2026-10-15",
+          "tz": "Asia/Shanghai",
+          "delayedCount": 0,
+          "blockedCount": 0,
+          "overview": "今日无阻塞、延期。",
+          "lines": [],
+          "events": [],
+          "body": "今日无阻塞、延期。"
+        }
+      }
+    },
+    {
+      "id": "矩阵09 回归 全程无外部资源请求（无 CDN / 外链 / 远程图片）且无 pageerror（日报弹层不引入任何外链）",
+      "ok": true,
+      "detail": {
+        "requests": 29,
+        "external": [],
+        "pageerrors": []
+      }
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4265/",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/styles.css",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/vendor/xlsx.full.min.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/app.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/api/wbs",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/api/health",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/styles.css",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/vendor/xlsx.full.min.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/app.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/api/wbs",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/api/health",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/api/wbs",
+      "method": "PUT"
+    },
+    {
+      "url": "http://127.0.0.1:4265/api/daily?tz=Asia%2FShanghai&date=2026-10-15",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/api/daily?tz=Asia%2FShanghai&date=2026-10-15",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4265/api/daily?tz=Asia%2FShanghai&date=2026-10-15",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4266/",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4266/styles.css",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4266/vendor/xlsx.full.min.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4266/app.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4266/api/wbs",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4266/api/health",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4266/",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4266/styles.css",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4266/vendor/xlsx.full.min.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4266/app.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4266/api/wbs",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4266/api/health",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4266/api/daily?tz=Asia%2FShanghai&date=2026-10-15",
+      "method": "GET"
+    }
+  ],
+  "browser_version": "140.0.7339.16",
+  "opened": {
+    "hidden": false,
+    "dialogRole": "dialog",
+    "ariaModal": "true",
+    "label": "今日阻塞与延期",
+    "text": "今日延期 2 项 / 阻塞 2 项\n【延期·高风险】客户端 / 业务工作台 / 业需导入 @李欢：设计 10-14 到期未更新，判定延期。\n【延期·高风险】客户端 / 业务工作台 / 需求拆分 @王言：开发 10-14 到期未更新，判定延期。\n【阻塞·高风险】客户端 / 业务工作台 / 需求拆分 @王言：测试阻塞。\n【阻塞·高风险】客户端 / 业务工作台 / 概要设计&评审 @王言：测试更新为阻塞。",
+    "whiteSpace": "pre-wrap",
+    "readOnly": "PRE",
+    "copyBtn": true,
+    "closeBtn": true,
+    "downloadHookCalls": null,
+    "objectUrls": 0,
+    "anchorDownloads": 0,
+    "dailyXlsxApi": "undefined/undefined",
+    "banner": "保存成功，服务器版本号已更新为 1（页面、API、磁盘三端一致）。"
+  },
+  "checks_summary": {
+    "pass": 15,
+    "fail": 0
+  }
+}

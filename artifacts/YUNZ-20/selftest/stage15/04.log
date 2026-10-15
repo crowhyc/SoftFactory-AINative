@@ -1,0 +1,11 @@
+=== 自测矩阵 04 · 内容范围：派生「到期未更新，判定延期」；当天已更新过的阶段不重复判定；边界（今天 / 空日期 / 已完成）与阻塞范围（当天新出现 + 仍阻塞） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage15/browser.log' 'PASS  矩阵04 派生「到期未更新，判定延期」入弹层' && require '/opt/wbs-rongcheng/tests/.tmp/stage15/textcheck.log' 'PASS  矩阵04 派生规则' 'PASS  矩阵04 去重规则' 'PASS  矩阵04 边界与抑制' 'PASS  矩阵04 阻塞范围含'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵04 派生「到期未更新，判定延期」入弹层
+PASS=1 FAIL=0
+OK    PASS  矩阵04 派生规则
+OK    PASS  矩阵04 去重规则
+OK    PASS  矩阵04 边界与抑制
+OK    PASS  矩阵04 阻塞范围含
+PASS=4 FAIL=0

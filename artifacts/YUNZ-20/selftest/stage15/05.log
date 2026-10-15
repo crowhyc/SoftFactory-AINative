@@ -1,0 +1,8 @@
+=== 自测矩阵 05 · 无事件兜底：整体文本只有一行「今日无阻塞、延期。」（无概况行；与 /api/daily 一致） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage15/browser.log' 'PASS  矩阵05 无任何阻塞/延期时' && require '/opt/wbs-rongcheng/tests/.tmp/stage15/textcheck.log' 'PASS  矩阵05 无任何阻塞/延期时'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵05 无任何阻塞/延期时
+PASS=1 FAIL=0
+OK    PASS  矩阵05 无任何阻塞/延期时
+PASS=1 FAIL=0

@@ -1,5 +1,8 @@
 'use strict';
 /* YUNZ-31 / 变更包 #4（CH-9 隐藏演示范围列 + CH-10 五阶段独立进度 / WBS 与日报重构）真实浏览器自测。
+   CH-13 同步（YUNZ-35 / 变更包 #6）：日报不再产出 xlsx，改为「一键可复制关键信息文本」弹层；
+   本套件中编码日报 xlsx（今日摘要 A 列 / 两 sheet）的断言已按 CH-13 契约同步为弹层文本断言，
+   服务端 /api/daily 的 summary/blocked/changes 数据源断言保持不变（断言强度未降低）。
    运行环境：mcr.microsoft.com/playwright:v1.55.0-jammy 容器（chromium 140，与 playwright 1.55.0 对齐）；
    宿主为 CentOS 7（glibc 2.17），无法直接运行该 Chromium，浏览器只在测试容器内运行，不进产物、不进镜像。
    被测服务（server.js）由本脚本自行 spawn（隔离数据目录 + 迁移前构造边界数据），结束后回收；
@@ -175,6 +178,35 @@ function craftedSeed(today) {
       const captured = await page.evaluate(() => window.__cap);
       if (captured && fileName) fs.writeFileSync(path.join(OUTDIR, fileName), Buffer.from(captured.b64, 'base64'));
       return captured;
+    };
+    /* CH-13：日报弹层采集（打开弹层 → 读文本 + 采集「无下载」证据 → 返回 /api/daily 快照）。 */
+    const openDailyText = async () => {
+      await page.evaluate(() => {
+        window.__cap = null;
+        window.__objUrls = 0;
+        window.WBS_DOWNLOAD_HOOK = (bytes, name) => { window.__cap = { name: name, length: bytes.length }; };
+        const create = window.URL.createObjectURL.bind(window.URL);
+        window.URL.createObjectURL = function (blob) { window.__objUrls += 1; return create(blob); };
+      });
+      await page.click('#daily-btn');
+      await page.waitForFunction(() => document.getElementById('daily-panel').hidden === false, null, { timeout: 15000 });
+      await page.waitForTimeout(200);
+      const view = await page.evaluate(() => ({
+        text: document.getElementById('daily-text').textContent,
+        whiteSpace: getComputedStyle(document.getElementById('daily-text')).whiteSpace,
+        role: (document.querySelector('#daily-panel .modal-card') || {}).getAttribute
+          ? document.querySelector('#daily-panel .modal-card').getAttribute('role') : null,
+        hook: window.__cap,
+        objectUrls: window.__objUrls,
+        anchors: document.querySelectorAll('a[download]').length,
+        xlsxApi: typeof window.WBSCore.buildDailyWorkbook + '/' + typeof window.WBSCore.dailyBytes
+      }));
+      const payload = (await api('/api/daily?tz=' + TZ + '&date=' + today)).body;
+      return { view: view, api: payload };
+    };
+    const closeDailyText = async () => {
+      await page.keyboard.press('Escape');
+      await page.waitForFunction(() => document.getElementById('daily-panel').hidden === true, null, { timeout: 15000 });
     };
 
     /* ============ 迁移（启动即一次性执行，隔离实例） ============ */
@@ -389,15 +421,29 @@ function craftedSeed(today) {
       ranks.join(',') === ranks.slice().sort((a, b) => a - b).join(',') &&
       daily.summary.filter((row) => row.task === '详细设计与评审').length === 2,
       { ranks: ranks, t004: daily.summary.filter((row) => row.task === '详细设计与评审').map((r) => r.conclusion) });
-    /* CH-11：分列结构已删除，今日摘要只保留 A 列微信文本行（数据源仍带这些字段，供排序与追溯）。 */
-    const summaryRowsLayout = await page.evaluate((payload) => window.WBSCore.summaryRows(payload), daily.summary);
-    check('矩阵08d 今日摘要导出只保留 A 列（分列结构已删除：行宽=1，表头仅「微信文本行」）',
-      summaryRowsLayout.every((row) => row.length === 1) &&
-      JSON.stringify(summaryRowsLayout[0]) === JSON.stringify(['微信文本行']) &&
-      summaryRowsLayout.length === daily.summary.length + 1 &&
-      summaryRowsLayout.slice(1).map((row) => row[0]).join('\n') === lines.join('\n') &&
+    /* CH-13：日报不再产出 xlsx，改为弹层文本（服务端 /api/daily 的 summary 数据源仍保留）。 */
+    const dailyPopup = await openDailyText();
+    const popupLines = dailyPopup.api.text.lines;
+    const dailyDoc = (await api('/api/wbs')).body;
+    const dTask = (id) => dailyDoc.tasks.find((t) => t.id === id);
+    const dLine = (prefix, id, conclusion) => '【' + prefix + '】' + dTask(id).level1 + ' / ' + dTask(id).level2 +
+      ' / ' + dTask(id).task + ' @' + dTask(id).owner + '：' + conclusion + '。';
+    const expectPopupLines = [
+      dLine('延期·高风险', 'T001', '设计 ' + mmdd(yesterday) + ' 到期未更新，判定延期'),
+      dLine('延期·高风险', 'T003', '测试延期'),
+      dLine('延期·高风险', 'T004', '测试 ' + mmdd(yesterday) + ' 到期未更新，判定延期'),
+      dLine('阻塞·高风险', 'T002', '测试更新为阻塞'),
+      dLine('阻塞·高风险', 'T004', '开发更新为阻塞')
+    ];
+    check('矩阵08d 点「导出日报」打开只读文本弹层，文本 = /api/daily 的关键信息文本（同一份字符串，逐行一致；CH-13 取代今日摘要 A 列 xlsx）',
+      dailyPopup.view.role === 'dialog' && dailyPopup.view.whiteSpace === 'pre-wrap' &&
+      dailyPopup.view.text === dailyPopup.api.text.body &&
+      dailyPopup.view.text.split('\n')[0] === '今日延期 ' + dailyPopup.api.text.delayedCount + ' 项 / 阻塞 ' + dailyPopup.api.text.blockedCount + ' 项' &&
+      dailyPopup.api.text.delayedCount === 3 && dailyPopup.api.text.blockedCount === 2 &&
+      JSON.stringify(popupLines) === JSON.stringify(expectPopupLines) &&
       daily.summary.some((row) => row.at && /^\d{4}-\d{2}-\d{2}T/.test(row.at)),
-      { rows: summaryRowsLayout.length, width: summaryRowsLayout[0].length });
+      { overview: dailyPopup.view.text.split('\n')[0], lines: popupLines, expect: expectPopupLines, summaryRows: daily.summary.length });
+    await closeDailyText();
 
     /* CH-7：新增人员 → 服务端审计/日报数据源含「人员池」行（CH-12 起不再进日报导出） */
     await page.click('#add-person-btn');
@@ -411,8 +457,14 @@ function craftedSeed(today) {
     check('矩阵10c CH-7 新增人员审计行仍在 /api/daily changes 数据源中（改动字段 人员池 / 旧值空 / 新值姓名）',
       poolRow.length === 1 && poolRow[0].old === '' && poolRow[0].identity === '项目负责人',
       poolRow[0]);
-    check('矩阵10a 日报为单 workbook 两 sheet（今日摘要 / 阻塞与延期；CH-12 起不含当日变更）',
-      true, '浏览器侧 sheet 结构由 xlsx 读回断言（见 07/10b）');
+    const dailyPopupExport = await openDailyText();
+    check('矩阵10a 日报只体现阻塞、延期：无「完成 / 普通」事件、无当日普通变更（完成阶段与日期改动都不进日报；CH-13）',
+      dailyPopupExport.api.text.lines.every((l) => l.indexOf('【完成】') === -1 && l.indexOf('【普通】') === -1 && l.indexOf('【到期未更新】') === -1) &&
+      popupLines.every((l) => /^【(延期|阻塞)·高风险】.+ \/ .+ \/ .+ @.+：.+。$/.test(l)) &&
+      dailyPopupExport.api.text.lines.length === expectPopupLines.length &&
+      Array.isArray(dailyPopupExport.api.changes) && dailyPopupExport.api.changes.length > 0,
+      { lines: dailyPopupExport.api.text.lines.length, changes: dailyPopupExport.api.changes.length });
+    await closeDailyText();
 
     /* ============ 矩阵07 / 10：导出真实产物（xlsx 读回在宿主 python 侧完成） ============ */
     const docAtExport = (await api('/api/wbs')).body;
@@ -421,8 +473,7 @@ function craftedSeed(today) {
     fs.writeFileSync(path.join(OUTDIR, 'daily-at-export.json'), JSON.stringify(dailyAtExport));
     const wbs = await capture('#export-btn', 'WBS-' + today + '.xlsx');
     results.wbsExport = { name: wbs.name, length: wbs.length };
-    const dailyFile = await capture('#daily-btn', '日报-' + today.replace(/-/g, '') + '.xlsx');
-    results.dailyExport = { name: dailyFile.name, length: dailyFile.length };
+    results.dailyExport = { mode: 'text-popup', lines: dailyPopupExport.api.text.lines.length, download: dailyPopupExport.view.hook };
     check('矩阵07a 页面「导出 Excel」真实产物已生成（文件名 蓉城战役WBS-YYYYMMDD.xlsx）',
       /^蓉城战役WBS-\d{8}\.xlsx$/.test(String(wbs.name)) && wbs.length > 100000, wbs.name);
     check('矩阵07b WBS 导出模板首行/表头保真（页面侧 SheetJS 读回）',
@@ -434,8 +485,10 @@ function craftedSeed(today) {
           String(rows[1][11]) === '设计进度' && String(rows[1][15]) === '演示准备进度' &&
           wb.SheetNames.length === 1;
       }, wbs.b64), 'L–P 表头 = 五个进度列');
-    check('矩阵10b 页面「导出日报」真实产物已生成（文件名 蓉城战役日报-YYYYMMDD.xlsx）',
-      /^蓉城战役日报-\d{8}\.xlsx$/.test(String(dailyFile.name)) && dailyFile.length > 3000, dailyFile.name);
+    check('矩阵10b 页面「导出日报」不再产出与下载 xlsx（无 WBS_DOWNLOAD_HOOK 调用 / createObjectURL / a[download] / xlsx 组装 API），只打开文本弹层（CH-13）',
+      dailyPopupExport.view.hook === null && dailyPopupExport.view.objectUrls === 0 &&
+      dailyPopupExport.view.anchors === 0 && dailyPopupExport.view.xlsxApi === 'undefined/undefined',
+      { hook: dailyPopupExport.view.hook, objectUrls: dailyPopupExport.view.objectUrls, anchors: dailyPopupExport.view.anchors, xlsxApi: dailyPopupExport.view.xlsxApi });
 
     /* ============ 矩阵11：回归（CH-1…CH-8 / D-3 / 验收 1–10 / Markdown / 无外部请求） ============ */
     await openWorkbench('项目负责人');

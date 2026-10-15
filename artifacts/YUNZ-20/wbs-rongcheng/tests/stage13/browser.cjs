@@ -1,8 +1,11 @@
 'use strict';
 /* YUNZ-33 / 变更包 #5（CH-11 今日摘要只保留 A 列 + CH-12 日报删除「当日变更」sheet）真实浏览器自测。
+   CH-13 同步（YUNZ-35 / 变更包 #6）：日报不再产出 xlsx，改为「一键可复制关键信息文本」弹层；
+   本套件的日报条目已按 CH-13 契约同步（等价断言：弹层文本逐字 / 概况行计数 / 排序 / 派生与去重 / 无事件兜底），
+   断言强度未降低；更完整的弹层交互（复制两条路径、关闭与 Esc、未保存编辑不受影响）见 tests/stage15/。
    运行环境：mcr.microsoft.com/playwright:v1.55.0-jammy 容器（chromium 140，与 playwright 1.55.0 对齐）；
    宿主为 CentOS 7（glibc 2.17），无法直接运行该 Chromium，浏览器只在测试容器内运行，不进产物、不进镜像。
-   被测服务（server.js）由本脚本自行 spawn（隔离数据目录 + 迁移前构造边界数据），结束后回收；
+   被测服务（server.js）由本脚本自行 spawn（隔离数据目录 + 构造边界数据，phases 显式给出、不起迁移），结束后回收；
    不触碰运行现场 0.0.0.0:4180 与 /opt/wbs-rongcheng/data。
    用法（由 tests/stage13/run.sh 调用）：
      APP_DIR=/app OUTDIR=/app/tests/.tmp/stage13-out DATA_DIR=/app/tests/.tmp/stage13-browser-data \
@@ -24,7 +27,8 @@ const DATA_DIR2 = DATA_DIR + '-quiet';
 const TZ = 'Asia/Shanghai';
 const PHASE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
 const PHASES = ['未开始', '已开始', '已完成', '延期', '阻塞'];
-const REMOVED_TOKENS = ['当日变更', '改动字段', '旧值', '新值', '操作身份', '重要度', '结论', '依据'];
+/* CH-13：旧日报 xlsx /「当日变更」口径字样（「结论」不再是特征：新文本格式本身含「：结论。」）。 */
+const REMOVED_TOKENS = ['当日变更', '改动字段', '旧值', '新值', '操作身份', '重要度', '依据'];
 
 const results = { base: BASE, tz: TZ, started_at: new Date().toISOString(), checks: [], page_errors: [], console_errors: [], requests: [] };
 let pass = 0, fail = 0;
@@ -57,17 +61,22 @@ function shiftDay(dateStr, delta) {
 }
 const mmdd = (dateStr) => String(dateStr).slice(5);
 
-/* 迁移前构造边界数据：A 实例日期为「昨天 / 今天」两类，迁移后 phases 可预期。 */
+/* 构造边界数据（CH-13 同步）：phases 显式给出（全部「未开始」）→ 服务端不起迁移，
+   于是「计划日期 < 今天且今日无人更新」的阶段可稳定地派生「到期未更新，判定延期」。 */
 function craftedSeed(today) {
   const seed = JSON.parse(fs.readFileSync(path.join(APP_DIR, 'data', 'wbs.seed.json'), 'utf8'));
   const yesterday = shiftDay(today, -1);
+  seed.tasks.forEach((task) => {
+    task.phases = {};
+    PHASE_KEYS.forEach((key) => { task.phases[key] = '未开始'; });
+  });
   const byId = {};
   seed.tasks.forEach((task) => { byId[task.id] = task; });
-  byId.T001.dates.design = yesterday;   // 到期未更新（今日无人更新）→ 判定延期
-  byId.T002.dates.design = yesterday;   // 今日改状态为已完成 → 只出「完成」
-  byId.T003.dates.dev = today;          // 边界：恰好今天 → 未开始（不判延期）
-  byId.T004.dates.test = yesterday;     // 到期未更新；其 dev 今日改为阻塞 → 一任务多事件
-  byId.T005.dates.product = yesterday;  // 今日改为已完成 → 只出「完成」
+  byId.T001.dates.design = yesterday;   // 今日无人更新 → 派生「到期未更新，判定延期」
+  byId.T002.dates.design = yesterday;   // 今日改状态为已完成 → 抑制派生、完成不进日报
+  byId.T003.dates.dev = today;          // 边界：恰好今天 → 不判延期
+  byId.T004.dates.test = yesterday;     // 今日无人更新 → 派生；其 dev 今日改为阻塞 → 一任务多事件
+  byId.T005.dates.product = yesterday;  // 今日改为已完成 → 抑制派生、完成不进日报
   return seed;
 }
 
@@ -212,6 +221,40 @@ function trackPage(page) {
     const history = (await api('/api/history?tz=' + TZ + '&date=' + today)).body;
     const poolEvents = (history.records || []).filter((r) => r.field === '人员池' && r.new === '赵新');
 
+    /* ============ 矩阵01–04（CH-13）：日报改为「一键可复制关键信息文本」弹层，不再产出日报 xlsx ============ */
+    const openDaily = async () => {
+      await page.evaluate(() => {
+        window.__cap = null;
+        window.__objUrls = 0;
+        window.WBS_DOWNLOAD_HOOK = (bytes, name) => { window.__cap = { name: name, length: bytes.length }; };
+        const create = window.URL.createObjectURL.bind(window.URL);
+        window.URL.createObjectURL = function (blob) { window.__objUrls += 1; return create(blob); };
+      });
+      await page.click('#daily-btn');
+      await page.waitForFunction(() => document.getElementById('daily-panel').hidden === false, null, { timeout: 15000 });
+      await page.waitForTimeout(200);
+      const view = await page.evaluate(() => {
+        const panel = document.getElementById('daily-panel');
+        const card = panel.querySelector('.modal-card');
+        const block = document.getElementById('daily-text');
+        return {
+          hidden: panel.hidden,
+          role: card ? card.getAttribute('role') : null,
+          ariaModal: card ? card.getAttribute('aria-modal') : null,
+          text: block.textContent,
+          whiteSpace: getComputedStyle(block).whiteSpace,
+          copyBtn: !!document.getElementById('daily-copy'),
+          closeBtn: !!document.getElementById('daily-close'),
+          hook: window.__cap,
+          objectUrls: window.__objUrls,
+          anchors: document.querySelectorAll('a[download]').length,
+          dailyXlsxApi: typeof window.WBSCore.buildDailyWorkbook + '/' + typeof window.WBSCore.dailyBytes
+        };
+      });
+      const payload = (await api('/api/daily?tz=' + TZ + '&date=' + today)).body;
+      return { view: view, api: payload };
+    };
+
     const docAtExport = (await api('/api/wbs')).body;
     fs.writeFileSync(path.join(OUTDIR, 'wbs-at-export.json'), JSON.stringify(docAtExport));
     const taskById = {};
@@ -219,79 +262,60 @@ function trackPage(page) {
     const line = (prefix, taskId, conclusion) => '【' + prefix + '】' + taskById[taskId].level1 + ' / ' + taskById[taskId].level2 +
       ' / ' + taskById[taskId].task + ' @' + taskById[taskId].owner + '：' + conclusion + '。';
 
-    const daily = (await api('/api/daily?tz=' + TZ + '&date=' + today)).body;
-    const dailyAtExport = daily;
-    fs.writeFileSync(path.join(OUTDIR, 'daily-at-export.json'), JSON.stringify(dailyAtExport));
-    const lines = dailyAtExport.summary.map((row) => row.line);
+    const dailyPopup = await openDaily();
+    const daily = dailyPopup.api;
+    const dailyText = daily.text;
+    const lines = dailyText.lines;
     const findLine = (needle) => lines.filter((l) => l.indexOf(needle) !== -1);
-    const t001Line = line('延期·高风险', 'T001', '设计 ' + mmdd(yesterday) + ' 到期未更新，判定延期');
-    const t004Line = line('延期·高风险', 'T004', '测试 ' + mmdd(yesterday) + ' 到期未更新，判定延期');
-    check('矩阵03a 今日摘要逐字模板：【重要度】一级 / 二级 / 任务项 @负责人：结论。（含 @ 与风险前缀，变更包 #4 口径不变）',
-      lines.indexOf(t001Line) !== -1 && lines.indexOf(t004Line) !== -1,
-      { expect: t001Line, hit: lines.indexOf(t001Line) !== -1 });
-
-    /* ============ 矩阵01 / 02 / 03 / 04 / 06b：导出真实产物与结构断言 ============ */
-    const dailyFile = await capture('#daily-btn', '日报-' + today.replace(/-/g, '') + '.xlsx');
-    results.dailyExport = { name: dailyFile.name, length: dailyFile.length };
-    const dailyShape = await page.evaluate((base64) => {
-      const wb = window.XLSX.read(base64, { type: 'base64', cellStyles: true });
-      const sheets = wb.SheetNames.map((sheetName) => ({
-        name: sheetName,
-        ref: (wb.Sheets[sheetName] || {})['!ref'],
-        rows: window.XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, raw: false, defval: '' }),
-        width: ((wb.Sheets[sheetName] || {})['!cols'] || [{}])[0].wch
-      }));
-      return { sheets: sheets, cols: ((wb.Sheets['今日摘要'] || {})['!cols'] || []) };
-    }, dailyFile.b64);
-    results.dailyShape = dailyShape;
-    check('矩阵01 日报 sheetNames == ["今日摘要","阻塞与延期"]（CH-12：当日变更已删除，顺序不变）',
-      dailyShape.sheets.map((s) => s.name).join('/') === '今日摘要/阻塞与延期',
-      dailyShape.sheets.map((s) => s.name));
-    check('矩阵01b 页面「导出日报」真实产物已生成（文件名 蓉城战役日报-YYYYMMDD.xlsx）',
-      /^蓉城战役日报-\d{8}\.xlsx$/.test(String(dailyFile.name)) && dailyFile.length > 3000 &&
-      String(dailyFile.name).indexOf(today.replace(/-/g, '')) !== -1, dailyFile.name);
-
-    const summarySheet = dailyShape.sheets[0];
-    const summaryRows = summarySheet.rows;
-    check('矩阵02 今日摘要仅 A 列有值：列数 1（!ref = A 列）、每行长度 1、表头只有「微信文本行」',
-      /^A1:A\d+$/.test(String(summarySheet.ref)) &&
-      summaryRows.every((row) => row.length === 1) &&
-      JSON.stringify(summaryRows[0]) === JSON.stringify(['微信文本行']) &&
-      summaryRows.length === dailyAtExport.summary.length + 1,
-      { ref: summarySheet.ref, width: summarySheet.width, header: summaryRows[0], rows: summaryRows.length });
-    check('矩阵02b 今日摘要 A 列列宽足够（≥100 字符宽，配合自动换行显示）',
-      Number(summarySheet.width) >= 100, { width: summarySheet.width, cols: dailyShape.cols });
-
-    const headerTexts = dailyShape.sheets.reduce((acc, sheet) => acc.concat(sheet.rows.slice(0, 2).reduce((a, r) => a.concat(r), [])), []);
-    const removedHits = REMOVED_TOKENS.filter((token) => headerTexts.some((cell) => String(cell) === token));
-    check('矩阵04 旧「当日变更」表头与「今日摘要」辅助分列表头（重要度/结论/…/依据）全部不出现',
-      removedHits.length === 0 && dailyShape.sheets.every((s) => s.name !== '当日变更') &&
-      !headerTexts.some((cell) => String(cell).indexOf('当日变更') !== -1),
-      { cells: headerTexts.slice(0, 12), hits: removedHits });
-
-    check('矩阵03b 导出「今日摘要」A 列逐字 = /api/daily 文本行（含 @、高风险前缀，逐行一致）',
-      summaryRows.slice(1).map((row) => row[0]).join('\n') === lines.join('\n'),
-      { rows: summaryRows.length - 1, api: lines.length, first: summaryRows[1] ? summaryRows[1][0] : null });
-    check('矩阵03c 五类前缀与结论模板逐字命中（延期/阻塞/完成/普通/到期未更新）',
-      lines.indexOf(line('延期·高风险', 'T003', '测试延期')) !== -1 &&
-      lines.indexOf(line('阻塞·高风险', 'T004', '阶段更新为阻塞')) !== -1 &&
-      lines.indexOf(line('完成', 'T005', '阶段已完成')) !== -1 &&
-      lines.indexOf(line('完成', 'T002', '阶段已完成')) !== -1 &&
-      lines.indexOf(line('普通', 'T006', '测试计划 11-01 → 11-05')) !== -1,
-      findLine('【').slice(0, 6));
-    const rankOf = (l) => {
-      if (l.indexOf('【延期·高风险】') === 0 && l.indexOf('到期未更新') === -1) return 1;
-      if (l.indexOf('【阻塞·高风险】') === 0) return 2;
-      if (l.indexOf('到期未更新') !== -1) return 3;
-      if (l.indexOf('【完成】') === 0) return 4;
-      return 5;
-    };
-    const ranks = lines.map(rankOf);
-    check('矩阵03d 排序 延期 > 阻塞 > 到期未更新判定延期 > 完成 > 普通；一任务多事件多行',
-      ranks.join(',') === ranks.slice().sort((a, b) => a - b).join(',') &&
-      daily.summary.filter((row) => row.task === taskById.T004.task).length === 2 &&
-      findLine('到期未更新，判定延期').length === 2,
-      { ranks: ranks, t004: daily.summary.filter((row) => row.task === taskById.T004.task).length });
+    fs.writeFileSync(path.join(OUTDIR, 'daily-at-export.json'), JSON.stringify(daily));
+    results.dailyText = dailyText;
+    const expectLines = [
+      line('延期·高风险', 'T001', '设计 ' + mmdd(yesterday) + ' 到期未更新，判定延期'),
+      line('延期·高风险', 'T003', '测试延期'),
+      line('延期·高风险', 'T004', '测试 ' + mmdd(yesterday) + ' 到期未更新，判定延期'),
+      line('阻塞·高风险', 'T004', '开发更新为阻塞')
+    ];
+    check('矩阵01 点「导出日报」打开只读文本弹层（role=dialog / aria-modal / 复制 + 关闭按钮），且不再产出与下载日报 xlsx（无 WBS_DOWNLOAD_HOOK 调用 / createObjectURL / a[download] / xlsx 组装 API）',
+      dailyPopup.view.hidden === false && dailyPopup.view.role === 'dialog' && dailyPopup.view.ariaModal === 'true' &&
+      dailyPopup.view.copyBtn === true && dailyPopup.view.closeBtn === true &&
+      dailyPopup.view.hook === null && dailyPopup.view.objectUrls === 0 && dailyPopup.view.anchors === 0 &&
+      dailyPopup.view.dailyXlsxApi === 'undefined/undefined',
+      { role: dailyPopup.view.role, copy: dailyPopup.view.copyBtn, close: dailyPopup.view.closeBtn, hook: dailyPopup.view.hook, anchors: dailyPopup.view.anchors, xlsxApi: dailyPopup.view.dailyXlsxApi });
+    check('矩阵01b 弹层只读文本块内容 = /api/daily 的关键信息文本（同一份字符串；pre-wrap 保留换行）',
+      dailyPopup.view.text === dailyText.body && dailyPopup.view.whiteSpace === 'pre-wrap' && lines.length > 0,
+      { whiteSpace: dailyPopup.view.whiteSpace, lines: lines.length });
+    check('矩阵02 顶部概况行固定为「今日延期 X 项 / 阻塞 Y 项」，X/Y = 弹层内事件行数（与 /api/daily 计数一致）',
+      dailyPopup.view.text.split('\n')[0] === '今日延期 3 项 / 阻塞 1 项' &&
+      dailyText.delayedCount === 3 && dailyText.blockedCount === 1 &&
+      dailyText.body === [dailyText.overview].concat(lines).join('\n'),
+      { overview: dailyPopup.view.text.split('\n')[0], delayed: dailyText.delayedCount, blocked: dailyText.blockedCount, lines: lines.length });
+    check('矩阵04 弹层文本不残留旧日报口径字样（当日变更 / 改动字段 / 旧值 / 新值 / 操作身份 / 重要度 / 依据）',
+      REMOVED_TOKENS.filter((token) => dailyPopup.view.text.indexOf(token) !== -1).length === 0,
+      REMOVED_TOKENS);
+    check('矩阵02b 日报只体现阻塞、延期：无「完成 / 普通」事件（完成阶段与当日普通变更都不进日报，数据源仍保留）',
+      lines.every((l) => l.indexOf('【完成】') === -1 && l.indexOf('【普通】') === -1 && l.indexOf('【到期未更新】') === -1) &&
+      lines.length === 4 && Array.isArray(daily.changes) && daily.changes.length > 0 && Array.isArray(daily.summary),
+      { lines: lines.length, changes: daily.changes.length });
+    check('矩阵03a 事件行逐字「【延期·高风险】/【阻塞·高风险】一级 / 二级 / 任务项 @负责人：结论。」（含 @ 与高风险前缀）',
+      JSON.stringify(lines) === JSON.stringify(expectLines) &&
+      lines.every((l) => /^【(延期|阻塞)·高风险】.+ \/ .+ \/ .+ @.+：.+。$/.test(l)),
+      { expect: expectLines, actual: lines });
+    check('矩阵03b 延期条目在前、阻塞条目在后；一任务多事件多行（T004 同时命中「延期·高风险」与「阻塞·高风险」）',
+      lines.slice(0, 3).every((l) => l.indexOf('【延期·高风险】') === 0) &&
+      lines[3].indexOf('【阻塞·高风险】') === 0 &&
+      findLine('详细设计与评审').length === 2,
+      { ranks: lines.map((l) => (l.indexOf('【延期·高风险】') === 0 ? 1 : 2)), t004: findLine('详细设计与评审').length });
+    check('矩阵03c 派生规则「{阶段} MM-DD 到期未更新，判定延期。」逐字命中（T001 设计 / T004 测试，MM-DD = 昨日）',
+      findLine('到期未更新，判定延期').length === 2 &&
+      lines.indexOf(line('延期·高风险', 'T001', '设计 ' + mmdd(yesterday) + ' 到期未更新，判定延期')) === 0 &&
+      lines.indexOf(line('延期·高风险', 'T004', '测试 ' + mmdd(yesterday) + ' 到期未更新，判定延期')) === 2,
+      findLine('到期未更新，判定延期'));
+    check('矩阵03d 当天已更新过的阶段按实际状态归类、不重复派生「到期未更新」（T002 设计今日改已完成、T006 今日改日期 → 均无条目）',
+      findLine('需求拆分').length === 0 && findLine('代码开发').length === 0,
+      { t002: findLine('需求拆分'), t006: findLine('代码开发') });
+    /* 收尾：关闭日报弹层（后续 WBS 导出断言需要页面可点击）。 */
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => document.getElementById('daily-panel').hidden === true, null, { timeout: 15000 });
 
     /* ============ 矩阵05：WBS 导出不回归（五色 / A–K / L–P / Q1） ============ */
     const wbs = await capture('#export-btn', 'WBS-' + today + '.xlsx');
@@ -321,17 +345,21 @@ function trackPage(page) {
       { sheets: wbsShape.sheetNames, l2p: wbsShape.header.slice(11, 16), q1: wbsShape.row1[16] });
 
     /* ============ 矩阵06（后半）：CH-7 数据源行 + 导出不含当日变更 ============ */
-    const poolChanges = (dailyAtExport.changes || []).filter((r) => r.field === '人员池' && r.new === '赵新');
+    const poolChanges = (daily.changes || []).filter((r) => r.field === '人员池' && r.new === '赵新');
     check('矩阵06 identity_added 仍写审计、/api/history 仍返回人员池行、/api/daily 数据源仍含该行（导出已不含当日变更 sheet）',
       identityAdds.length === 1 && identityAdds[0].identity === '项目负责人' && Date.parse(identityAdds[0].at) > 0 &&
       poolEvents.length === 1 && poolEvents[0].old === '' && poolEvents[0].task === '新增人员 赵新' &&
       poolChanges.length === 1 && poolChanges[0].old === '' && poolChanges[0].identity === '项目负责人' &&
       ((await api('/api/wbs')).body.identities || []).indexOf('赵新') !== -1,
       { audit: identityAdds.length, history: poolEvents.length, dailyChanges: poolChanges.length });
-    check('矩阵06b 当天含 identity_added 审计时，日报导出仍为两 sheet、仍不含「当日变更」（审计只留在服务端）',
-      dailyShape.sheets.map((s) => s.name).join('/') === '今日摘要/阻塞与延期' &&
-      dailyShape.sheets.every((s) => s.name !== '当日变更'),
-      dailyShape.sheets.map((s) => s.name));
+    const dailyAfterAdd = await openDaily();
+    check('矩阵06b 当天含 identity_added 审计时，日报弹层文本仍只含阻塞、延期（人员池行只留在服务端数据源）',
+      dailyAfterAdd.view.text === dailyAfterAdd.api.text.body &&
+      dailyAfterAdd.api.text.lines.length === 4 &&
+      dailyAfterAdd.view.text.indexOf('赵新') === -1 && dailyAfterAdd.view.text.indexOf('人员池') === -1,
+      { lines: dailyAfterAdd.api.text.lines.length, text: dailyAfterAdd.view.text.split('\n').slice(0, 2) });
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(200);
 
     /* ============ 矩阵07：保存 / 409 / 重启持久 / 健康探针 ============ */
     await setPhase('T007', 'dev', '已开始');
@@ -381,22 +409,16 @@ function trackPage(page) {
     await waitReady(BASE2);
     const quietDaily = await fetch(BASE2 + '/api/daily?tz=' + TZ + '&date=' + today).then((r) => r.json());
     await openWorkbench('项目负责人', BASE2);
-    const quietFile = await capture('#daily-btn', '日报-' + today.replace(/-/g, '') + '-无事件.xlsx');
-    const quietShape = await page.evaluate((base64) => {
-      const wb = window.XLSX.read(base64, { type: 'base64' });
-      return {
-        sheets: wb.SheetNames,
-        rows: window.XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false, defval: '' }),
-        ref: (wb.Sheets[wb.SheetNames[0]] || {})['!ref']
-      };
-    }, quietFile.b64);
+    await page.click('#daily-btn');
+    await page.waitForFunction(() => document.getElementById('daily-panel').hidden === false, null, { timeout: 15000 });
+    await page.waitForTimeout(200);
+    const quietText = await page.evaluate(() => document.getElementById('daily-text').textContent);
+    await page.keyboard.press('Escape');
     fs.writeFileSync(path.join(OUTDIR, 'daily-quiet.json'), JSON.stringify(quietDaily));
-    check('矩阵03e 无事件兜底：/api/daily 与导出 A 列都只输出一行「今日无阻塞、延期或变更。」（仍两 sheet、A 列）',
-      quietDaily.summary.length === 1 && quietDaily.summary[0].line === '今日无阻塞、延期或变更。' &&
-      quietShape.sheets.join('/') === '今日摘要/阻塞与延期' &&
-      quietShape.rows.length === 2 && quietShape.rows[1][0] === '今日无阻塞、延期或变更。' &&
-      quietShape.rows[1].length === 1 && quietShape.ref === 'A1:A2',
-      { api: quietDaily.summary, export: quietShape.rows, ref: quietShape.ref });
+    check('矩阵03e 无事件兜底：整体文本只有一行「今日无阻塞、延期。」（无概况行；弹层与 /api/daily 一致）',
+      quietDaily.text.body === '今日无阻塞、延期。' && quietDaily.text.lines.length === 0 &&
+      quietText === '今日无阻塞、延期。' && quietText.split('\n').length === 1,
+      { api: quietDaily.text, display: quietText });
     await stopServer('B');
 
     /* ============ 回归：无外部请求 / 无 pageerror ============ */

@@ -35,14 +35,10 @@
   var EXPORT_COL_COUNT = 11;
   var HISTORY_TZ = 'Asia/Shanghai';
   var IDENTITY_MAX_LEN = 20;
-  /* CH-11：日报两 sheet 表头。今日摘要 = 仅 A 列微信文本行（原辅助分列已删除）；阻塞与延期 = A–K + 五进度列。 */
-  var DAILY_SUMMARY_HEADER = ['微信文本行'];
-  var DAILY_BLOCKED_HEADER = ['一级', '二级', '任务项', '负责人', '是否演示范围', '设计', '开发', '测试', '产品', '演示准备', '进展说明']
-    .concat(PHASE_HEADERS);
-  /* CH-12：日报导出只保留两个 sheet（当日变更 sheet 及其表头/组装代码已从导出路径移除）。 */
-  var DAILY_SHEET_NAMES = ['今日摘要', '阻塞与延期'];
-  /* CH-11：A 列微信文本行足够宽 + 自动换行（社区版 SheetJS 不写样式，故沿用 STORED zip 最小修补）。 */
-  var DAILY_SUMMARY_COL_WIDTH = 120;
+  /* CH-13：日报不再产出 xlsx，改为「一键可复制的关键信息文本」弹层（只含阻塞、延期）。
+     xlsx 组装（两 sheet、A 列宽、自动换行修补）与其常量已随 CH-13 从导出路径整体移除。 */
+  var DAILY_COPY_OK = '已复制，可直接粘贴到微信';
+  var DAILY_COPY_FAIL = '复制失败：请手动选择文本后复制。';
 
   /* ------------------------------------------------------------ 纯逻辑 */
 
@@ -122,27 +118,7 @@
     });
   }
 
-  /* ------------------------------------------------------- 日报（导出） */
-
-  /* 某行的五个阶段进度（顺序 design/dev/test/product/demo_prep）。 */
-  function phaseValues(task) {
-    var phases = (task && task.phases) || {};
-    return PHASE_KEYS.map(function (key) { return phases[key] == null ? '' : String(phases[key]); });
-  }
-
-  /* CH-10：阻塞与延期 sheet —— 任一阶段命中 延期/阻塞 的行；A–K（含是否演示范围）+ 五进度列；阻塞行排前。 */
-  function blockedRows(tasks) {
-    var rows = [DAILY_BLOCKED_HEADER.slice()];
-    (tasks || []).map(function (task, index) {
-      var phases = (task && task.phases) || {};
-      var delayed = PHASE_KEYS.some(function (key) { return phases[key] === '延期' || phases[key] === '阻塞'; });
-      var blocked = PHASE_KEYS.some(function (key) { return phases[key] === '阻塞'; });
-      return { task: task, index: index, hit: delayed, group: blocked ? 0 : 1 };
-    }).filter(function (item) { return item.hit; })
-      .sort(function (a, b) { return (a.group - b.group) || (a.index - b.index); })
-      .forEach(function (item) { rows.push(exportRows([item.task])[0].concat(phaseValues(item.task))); });
-    return rows;
-  }
+  /* ------------------------------------------------------- WBS 导出辅助 */
 
   /* 时区下的「今天」YYYY-MM-DD。 */
   function todayInTz(tz) {
@@ -170,21 +146,6 @@
     } catch (err) {
       return at.toISOString();
     }
-  }
-
-  function cellText(value) {
-    if (value == null) return '';
-    if (typeof value === 'object') return JSON.stringify(value);
-    return String(value);
-  }
-
-  /* CH-11：今日摘要 sheet 只有 A 列——每行一段微信可直接复制的文本行（原 B–I 辅助分列已删除）。 */
-  function summaryRows(summary) {
-    var rows = [DAILY_SUMMARY_HEADER.slice()];
-    (summary || []).forEach(function (item) {
-      rows.push([cellText(item.line)]);
-    });
-    return rows;
   }
 
   function colName(index) {
@@ -468,67 +429,6 @@
     }
   }
 
-  /** CH-11 / CH-12：日报单文件两个 sheet（今日摘要 / 阻塞与延期），浏览器本地生成，不依赖模板。 */
-  function buildDailyWorkbook(data) {
-    var XLSX = global.XLSX;
-    if (!XLSX) throw new Error('XLSX 未加载');
-    var payload = data || {};
-    var workbook = XLSX.utils.book_new();
-    var summary = XLSX.utils.aoa_to_sheet(summaryRows(payload.summary));
-    summary['!cols'] = [{ wch: DAILY_SUMMARY_COL_WIDTH }];  // CH-11：A 列足够宽
-    XLSX.utils.book_append_sheet(workbook, summary, DAILY_SHEET_NAMES[0]);
-    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(blockedRows(payload.blocked)), DAILY_SHEET_NAMES[1]);
-    return workbook;
-  }
-
-  /** CH-11：「今日摘要」A 列自动换行（最小 ZIP 级修补，与 CH-10 五色修补同一套机制）。
-   *  随包 SheetJS 0.18.5 社区版读得到单元格样式、写出时却不生成 cellXfs，因此仍用
-   *  「不压缩写盘 + 只改 styles.xml/sheet1.xml」的方式补一个 wrapText 的 cellXf 并套到 A 列。
-   *  修补失败不改变导出语义：回落到仅列宽。 */
-  function patchSummaryWrap(bytes) {
-    try {
-      var entries = readStoredZip(bytes);
-      var stylesIndex = -1;
-      var sheetIndex = -1;
-      entries.forEach(function (entry, index) {
-        if (entry.name === 'xl/styles.xml') stylesIndex = index;
-        if (entry.name === 'xl/worksheets/sheet1.xml') sheetIndex = index;
-      });
-      if (stylesIndex < 0 || sheetIndex < 0) throw new Error('xlsx 缺少 styles/sheet 部件');
-      var styles = utf8Decode(entries[stylesIndex].data);
-      var match = /<cellXfs count="(\d+)">([\s\S]*?)<\/cellXfs>/.exec(styles);
-      if (!match) throw new Error('styles.xml 缺少 cellXfs');
-      var wrapXf = Number(match[1]);   // 追加的 xf 索引 = 原 count（0 基）
-      styles = styles.replace(/<cellXfs count="(\d+)">([\s\S]*?)<\/cellXfs>/, function (all, count, body) {
-        return '<cellXfs count="' + (Number(count) + 1) + '">' + body +
-          '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1">' +
-          '<alignment wrapText="1" vertical="top"/></xf></cellXfs>';
-      });
-      var sheet = utf8Decode(entries[sheetIndex].data);
-      for (var row = 1; row <= 1000; row += 1) {
-        var ref = 'A' + row;
-        var pattern = new RegExp('<c r="' + ref + '"([^>]*?)(\\/?)>');
-        if (!pattern.test(sheet)) continue;
-        sheet = sheet.replace(pattern, function (all, attrs, selfClose) {
-          if (/(^|\s)s="\d+"/.test(attrs)) return all;
-          return '<c r="' + ref + '"' + attrs + ' s="' + wrapXf + '"' + selfClose + '>';
-        });
-      }
-      entries[stylesIndex].data = utf8Encode(styles);
-      entries[sheetIndex].data = utf8Encode(sheet);
-      var patched = writeStoredZip(entries);
-      return patched && patched.length ? patched : bytes;
-    } catch (err) {
-      return bytes;
-    }
-  }
-
-  /** 日报字节：同一份 buildDailyWorkbook → 不压缩写出 → A 列自动换行修补。 */
-  function dailyBytes(workbook) {
-    var raw = global.XLSX.write(workbook, { bookType: 'xlsx', type: 'array', compression: false });
-    return patchSummaryWrap(new Uint8Array(raw));
-  }
-
   function validateDraft(doc, identities) {
     var errors = [];
     var push = function (id, field, message) { errors.push({ id: String(id), field: field, message: message }); };
@@ -764,11 +664,6 @@
     PHASE_HEADERS: PHASE_HEADERS,
     PHASE_HEX: PHASE_HEX,
     PHASE_TEXT: PHASE_TEXT,
-    phaseValues: phaseValues,
-    DAILY_SUMMARY_HEADER: DAILY_SUMMARY_HEADER,
-    DAILY_BLOCKED_HEADER: DAILY_BLOCKED_HEADER,
-    DAILY_SHEET_NAMES: DAILY_SHEET_NAMES,
-    summaryRows: summaryRows,
     EXPORT_TOTAL_COL_COUNT: EXPORT_TOTAL_COL_COUNT,
     applyExportPhases: applyExportPhases,
     STRUCT_FIELDS: STRUCT_FIELDS,
@@ -789,10 +684,8 @@
     readStoredZip: readStoredZip,
     writeStoredZip: writeStoredZip,
     crc32: crc32,
-    blockedRows: blockedRows,
-    buildDailyWorkbook: buildDailyWorkbook,
-    patchSummaryWrap: patchSummaryWrap,
-    dailyBytes: dailyBytes,
+    DAILY_COPY_OK: DAILY_COPY_OK,
+    DAILY_COPY_FAIL: DAILY_COPY_FAIL,
     todayInTz: todayInTz,
     formatInTz: formatInTz,
     parseRange: parseRange,
@@ -822,7 +715,10 @@
     errorCells: {},
     health: null,
     editingRows: {},
-    notePanel: { open: false, taskId: null, original: '', readonly: false, dirty: false, tab: 'edit' }
+    notePanel: { open: false, taskId: null, original: '', readonly: false, dirty: false, tab: 'edit' },
+    /* CH-13：日报文本弹层。 */
+    dailyPanel: { open: false },
+    dailyText: ''
   };
 
   function $(id) { return document.getElementById(id); }
@@ -1619,11 +1515,7 @@
     return '蓉城战役WBS-' + stamp + '.xlsx';
   }
 
-  /* ------------------------------------------------------------ 日报导出 */
-
-  function dailyReportFileName(dateStr) {
-    return '蓉城战役日报-' + String(dateStr || '').replace(/-/g, '') + '.xlsx';
-  }
+  /* -------------------------------------------------- 日报文本弹层（CH-13） */
 
   async function fetchHistory(dateStr) {
     var url = '/api/history?tz=' + encodeURIComponent(HISTORY_TZ) + '&date=' + encodeURIComponent(dateStr);
@@ -1632,7 +1524,7 @@
     return response.json();
   }
 
-  /* CH-10：日报数据源为 /api/daily（三 sheet：今日摘要 / 阻塞与延期 / 当日变更）。 */
+  /* CH-13：日报数据源仍为 /api/daily（服务端汇总逻辑保留），取其中的 text 作为弹层文本。 */
   async function fetchDaily(dateStr) {
     var url = '/api/daily?tz=' + encodeURIComponent(HISTORY_TZ) + '&date=' + encodeURIComponent(dateStr);
     var response = await fetch(url, { cache: 'no-store' });
@@ -1640,22 +1532,94 @@
     return response.json();
   }
 
+  /* CH-13：点「导出日报」不再生成/下载 xlsx，改为打开只读文本弹层（内容 = /api/daily 的关键信息文本）。
+     弹层内没有任何下载行为（无 blob、无 a[download]、无 xlsx 组装调用）。 */
   async function exportDailyReport() {
     var dateStr = todayInTz(HISTORY_TZ);
     try {
       var daily = await fetchDaily(dateStr);
-      var workbook = Core.buildDailyWorkbook(daily);
-      var name = dailyReportFileName(dateStr);
-      var bytes = dailyBytes(workbook);
-      state.lastDaily = { name: name, bytes: bytes };
-      downloadExport(bytes, name);
-      var counts = daily.counts || { summary: 0, blocked: 0 };
-      showBanner('ok', '已导出日报 ' + name + '：sheet「今日摘要」' + counts.summary + ' 行、「阻塞与延期」' + counts.blocked +
-        ' 行（' + dateStr + ' ' + HISTORY_TZ + ' 自然日口径；日报只含两个 sheet、今日摘要只保留 A 列；旧 status 不进日报、WBS 导出与页面）。');
-      return { ok: true, name: name, date: dateStr, summary: counts.summary, blocked: counts.blocked, daily: daily, bytes: bytes };
+      if (!daily || !daily.text || typeof daily.text.body !== 'string' || daily.text.body === '') {
+        throw new Error('服务端未返回日报文本');
+      }
+      var text = daily.text.body;
+      openDailyPanel(text);
+      return { ok: true, date: dateStr, text: text, daily: daily };
     } catch (err) {
-      showBanner('error', '日报导出失败：' + err.message);
+      showBanner('error', '日报打开失败：' + err.message);
       return { ok: false, error: err.message };
+    }
+  }
+
+  /* 打开弹层：展示文本与复制到剪贴板的文本是同一份字符串（state.dailyText 与 DOM 同步写入）。 */
+  function openDailyPanel(text) {
+    var body = text == null ? '' : String(text);
+    state.dailyText = body;
+    var block = $('daily-text');
+    block.textContent = body;
+    showDailyMsg('');
+    $('daily-panel').hidden = false;
+    state.dailyPanel.open = true;
+    try { $('daily-copy').focus(); } catch (e) { /* 忽略 */ }
+    return { ok: true, text: body };
+  }
+
+  /* 关闭弹层：只读展示、不涉及未保存内容，不影响工作台既有未保存编辑状态。 */
+  function closeDailyPanel() {
+    if (!$('daily-panel').hidden) $('daily-panel').hidden = true;
+    state.dailyPanel.open = false;
+    showDailyMsg('');
+    return { ok: true };
+  }
+
+  function showDailyMsg(text) {
+    var node = $('daily-msg');
+    node.textContent = text;
+    node.className = 'daily-msg' + (text === DAILY_COPY_OK || text === '' ? '' : ' error');
+    node.hidden = !text;
+  }
+
+  /* 复制：优先 navigator.clipboard.writeText，失败时「选择 + document.execCommand('copy')」兜底。 */
+  async function copyDailyText() {
+    var text = $('daily-text').textContent == null ? '' : String($('daily-text').textContent);
+    var copied = false;
+    var clipboard = global.navigator && global.navigator.clipboard;
+    if (text !== '' && clipboard && typeof clipboard.writeText === 'function') {
+      try {
+        await clipboard.writeText(text);
+        copied = true;
+      } catch (err) {
+        copied = false;
+      }
+    }
+    if (!copied) copied = legacyCopyText(text);
+    showDailyMsg(copied ? DAILY_COPY_OK : DAILY_COPY_FAIL);
+    return { ok: copied, text: text, message: copied ? DAILY_COPY_OK : DAILY_COPY_FAIL };
+  }
+
+  /* 兜底：临时只读 textarea 全选 + execCommand('copy')；不影响弹层展示内容与选区。 */
+  function legacyCopyText(text) {
+    var body = text == null ? '' : String(text);
+    if (body === '') return false;
+    var area = null;
+    try {
+      area = document.createElement('textarea');
+      area.value = body;
+      area.setAttribute('readonly', 'readonly');
+      area.setAttribute('aria-hidden', 'true');
+      area.style.position = 'fixed';
+      area.style.top = '-1000px';
+      area.style.left = '-1000px';
+      area.style.opacity = '0';
+      document.body.appendChild(area);
+      area.select();
+      area.setSelectionRange(0, body.length);
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+      return !!ok;
+    } catch (err) {
+      return false;
+    } finally {
+      if (area && area.parentNode) area.parentNode.removeChild(area);
     }
   }
 
@@ -1841,6 +1805,9 @@
     $('add-row-btn').addEventListener('click', function () { addRow(); });
     $('export-btn').addEventListener('click', function () { exportXlsx(); });
     $('daily-btn').addEventListener('click', function () { exportDailyReport(); });
+    /* CH-13 日报文本弹层：复制 / 关闭 / Esc。 */
+    $('daily-copy').addEventListener('click', function () { copyDailyText(); });
+    $('daily-close').addEventListener('click', function () { closeDailyPanel(); });
     $('add-person-btn').addEventListener('click', function () { openAddPersonPanel(); });
     $('identity-add-btn').addEventListener('click', function () { openAddPersonPanel(); });
     $('new-person-confirm').addEventListener('click', function () { confirmAddPerson(); });
@@ -1867,6 +1834,8 @@
     });
     document.addEventListener('keydown', function (event) {
       if (event.key !== 'Escape') return;
+      /* CH-13：日报弹层在最上层，Esc 先关它（只读展示，无需确认）。 */
+      if (!$('daily-panel').hidden) { event.preventDefault(); closeDailyPanel(); return; }
       if (!$('note-confirm').hidden) { event.preventDefault(); cancelNoteConfirm(); return; }
       if (!state.notePanel.open) return;
       event.preventDefault();
@@ -1913,7 +1882,10 @@
     reload: reload,
     exportXlsx: exportXlsx,
     exportDailyReport: exportDailyReport,
-    dailyReportFileName: dailyReportFileName,
+    openDailyPanel: openDailyPanel,
+    closeDailyPanel: closeDailyPanel,
+    copyDailyText: copyDailyText,
+    legacyCopyText: legacyCopyText,
     fetchHistory: fetchHistory,
     fetchDaily: fetchDaily,
     openAddPersonPanel: openAddPersonPanel,

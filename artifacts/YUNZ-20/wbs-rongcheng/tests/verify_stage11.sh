@@ -2,6 +2,8 @@
 # YUNZ-31 / 变更包 #4（CH-9 隐藏演示范围列 + CH-10 五阶段独立进度 / WBS 与日报导出重构）作者自测矩阵 01–11 总入口。
 # 浏览器项跑在 playwright Chromium 容器内（宿主 CentOS 7 无法直接跑 Chromium），服务端项用 Node 标准库脚本；
 # 导出产物另由宿主 python 侧独立读回（xlsx zip/XML，不依赖 openpyxl）；回归项另跑既有 18 项矩阵、Stage7 矩阵 01–14 与部署自检。
+# CH-13 同步（YUNZ-35 / 变更包 #6）：日报不再产出 xlsx，改为「一键可复制关键信息文本」弹层；
+# 原「今日摘要 A 列 / 日报两 sheet」的 xlsx 读回条目同步为弹层文本断言（服务端 /api/daily 数据源断言不变）。
 # 用法：bash tests/verify_stage11.sh [输出目录]
 set -uo pipefail
 
@@ -64,7 +66,6 @@ echo | tee -a "$SUMMARY"
 BROWSER_LOG="$OUT/browser.log"
 SERVER_LOG="$OUT/server.log"
 READBACK_WBS="$OUT/readback-wbs.log"
-READBACK_DAILY="$OUT/readback-daily.log"
 BROWSER_OUT="$APP_DIR/tests/.tmp/stage11-out"
 rm -rf "$BROWSER_OUT"
 
@@ -82,9 +83,7 @@ echo "--- 准备 C：导出产物宿主 python 独立读回（zip/XML，不依�
 WBS_ROWS="$(python3 -c "import json,sys;print(len(json.load(open(sys.argv[1]))['tasks']))" "$BROWSER_OUT/wbs-at-export.json" 2>/dev/null || echo 36)"
 python3 tests/stage11/xlsx_readback.py wbs "$BROWSER_OUT/WBS-$TODAY.xlsx" public/template.xlsx "$BROWSER_OUT/wbs-at-export.json" "$WBS_ROWS" > "$READBACK_WBS" 2>&1
 READBACK_WBS_RC=$?
-python3 tests/stage11/xlsx_readback.py daily "$BROWSER_OUT/日报-$TODAY_COMPACT.xlsx" "$BROWSER_OUT/daily-at-export.json" > "$READBACK_DAILY" 2>&1
-READBACK_DAILY_RC=$?
-echo "WBS 读回退出码 $READBACK_WBS_RC（$READBACK_WBS） 日报读回退出码 $READBACK_DAILY_RC（$READBACK_DAILY）" | tee -a "$SUMMARY"
+echo "WBS 读回退出码 $READBACK_WBS_RC（$READBACK_WBS） 日报已改为弹层文本、无 xlsx 读回（CH-13）" | tee -a "$SUMMARY"
 echo | tee -a "$SUMMARY"
 
 run_item 01 "五阶段下拉常显与五色映射（灰/蓝/绿/红/黄；含 option 颜色）" \
@@ -101,12 +100,12 @@ run_item 06 "保存与 409（阶段状态字段级 audit + 并发非覆盖 + 非
   "require '$BROWSER_LOG' 'PASS  矩阵06 并发保存 409' && require '$SERVER_LOG' 'PASS  矩阵06a' 'PASS  矩阵06b' 'PASS  矩阵06c'"
 run_item 07 "WBS 导出：A–K 保真 + 五进度列文字与颜色读回 + 导出日期标签右移到 Q1" \
   "require '$BROWSER_LOG' 'PASS  矩阵07a' 'PASS  矩阵07b' && require '$READBACK_WBS' 'WBS A–K 数据区逐字段与 JSON 一致' 'WBS 五进度列数据区状态文字与 JSON 一致' 'WBS 五进度列颜色填充存在' '原「导出日期」标签右移到 Q1' 'WBS 导出保留 A1:C1 合并' 'WBS 导出不含旧全局 status'"
-run_item 08 "今日摘要格式逐字断言（含 @ 与风险前缀）与重要度排序；仅 A 列（CH-11 分列已删）" \
-  "require '$BROWSER_LOG' 'PASS  矩阵08a' 'PASS  矩阵08b' 'PASS  矩阵08c' 'PASS  矩阵08d' && require '$SERVER_LOG' 'PASS  矩阵08' && require '$READBACK_DAILY' '「今日摘要」只有 A 列' '「今日摘要」逐字 = ' '「今日摘要」按重要度排序'"
+run_item 08 "日报弹层文本（CH-13）：点「导出日报」打开弹层、文本 = /api/daily 关键信息文本（含 @ 与高风险前缀）；/api/daily 数据源与派生规则不回归" \
+  "require '$BROWSER_LOG' 'PASS  矩阵08a' 'PASS  矩阵08b' 'PASS  矩阵08c' 'PASS  矩阵08d 点「导出日报」打开只读文本弹层' && require '$SERVER_LOG' 'PASS  矩阵08'"
 run_item 09 "到期未更新判定 与「当天已更新则不判定」两条构造用例" \
   "require '$BROWSER_LOG' 'PASS  矩阵09a' 'PASS  矩阵09b' && require '$SERVER_LOG' 'PASS  矩阵09a' 'PASS  矩阵09b'"
-run_item 10 "日报两 sheet（CH-12 删除当日变更）与 CH-7 新增人员审计（保留在服务端数据源）" \
-  "require '$BROWSER_LOG' 'PASS  矩阵10a' 'PASS  矩阵10b' 'PASS  矩阵10c' && require '$READBACK_DAILY' '日报为单 workbook 两 sheet' '「阻塞与延期」保留 A–K 与 是否演示范围' '日报导出不含「当日变更」sheet' '旧「当日变更」表头与「今日摘要」辅助表头均不出现在任何 sheet' 'CH-7 新增人员审计行仍保留在服务端数据源'"
+run_item 10 "日报弹层（CH-13）：只体现阻塞/延期、无 xlsx 下载；CH-7 新增人员审计保留在服务端数据源" \
+  "require '$BROWSER_LOG' 'PASS  矩阵10a 日报只体现阻塞、延期' 'PASS  矩阵10b 页面「导出日报」不再产出与下载 xlsx' 'PASS  矩阵10c CH-7 新增人员审计行仍在'"
 run_item 11 "回归：CH-1…CH-8（含 CH-9/CH-10）/ D-3 / 验收 1–10 / Markdown / 重启持久 / 无外部请求" \
   "require '$BROWSER_LOG' 'PASS  矩阵11a' 'PASS  矩阵11b' 'PASS  矩阵11c' 'PASS  矩阵11d' 'PASS  矩阵11e' 'PASS  矩阵11f' 'PASS  矩阵11g' 'PASS  矩阵11h' 'PASS  矩阵11i' 'PASS  矩阵11j' && require '$SERVER_LOG' 'PASS  矩阵10b 旧 status 保留原值但不被日报引用' 'PASS  矩阵07（前置）CH-9'"
 run_item 12 "既有 18 项矩阵回归（JS/DOM/导出；按当前部署口径跳过容器附加项）" \

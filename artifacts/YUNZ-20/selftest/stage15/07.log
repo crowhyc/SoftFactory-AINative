@@ -1,0 +1,8 @@
+=== 自测矩阵 07 · 复制：优先 navigator.clipboard 成功路径 + 失败走选择/execCommand 兜底路径 + 双失败中文提示；成功提示「已复制，可直接粘贴到微信」 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage15/browser.log' 'PASS  矩阵07a 复制成功路径' 'PASS  矩阵07b 兜底路径' 'PASS  矩阵07c 两条路径都失败时'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵07a 复制成功路径
+OK    PASS  矩阵07b 兜底路径
+OK    PASS  矩阵07c 两条路径都失败时
+PASS=3 FAIL=0

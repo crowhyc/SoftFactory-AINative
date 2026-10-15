@@ -1,0 +1,8 @@
+=== 自测矩阵 03 · 排序：延期条目在前、阻塞条目在后；同类内按任务与阶段顺序稳定排列（设计→开发→测试→产品→演示准备） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage15/browser.log' 'PASS  矩阵03 弹层内延期条目在前' && require '/opt/wbs-rongcheng/tests/.tmp/stage15/textcheck.log' 'PASS  矩阵03 延期条目在前、阻塞条目在后'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵03 弹层内延期条目在前
+PASS=1 FAIL=0
+OK    PASS  矩阵03 延期条目在前、阻塞条目在后
+PASS=1 FAIL=0

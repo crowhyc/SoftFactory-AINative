@@ -1,0 +1,8 @@
+=== 自测矩阵 02 · 顶部概况行固定「今日延期 X 项 / 阻塞 Y 项」，计数与事件行数一致（前端 + 服务端双口径） ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage15/browser.log' 'PASS  矩阵02 顶部概况行' && require '/opt/wbs-rongcheng/tests/.tmp/stage15/textcheck.log' 'PASS  矩阵02 顶部概况行固定为'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵02 顶部概况行
+PASS=1 FAIL=0
+OK    PASS  矩阵02 顶部概况行固定为
+PASS=1 FAIL=0

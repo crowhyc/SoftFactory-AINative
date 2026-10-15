@@ -819,7 +819,7 @@ function trackPage(page, list) {
       (await page.evaluate(() => document.getElementById('identity-select').value)) === '项目负责人',
       await noteSummaryText('T004'));
 
-    /* =================== 矩阵 11：回归（D-3 / CH-1…CH-7 / 导出保真 / 日报双 sheet） =================== */
+    /* =================== 矩阵 11：回归（D-3 / CH-1…CH-7 / 导出保真；日报口径见 tests/stage15/） =================== */
     const regression = await page.evaluate(() => {
       const layer = document.getElementById('identity-layer');
       const rows = Array.from(document.querySelectorAll('#wbs-body tr'));
@@ -888,41 +888,77 @@ function trackPage(page, list) {
       diskDoc().identities.indexOf('赵新') !== -1 && addEvents.length === 1,
       { n: afterAdd.identities.length, events: addEvents.length });
 
-    /* CH-5 / CH-6 / 导出保真 */
-    const currentDoc = (await api('/api/wbs')).body;
-    const daily = await capture('#daily-btn');
-    results.daily = { name: daily.name, sheets: daily.sheets ? daily.sheets.map((s) => s.name) : null };
-    if (daily.base64) fs.writeFileSync(path.join(OUTDIR, daily.name), Buffer.from(daily.base64, 'base64'));
-    const blockedSheet = (daily.sheets || [])[1];
-    const blockedHeader = blockedSheet ? blockedSheet.rows[0] : null;
-    const blockedRank9 = (task) => (PHASE_KEYS.some((k) => task.phases[k] === '阻塞') ? 0 : 1);
-    const expectedBlocked = currentDoc.tasks
-      .filter((task) => PHASE_KEYS.some((k) => ['延期', '阻塞'].indexOf(task.phases[k]) !== -1))
-      .sort((a, b) => blockedRank9(a) - blockedRank9(b))
-      .map((task) => {
-        const dates = task.dates || {};
-        const phases = task.phases || {};
-        return [task.level1, task.level2, task.task, task.owner, task.demo]
-          .concat(PHASE_KEYS.map((key) => dates[key] || ''))
-          .concat([task.note])
-          .concat(PHASE_KEYS.map((key) => phases[key] || ''));
+    /* CH-5 / CH-6 / 导出保真 —— 日报口径自 CH-13 起改为「一键可复制关键信息文本」弹层（不再产出日报 xlsx）。 */
+    const openDaily = async () => {
+      await page.evaluate(() => {
+        window.__cap = null;
+        window.__objUrls = 0;
+        window.WBS_DOWNLOAD_HOOK = (bytes, name) => { window.__cap = { name: name, length: bytes.length }; };
+        const create = window.URL.createObjectURL.bind(window.URL);
+        window.URL.createObjectURL = function (blob) { window.__objUrls += 1; return create(blob); };
       });
-    check('矩阵11g 回归(CH-5) 日报为单 workbook 两 sheet（今日摘要 / 阻塞与延期），阻塞与延期行 = 任一阶段 ∈ {延期, 阻塞}（A–K + 五进度列）',
-      !!daily.sheets && daily.sheets.length === 2 && (daily.sheets || [])[0].name === '今日摘要' &&
-      blockedSheet.name === '阻塞与延期' &&
-      blockedHeader.length === 16 && blockedHeader[10] === '进展说明' && blockedHeader[11] === '设计进度' && blockedHeader[15] === '演示准备进度' &&
-      JSON.stringify(blockedSheet.rows.slice(1)) === JSON.stringify(expectedBlocked),
-      { sheets: daily.sheets ? daily.sheets.map((s) => s.name) : null, blocked: blockedSheet ? blockedSheet.rows.length - 1 : null });
+      await page.click('#daily-btn');
+      await page.waitForFunction(() => document.getElementById('daily-panel').hidden === false, null, { timeout: 15000 });
+      await page.waitForTimeout(200);
+      const view = await page.evaluate(() => {
+        const panel = document.getElementById('daily-panel');
+        const card = panel.querySelector('.modal-card');
+        const block = document.getElementById('daily-text');
+        return {
+          hidden: panel.hidden,
+          role: card ? card.getAttribute('role') : null,
+          ariaModal: card ? card.getAttribute('aria-modal') : null,
+          text: block.textContent,
+          whiteSpace: getComputedStyle(block).whiteSpace,
+          copyBtn: !!document.getElementById('daily-copy'),
+          closeBtn: !!document.getElementById('daily-close'),
+          hook: window.__cap,
+          objectUrls: window.__objUrls,
+          anchors: document.querySelectorAll('a[download]').length
+        };
+      });
+      const payload = (await api('/api/daily?tz=' + TZ + '&date=' + today())).body;
+      return { view: view, api: payload };
+    };
+
+    const dailyPopup = await openDaily();
+    const dailyText = dailyPopup.api.text;
+    const dailyLines = (dailyText && dailyText.lines) || [];
+    fs.writeFileSync(path.join(OUTDIR, 'daily-at-export.json'), JSON.stringify(dailyPopup.api));
+    results.dailyText = dailyText;
+    const delayedLines = dailyLines.filter((l) => l.indexOf('【延期·高风险】') === 0);
+    const blockedLines11 = dailyLines.filter((l) => l.indexOf('【阻塞·高风险】') === 0);
+    const lineRe11 = /^【(延期|阻塞)·高风险】.+ \/ .+ \/ .+ @.+：.+。$/;
+    const lastDelayed11 = delayedLines.length ? dailyLines.lastIndexOf(delayedLines[delayedLines.length - 1]) : -1;
+    const firstBlocked11 = blockedLines11.length ? dailyLines.indexOf(blockedLines11[0]) : -1;
+    const ordered11 = lastDelayed11 === -1 || firstBlocked11 === -1 || lastDelayed11 < firstBlocked11;
+    check('矩阵11g 回归(CH-5/CH-13) 日报改为只读文本弹层（role=dialog / aria-modal / 复制 + 关闭；无 WBS_DOWNLOAD_HOOK / createObjectURL / a[download]），文本 = /api/daily 关键信息文本（同一份字符串，pre-wrap 保留换行）',
+      dailyPopup.view.hidden === false && dailyPopup.view.role === 'dialog' && dailyPopup.view.ariaModal === 'true' &&
+      dailyPopup.view.copyBtn === true && dailyPopup.view.closeBtn === true &&
+      dailyPopup.view.hook === null && dailyPopup.view.objectUrls === 0 && dailyPopup.view.anchors === 0 &&
+      dailyPopup.view.whiteSpace === 'pre-wrap' && dailyPopup.view.text === dailyText.body,
+      { role: dailyPopup.view.role, hook: dailyPopup.view.hook, objectUrls: dailyPopup.view.objectUrls, anchors: dailyPopup.view.anchors, lines: dailyLines.length, whiteSpace: dailyPopup.view.whiteSpace });
     /* CH-12：当日变更 sheet 已从导出移除；note 字段级 old→new 与 CH-7 新增人员行改由服务端数据源承载。 */
     const historyForNote = (await api('/api/history?tz=' + encodeURIComponent(TZ) + '&date=' + today())).body.records || [];
     const noteRecords11 = historyForNote.filter((r) => r.field === 'note');
     const poolRecords = historyForNote.filter((r) => r.field === '人员池');
-    check('矩阵11h 回归(CH-5/CH-8-7) 日报导出不再含「当日变更」sheet（今日摘要仅 A 列），note 字段级 old→new 与新增人员行仍可从 /api/history 读到',
-      (daily.sheets || []).every((s) => s.name !== '当日变更') &&
-      (daily.sheets || [])[0].rows.every((row) => row.length === 1) &&
+    /* 无事件时契约要求整体文本只有一行「今日无阻塞、延期。」（不输出概况行）。 */
+    const expectedOverview11 = (delayedLines.length + blockedLines11.length) === 0
+      ? '今日无阻塞、延期。'
+      : ('今日延期 ' + delayedLines.length + ' 项 / 阻塞 ' + blockedLines11.length + ' 项');
+    check('矩阵11h 回归(CH-5/CH-8-7) 日报弹层只体现阻塞、延期（概况行计数 = 事件行数；逐字模板含 @ 与高风险前缀；延期条目在前、阻塞在后）；note 字段级 old→new 与新增人员行仍可从 /api/history 读到',
+      dailyText.overview === expectedOverview11 &&
+      dailyLines.length === delayedLines.length + blockedLines11.length &&
+      dailyText.delayedCount === delayedLines.length && dailyText.blockedCount === blockedLines11.length &&
+      dailyLines.every((l) => lineRe11.test(l)) && ordered11 &&
+      dailyText.body.indexOf('【完成】') === -1 && dailyText.body.indexOf('【普通】') === -1 &&
       noteRecords11.some((r) => r.old === '' && r.new === consistentNote && r.identity === '项目负责人') &&
       poolRecords.some((r) => r.new === '赵新'),
-      { sheets: daily.sheets ? daily.sheets.map((s) => s.name) : null, noteRows: noteRecords11.length, poolRows: poolRecords.length, summaryWidth: (daily.sheets || [])[0].rows[0].length });
+      { overview: dailyText.overview, delayed: delayedLines.length, blocked: blockedLines11.length, ordered: ordered11, noteRows: noteRecords11.length, poolRows: poolRecords.length });
+    /* 关闭日报弹层（后续 WBS 导出断言需要页面可点击）。 */
+    await page.click('#daily-close');
+    await page.waitForFunction(() => document.getElementById('daily-panel').hidden === true, null, { timeout: 15000 });
+    await page.waitForTimeout(150);
 
     const wbsExport = await capture('#export-btn');
     results.wbsExport = { name: wbsExport.name, sheets: wbsExport.sheets ? wbsExport.sheets.map((s) => s.name) : null };

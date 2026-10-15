@@ -1,0 +1,10 @@
+=== 自测矩阵 06 · 行格式与高风险前缀：逐字「【延期·高风险】/【阻塞·高风险】一级 / 二级 / 任务项 @负责人：结论。」；文本 = /api/daily 同一份字符串；只体现阻塞、延期 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage15/browser.log' 'PASS  矩阵06 弹层只读文本块内容' 'PASS  矩阵06 事件行逐字命中' && require '/opt/wbs-rongcheng/tests/.tmp/stage15/textcheck.log' 'PASS  矩阵06 事件行逐字为' 'PASS  矩阵06 只体现阻塞、延期'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵06 弹层只读文本块内容
+OK    PASS  矩阵06 事件行逐字命中
+PASS=2 FAIL=0
+OK    PASS  矩阵06 事件行逐字为
+OK    PASS  矩阵06 只体现阻塞、延期
+PASS=2 FAIL=0

@@ -102,6 +102,19 @@
   </div>
 </div>
 
+<div id="daily-panel" class="modal daily-panel" hidden>
+  <div class="modal-card daily-card" role="dialog" aria-modal="true" aria-labelledby="daily-title">
+    <h2 id="daily-title">今日阻塞与延期</h2>
+    <p class="modal-sub">只保留阻塞、延期两类关键信息；点「复制」后可整段粘贴到微信。</p>
+    <pre id="daily-text" class="daily-text" tabindex="0"></pre>
+    <p id="daily-msg" class="daily-msg" hidden></p>
+    <div class="modal-actions">
+      <button id="daily-close" type="button" class="btn">关闭</button>
+      <button id="daily-copy" type="button" class="btn btn-primary">复制</button>
+    </div>
+  </div>
+</div>
+
 <div id="note-panel" class="note-panel" hidden>
   <div id="note-dialog" class="note-dialog" role="dialog" aria-modal="true" aria-labelledby="note-title">
     <header class="note-head">

@@ -1,0 +1,22 @@
+YUNZ-35 变更包 #6（CH-13 日报文本弹层）作者自测开始 2026-10-15T18:35:18+0800
+node: /bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+v24.21.0  python3: Python 3.6.8  docker: Docker version 26.1.4, build 5650f9b  today: 2026-10-15
+
+--- 准备 A：真实浏览器（Chromium 容器）用例集（弹层 / 复制 / 关闭 / 无事件兜底） ---
+浏览器用例集退出码 0（完整输出：/opt/wbs-rongcheng/tests/.tmp/stage15/browser.log）
+--- 准备 B：服务端文本口径用例集（宿主 node：概况行 / 排序 / 派生 / 去重 / 兜底 / 旧数据源保留） ---
+服务端文本用例集退出码 0（完整输出：/opt/wbs-rongcheng/tests/.tmp/stage15/textcheck.log + /opt/wbs-rongcheng/tests/.tmp/stage15/textcheck-results.json）
+
+01   弹层入口（CH-13）：点「导出日报」打开只读文本弹层（role=dialog / 复制 + 关闭），无 blob / a[download] / xlsx 组装调用 通过（PASS=2 FAIL=0）
+02   顶部概况行固定「今日延期 X 项 / 阻塞 Y 项」，计数与事件行数一致（前端 + 服务端双口径） 通过（PASS=1 FAIL=0）
+03   排序：延期条目在前、阻塞条目在后；同类内按任务与阶段顺序稳定排列（设计→开发→测试→产品→演示准备） 通过（PASS=1 FAIL=0）
+04   内容范围：派生「到期未更新，判定延期」；当天已更新过的阶段不重复判定；边界（今天 / 空日期 / 已完成）与阻塞范围（当天新出现 + 仍阻塞） 通过（PASS=4 FAIL=0）
+05   无事件兜底：整体文本只有一行「今日无阻塞、延期。」（无概况行；与 /api/daily 一致） 通过（PASS=1 FAIL=0）
+06   行格式与高风险前缀：逐字「【延期·高风险】/【阻塞·高风险】一级 / 二级 / 任务项 @负责人：结论。」；文本 = /api/daily 同一份字符串；只体现阻塞、延期 通过（PASS=2 FAIL=0）
+07   复制：优先 navigator.clipboard 成功路径 + 失败走选择/execCommand 兜底路径 + 双失败中文提示；成功提示「已复制，可直接粘贴到微信」 通过（PASS=3 FAIL=0）
+08   关闭路径：关闭按钮 / Esc 均可关闭（只读展示、不弹确认）；打开与关闭不影响工作台未保存编辑状态 通过（PASS=3 FAIL=0）
+09   回归：既有 18 项矩阵 + Stage7 + Stage9 + Stage11 + Stage13（WBS 导出与五色、阶段下拉、权限、409 / 重启、Markdown、无外部请求） 通过（PASS=1 FAIL=0）
+10   部署与镜像自检（BIND_HOST=0.0.0.0 / 本机+0.0.0.0+公网三端 health / 无 node_modules / 资源与源码一致 / CH-13 live 冒烟） 通过（PASS=13 FAIL=0）
+
+结论：变更包 #6（CH-13 日报改为可复制关键信息文本弹层）作者自测矩阵 01–10 全部通过（浏览器用例集 0 / 服务端文本用例集 0）
+输出目录：/opt/wbs-rongcheng/tests/.tmp/stage15

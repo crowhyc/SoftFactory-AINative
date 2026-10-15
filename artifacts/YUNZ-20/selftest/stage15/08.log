@@ -1,0 +1,8 @@
+=== 自测矩阵 08 · 关闭路径：关闭按钮 / Esc 均可关闭（只读展示、不弹确认）；打开与关闭不影响工作台未保存编辑状态 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage15/browser.log' 'PASS  矩阵08a 关闭按钮可关闭弹层' 'PASS  矩阵08b Esc 可关闭弹层' 'PASS  矩阵08c 打开/关闭日报弹层不影响'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵08a 关闭按钮可关闭弹层
+OK    PASS  矩阵08b Esc 可关闭弹层
+OK    PASS  矩阵08c 打开/关闭日报弹层不影响
+PASS=3 FAIL=0

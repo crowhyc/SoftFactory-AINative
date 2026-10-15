@@ -1,5 +1,7 @@
 'use strict';
-/* YUNZ-27 / 变更包 #2：真实浏览器（Chromium）关键交互自测。
+/* YUNZ-27 / 变更包 #2：真实浏览器（Chromium）关键交互自测（CH-13 同步见下）。
+   CH-13 同步（YUNZ-35 / 变更包 #6）：日报不再产出 xlsx，改为「一键可复制关键信息文本」弹层；
+   本套件中编码日报 xlsx 的条目（矩阵7 / 8a / 14c）已按 CH-13 契约同步为弹层文本断言，断言强度未降低。
    运行环境：mcr.microsoft.com/playwright:v1.55.0-jammy 容器（chromium 140，与 playwright 1.55.0 对齐），
    --network host 使容器直接访问宿主回环上的服务（BASE）。宿主 CentOS 7（glibc 2.17）无法直接运行该 Chromium。
    宿主未安装任何系统级浏览器组件；浏览器只在测试容器内运行，不进产物、不进镜像。
@@ -365,43 +367,73 @@ function stopServer() {
       });
     };
 
-    const daily = await capture('#daily-btn');
-    const dailyNameOk = /^蓉城战役日报-\d{8}\.xlsx$/.test(String(daily.name)) && String(daily.name).indexOf(today().replace(/-/g, '')) !== -1;
-    check('矩阵7a 日报文件名与日期口径正确', dailyNameOk, { name: daily.name, today: today() });
-    results.daily = { name: daily.name, sheets: daily.sheets };
-    if (!daily.sheets) throw new Error('日报未产出文件');
-    check('矩阵7b 日报为单个 workbook、两个 sheet（今日摘要 / 阻塞与延期；CH-12 起不再含当日变更）',
-      daily.sheets.length === 2 && daily.sheets.map((s) => s.name).join('/') === '今日摘要/阻塞与延期',
-      daily.sheets.map((s) => s.name));
-
-    const blockedRows = daily.sheets[1].rows;
-    const blockedHeader = blockedRows[0];
-    const blockedBody = blockedRows.slice(1);
-    check('矩阵7c 阻塞与延期表头 = A–K 全字段 + 五个阶段进度列（16 列，含 是否演示范围）',
-      blockedHeader.length === 16 && blockedHeader[4] === '是否演示范围' && blockedHeader[10] === '进展说明' &&
-      blockedHeader[11] === '设计进度' && blockedHeader[15] === '演示准备进度',
-      blockedHeader);
-    const blockedRank = (task) => (PHASE_KEYS.some((k) => task.phases[k] === '阻塞') ? 0 : 1);
-    const expectedBlocked = prepared.tasks
-      .filter((task) => PHASE_KEYS.some((k) => ['延期', '阻塞'].indexOf(task.phases[k]) !== -1))
-      .sort((a, b) => blockedRank(a) - blockedRank(b))
-      .map((task) => {
-        const dates = task.dates || {};
-        const phases = task.phases || {};
-        return [task.level1, task.level2, task.task, task.owner, task.demo]
-          .concat(PHASE_KEYS.map((key) => dates[key] || ''))
-          .concat([task.note])
-          .concat(PHASE_KEYS.map((key) => phases[key] || ''));
+    /* CH-13：日报弹层采集（打开弹层 → 读文本 + 采集「无下载」证据 → 返回 /api/daily 快照）。 */
+    const openDaily = async () => {
+      await page.evaluate(() => {
+        window.__captured = null;
+        window.__capturedName = null;
+        window.__objUrls = 0;
+        window.WBS_DOWNLOAD_HOOK = (bytes, name) => { window.__captured = name; window.__capturedName = name; };
+        const create = window.URL.createObjectURL.bind(window.URL);
+        window.URL.createObjectURL = function (blob) { window.__objUrls += 1; return create(blob); };
       });
-    check('矩阵7d 阻塞与延期 sheet 恰好 = 任一阶段 ∈ {延期, 阻塞} 的行，A–K + 五进度列逐字段与数据一致（阻塞行排前）',
-      JSON.stringify(blockedBody) === JSON.stringify(expectedBlocked) && blockedBody.length >= 2,
-      { expected: expectedBlocked, actual: blockedBody });
+      await page.click('#daily-btn');
+      await page.waitForFunction(() => document.getElementById('daily-panel').hidden === false, null, { timeout: 15000 });
+      await page.waitForTimeout(200);
+      const view = await page.evaluate(() => ({
+        text: document.getElementById('daily-text').textContent,
+        whiteSpace: getComputedStyle(document.getElementById('daily-text')).whiteSpace,
+        role: document.querySelector('#daily-panel .modal-card') ? document.querySelector('#daily-panel .modal-card').getAttribute('role') : null,
+        hook: window.__captured,
+        objectUrls: window.__objUrls,
+        anchors: document.querySelectorAll('a[download]').length,
+        xlsxApi: typeof window.WBSCore.buildDailyWorkbook + '/' + typeof window.WBSCore.dailyBytes
+      }));
+      const payload = (await api('/api/daily?tz=' + encodeURIComponent(TZ) + '&date=' + today())).body;
+      return { view: view, api: payload };
+    };
 
-    /* CH-12：日报导出不再含「当日变更」sheet；字段级证据改由 /api/history（服务端保留）承载。 */
-    check('矩阵8a 日报导出的 sheet 仅今日摘要/阻塞与延期，不含「当日变更」（CH-12）',
-      daily.sheets.map((s) => s.name).indexOf('当日变更') === -1 && daily.sheets.length === 2 &&
-      daily.sheets[0].rows[0].length === 1,
-      daily.sheets.map((s) => s.name));
+    const daily = await openDaily();
+    results.dailyText = daily.api.text;
+    const dailyDoc = (await api('/api/wbs')).body;
+    const dTask = (id) => dailyDoc.tasks.find((t) => t.id === id);
+    const dLine = (prefix, id, conclusion) => '【' + prefix + '】' + dTask(id).level1 + ' / ' + dTask(id).level2 +
+      ' / ' + dTask(id).task + ' @' + dTask(id).owner + '：' + conclusion + '。';
+    const expectDailyLines = [
+      dLine('延期·高风险', 'T004', '开发延期'),
+      dLine('阻塞·高风险', 'T003', '测试更新为阻塞')
+    ];
+    check('矩阵7a 点「导出日报」打开只读文本弹层（role=dialog），且不再产出与下载日报 xlsx（无 WBS_DOWNLOAD_HOOK 调用 / createObjectURL / a[download] / xlsx 组装 API；CH-13）',
+      daily.view.role === 'dialog' && daily.view.hook === null && daily.view.objectUrls === 0 &&
+      daily.view.anchors === 0 && daily.view.xlsxApi === 'undefined/undefined',
+      { role: daily.view.role, hook: daily.view.hook, objectUrls: daily.view.objectUrls, anchors: daily.view.anchors, xlsxApi: daily.view.xlsxApi });
+    check('矩阵7b 弹层只读文本块 = /api/daily 的关键信息文本（同一份字符串），首行概况为「今日延期 X 项 / 阻塞 Y 项」',
+      daily.view.text === daily.api.text.body && daily.view.whiteSpace === 'pre-wrap' &&
+      daily.view.text.split('\n')[0] === '今日延期 1 项 / 阻塞 1 项' &&
+      daily.api.text.delayedCount === 1 && daily.api.text.blockedCount === 1,
+      { first: daily.view.text.split('\n')[0], text: daily.view.text.split('\n') });
+
+    check('矩阵7c 弹层事件行逐字「【延期·高风险】/【阻塞·高风险】一级 / 二级 / 任务项 @负责人：结论。」（含 @ 与高风险前缀；只体现阻塞、延期）',
+      JSON.stringify(daily.api.text.lines) === JSON.stringify(expectDailyLines) &&
+      daily.api.text.lines.every((l) => /^【(延期|阻塞)·高风险】.+ \/ .+ \/ .+ @.+：.+。$/.test(l)) &&
+      daily.view.text.indexOf('【完成】') === -1 && daily.view.text.indexOf('【普通】') === -1,
+      { expect: expectDailyLines, actual: daily.api.text.lines });
+    check('矩阵7d 延期条目在前、阻塞条目在后；Esc 可关闭弹层（只读展示、无未保存内容、不下载文件）',
+      daily.api.text.lines.slice(0, daily.api.text.delayedCount).every((l) => l.indexOf('【延期·高风险】') === 0) &&
+      daily.api.text.lines.slice(daily.api.text.delayedCount).every((l) => l.indexOf('【阻塞·高风险】') === 0) &&
+      daily.api.text.lines.length === daily.api.text.delayedCount + daily.api.text.blockedCount,
+      { delayed: daily.api.text.delayedCount, blocked: daily.api.text.blockedCount });
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => document.getElementById('daily-panel').hidden === true, null, { timeout: 15000 });
+    const escClosed = await page.evaluate(() => document.getElementById('daily-panel').hidden);
+    check('矩阵7e Esc 关闭日报弹层（关闭按钮路径见矩阵 7a 之后的弹层结构断言）', escClosed === true, escClosed);
+
+    /* CH-13：日报改为文本弹层，不含「当日变更」等普通变更明细；字段级证据仍由 /api/history（服务端保留）承载。 */
+    check('矩阵8a 日报弹层只体现阻塞、延期：不含「完成 / 普通」事件，也不含当日普通变更明细（CH-13）',
+      daily.api.text.lines.every((l) => l.indexOf('【完成】') === -1 && l.indexOf('【普通】') === -1) &&
+      daily.api.changes.length > 0 && Array.isArray(daily.api.summary) &&
+      daily.view.text.indexOf('当日变更') === -1 && daily.view.text.indexOf('改动字段') === -1,
+      { lines: daily.api.text.lines.length, changes: daily.api.changes.length });
     const history = (await api('/api/history?tz=' + TZ + '&date=' + today())).body;
     const nameById = {};
     prepared.tasks.forEach((t) => { nameById[t.id] = t.task; });
@@ -424,7 +456,6 @@ function stopServer() {
       { expected: expectedChanges, actual: actualChanges });
     const times = history.records.map((row) => Date.parse(row.at));
     check('矩阵8c 同一任务的字段级记录按时间升序（/api/history）', times.every((t, i) => i === 0 || t >= times[i - 1]), times);
-    if (daily.base64) fs.writeFileSync(path.join(OUTDIR, daily.name), Buffer.from(daily.base64, 'base64'));
 
     /* ---------- 矩阵9：原 WBS 导出仍不含 status、A–K 11 列、第 1/2 行不变 ---------- */
     const wbsExport = await capture('#export-btn');
@@ -630,16 +661,18 @@ function stopServer() {
       addEvents[0]);
 
     /* CH-12：当日变更 sheet 已从日报导出移除，CH-7 新增人员行改由 /api/daily 的 changes 数据 + /api/history 保留。 */
-    const daily2 = await capture('#daily-btn');
-    const daily2Name = String(daily2.name || 'daily-after-add.xlsx').replace(/\.xlsx$/, '-含新增人员.xlsx');
-    if (daily2.base64) fs.writeFileSync(path.join(OUTDIR, daily2Name), Buffer.from(daily2.base64, 'base64'));
+    /* CH-13：日报改为文本弹层（只含阻塞、延期）；CH-7 新增人员行仍留在服务端审计/数据源。 */
     const dailyApi2 = (await api('/api/daily?tz=' + encodeURIComponent(TZ) + '&date=' + today())).body;
     const poolChanges = (dailyApi2.changes || []).filter((row) => row.field === '人员池');
     const addChange = poolChanges.find((row) => row.new === '赵新');
-    check('矩阵14c（CH-7）CH-7 新增人员行仍在服务端审计/日报数据源中（改动字段=人员池 / 旧值空 / 新值=姓名 / 操作身份照实），且不再出现在日报导出的 sheet 中',
+    const daily2 = await openDaily();
+    check('矩阵14c（CH-7）CH-7 新增人员行仍在服务端审计/日报数据源中（改动字段=人员池 / 旧值空 / 新值=姓名 / 操作身份照实），且不出现在日报弹层（CH-13 起只含阻塞、延期）',
       !!addChange && addChange.old === '' && addChange.task === '新增人员 赵新' && addChange.identity === '项目负责人' &&
-      poolChanges.length === 1 && daily2.sheets.length === 2 && daily2.sheets.every((sheet) => sheet.name !== '当日变更'),
-      { change: addChange, sheets: daily2.sheets.map((sheet) => sheet.name) });
+      poolChanges.length === 1 && daily2.view.text.indexOf('赵新') === -1 && daily2.view.text.indexOf('人员池') === -1 &&
+      daily2.view.text === daily2.api.text.body,
+      { change: addChange, text: daily2.view.text.split('\n').slice(0, 2) });
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(() => document.getElementById('daily-panel').hidden === true, null, { timeout: 15000 });
 
     await page.click('#home-btn');
     await page.waitForTimeout(400);

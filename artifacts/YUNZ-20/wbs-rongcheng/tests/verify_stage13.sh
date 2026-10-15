@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # YUNZ-33 / 变更包 #5（CH-11 今日摘要只保留 A 列 + CH-12 日报删除「当日变更」sheet）作者自测矩阵 01–07 总入口。
+# CH-13 同步（YUNZ-35 / 变更包 #6）：日报不再产出 xlsx，改为「一键可复制关键信息文本」弹层；
+# 本套件编码日报 xlsx 的条目（01–04 / 06）已按 CH-13 契约同步为弹层文本断言，断言强度未降低。
 # 浏览器项跑在 playwright Chromium 容器内（宿主 CentOS 7 无法直接跑 Chromium）；
 # 导出产物另由宿主 python 侧独立读回（xlsx zip/XML，不依赖 openpyxl）；
 # 回归项另跑既有 18 项矩阵、Stage7 / Stage9 / Stage11 矩阵与部署自检。
@@ -63,12 +65,10 @@ echo | tee -a "$SUMMARY"
 
 BROWSER_LOG="$OUT/browser.log"
 READBACK_WBS="$OUT/readback-wbs.log"
-READBACK_DAILY="$OUT/readback-daily.log"
-READBACK_QUIET="$OUT/readback-daily-quiet.log"
 BROWSER_OUT="$APP_DIR/tests/.tmp/stage13-out"
 rm -rf "$BROWSER_OUT"
 
-echo "--- 准备 A：真实浏览器（Chromium 容器）用例集（日报两 sheet / 摘要仅 A 列 / WBS 不回归 / 409 / 重启） ---" | tee -a "$SUMMARY"
+echo "--- 准备 A：真实浏览器（Chromium 容器）用例集（日报文本弹层 / WBS 不回归 / 409 / 重启） ---" | tee -a "$SUMMARY"
 bash tests/stage13/run.sh "$BROWSER_OUT" > "$BROWSER_LOG" 2>&1
 BROWSER_RC=$?
 echo "浏览器用例集退出码 $BROWSER_RC（完整输出：$BROWSER_LOG）" | tee -a "$SUMMARY"
@@ -76,25 +76,21 @@ echo "浏览器用例集退出码 $BROWSER_RC（完整输出：$BROWSER_LOG）" 
 echo "--- 准备 B：导出产物宿主 python 独立读回（zip/XML，不依赖 openpyxl） ---" | tee -a "$SUMMARY"
 python3 tests/stage13/xlsx_readback.py wbs "$BROWSER_OUT/WBS-$TODAY.xlsx" public/template.xlsx "$BROWSER_OUT/wbs-at-export.json" 36 > "$READBACK_WBS" 2>&1
 READBACK_WBS_RC=$?
-python3 tests/stage13/xlsx_readback.py daily "$BROWSER_OUT/日报-$TODAY_COMPACT.xlsx" "$BROWSER_OUT/daily-at-export.json" > "$READBACK_DAILY" 2>&1
-READBACK_DAILY_RC=$?
-python3 tests/stage13/quiet_readback.py "$BROWSER_OUT/日报-$TODAY_COMPACT-无事件.xlsx" "$BROWSER_OUT/daily-quiet.json" > "$READBACK_QUIET" 2>&1
-READBACK_QUIET_RC=$?
-echo "WBS 读回退出码 $READBACK_WBS_RC（$READBACK_WBS） 日报读回退出码 $READBACK_DAILY_RC（$READBACK_DAILY） 无事件读回退出码 $READBACK_QUIET_RC（$READBACK_QUIET）" | tee -a "$SUMMARY"
+echo "WBS 读回退出码 $READBACK_WBS_RC（$READBACK_WBS） 日报已改为弹层文本（CH-13）：无日报 xlsx 读回，弹层文本断言在浏览器侧逐字比对 /api/daily.text" | tee -a "$SUMMARY"
 echo | tee -a "$SUMMARY"
 
-run_item 01 "日报 sheetNames == [\"今日摘要\",\"阻塞与延期\"]（CH-12）" \
-  "require '$BROWSER_LOG' 'PASS  矩阵01 日报 sheetNames == ' 'PASS  矩阵01b' && require '$READBACK_DAILY' '日报为单 workbook 两 sheet'"
-run_item 02 "今日摘要仅 A 列有值（列数 1 / 无辅助表头）与 A 列宽 + 自动换行（CH-11）" \
-  "require '$BROWSER_LOG' 'PASS  矩阵02 今日摘要仅 A 列有值' 'PASS  矩阵02b' && require '$READBACK_DAILY' '「今日摘要」只有 A 列' '「今日摘要」A 列之外无任何值' '「今日摘要」A 列列宽足够' '「今日摘要」单元格套用自动换行样式'"
-run_item 03 "摘要文本逐字与 #4 口径一致（@ / 高风险前缀 / 排序 / 五类模板 / 一任务多行 / 无事件兜底）" \
-  "require '$BROWSER_LOG' 'PASS  矩阵03a' 'PASS  矩阵03b' 'PASS  矩阵03c' 'PASS  矩阵03d' 'PASS  矩阵03e' && require '$READBACK_DAILY' '「今日摘要」A 列 = /api/daily 的微信检索式文本行' '「今日摘要」逐字 = ' '「今日摘要」按重要度排序' '「今日摘要」同一任务多事件多行' && require '$READBACK_QUIET' '无事件兜底导出仍为两 sheet' '无事件兜底：导出 A 列 = 表头 + 一行兜底文案'"
-run_item 04 "旧「当日变更」表头不出现（导出路径已移除）" \
-  "require '$BROWSER_LOG' 'PASS  矩阵04 旧「当日变更」表头与「今日摘要」辅助分列表头' && require '$READBACK_DAILY' '日报导出不含「当日变更」sheet' '旧「当日变更」表头与「今日摘要」辅助表头均不出现在任何 sheet' '全部 sheet/workbook 部件无旧「当日变更」表头字样'"
+run_item 01 "日报弹层（CH-13）：点「导出日报」打开只读文本弹层（role=dialog / 复制 + 关闭），且不再产出与下载日报 xlsx" \
+  "require '$BROWSER_LOG' 'PASS  矩阵01 点「导出日报」打开只读文本弹层'"
+run_item 02 "弹层文本 = /api/daily 的关键信息文本（同一份字符串）；概况行「今日延期 X 项 / 阻塞 Y 项」计数与事件行数一致，且只体现阻塞与延期" \
+  "require '$BROWSER_LOG' 'PASS  矩阵01b 弹层只读文本块内容' 'PASS  矩阵02 顶部概况行固定为' 'PASS  矩阵02b 日报只体现阻塞、延期'"
+run_item 03 "事件行逐字模板（含 @ 与高风险前缀）/ 延期在前阻塞在后 / 派生到期未更新与当天已更新不重复判定 / 无事件兜底" \
+  "require '$BROWSER_LOG' 'PASS  矩阵03a 事件行逐字' 'PASS  矩阵03b 延期条目在前' 'PASS  矩阵03c 派生规则' 'PASS  矩阵03d 当天已更新过的阶段' 'PASS  矩阵03e 无事件兜底'"
+run_item 04 "弹层文本不残留旧日报口径字样（当日变更 / 改动字段 / 旧值 / 新值 / 操作身份 / 重要度 / 依据）" \
+  "require '$BROWSER_LOG' 'PASS  矩阵04 弹层文本不残留旧日报口径字样'"
 run_item 05 "WBS 导出不回归：五色填充 / A–K 保真 / L–P 五进度列 / Q1 导出日期标签" \
   "require '$BROWSER_LOG' 'PASS  矩阵05a' && require '$READBACK_WBS' 'WBS 第 1/2 行 A–K 与源模板逐字一致' 'WBS A–K 数据区逐字段与 JSON 一致' 'WBS 五进度列数据区状态文字与 JSON 一致' 'WBS 五进度列颜色填充存在且与五色映射一致' '原「导出日期」标签右移到 Q1' 'WBS 导出保留 A1:C1 合并' 'WBS 导出不含旧全局 status'"
-run_item 06 "CH-7 identity_added 仍写审计、/api/history 仍返回（导出不再含当日变更 sheet）" \
-  "require '$BROWSER_LOG' 'PASS  矩阵06 identity_added 仍写审计' 'PASS  矩阵06b' && require '$READBACK_DAILY' 'CH-7 新增人员审计行仍保留在服务端数据源' '日报导出不含「当日变更」sheet' '日报为单 workbook 两 sheet'"
+run_item 06 "CH-7 identity_added 仍写审计、/api/history 与 /api/daily 数据源仍返回（CH-13 起只留在服务端、不进日报文本）" \
+  "require '$BROWSER_LOG' 'PASS  矩阵06 identity_added 仍写审计' 'PASS  矩阵06b 当天含 identity_added 审计时'"
 run_item 07 "保存 / 409 / 重启持久 / 健康探针 / 无外部请求不回归" \
   "require '$BROWSER_LOG' 'PASS  矩阵07a' 'PASS  矩阵07b' 'PASS  矩阵07c' 'PASS  矩阵07d'"
 run_item 08 "回归：既有 18 项矩阵（JS/DOM/导出；按当前部署口径跳过容器附加项）" \
@@ -110,7 +106,7 @@ run_item 12 "部署与镜像自检（BIND_HOST=0.0.0.0 / 双端+公网 health / 
 
 echo | tee -a "$SUMMARY"
 if [ "$FAILED" -eq 0 ]; then
-  echo "结论：变更包 #5（CH-11 + CH-12）作者自测矩阵 01–07 与回归项 08–12 全部通过（浏览器用例集 $BROWSER_RC）" | tee -a "$SUMMARY"
+  echo "结论：变更包 #5（CH-11 + CH-12，日报口径已由 CH-13 同步为文本弹层）作者自测矩阵 01–07 与回归项 08–12 全部通过（浏览器用例集 $BROWSER_RC）" | tee -a "$SUMMARY"
 else
   echo "结论：存在失败项，见上方与各项日志" | tee -a "$SUMMARY"
 fi
