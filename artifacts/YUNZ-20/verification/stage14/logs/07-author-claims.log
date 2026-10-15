@@ -1,0 +1,12 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  C-01 作者自报 app.js sha256 复算一致
+PASS  C-02 作者自报 server.js sha256 复算一致（本包未改服务端）
+PASS  C-03 作者自报 SHA256SUMS sha256 复算一致
+PASS  C-04 作者自测证据目录 selftest/stage13 存在（自报链）
+PASS  C-05 作者自测逐项日志 >= 12（自报链）
+PASS  C-06 作者自报部署镜像名与实际运行镜像一致
+PASS  C-07 运行目录 public/ 与源码快照逐字一致
+  作者自测浏览器产物 日报-20261015.xlsx sha256=27fa25e2f54f9870e732b7c6e38ab76a4f396e54f7b2cde563035a1e45e8b2f4 size=20609
+  作者自测无事件兜底文件 sha256=
+
+[author-claims] PASS=7 FAIL=0

@@ -1,0 +1,40 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+isoA: tasks=35 today=2026-10-15 t002.design=2026-11-14
+isoB: tasks=35 today=2026-10-15 t002.design=2026-12-14
+PASS  I01 隔离实例页面渲染 35 行  :: {"rows":35}
+PASS  I02 阶段下拉「开发→阻塞」已进入页面草稿
+PASS  SAVE 保存返回 200 且带 revision  :: {"status":200,"body":{"ok":true,"revision":12}}
+PASS  I03 页面显示 / API / 磁盘三端一致（T003 开发=阻塞）  :: {"api":"阻塞","disk":"阻塞"}
+PASS  SAVE 保存返回 200 且带 revision  :: {"status":200,"body":{"ok":true,"revision":13}}
+PASS  I04 T004 测试=已完成 三端一致
+PASS  SAVE 保存返回 200 且带 revision  :: {"status":200,"body":{"ok":true,"revision":14}}
+PASS  I05 T006 设计=延期 三端一致
+PASS  SAVE 保存返回 200 且带 revision  :: {"status":200,"body":{"ok":true,"revision":15}}
+PASS  I-DESIGN-PROGRESS T007 设计进度=已开始（补齐五色覆盖）  :: {"v":"已开始"}
+PASS  SAVE 保存返回 200 且带 revision  :: {"status":200,"body":{"ok":true,"revision":16}}
+PASS  I06 日期编辑入口改「产品计划 → 11-05」三端一致
+PASS  SAVE 保存返回 200 且带 revision  :: {"status":200,"body":{"ok":true,"revision":17}}
+PASS  I07 T006 开发计划 → 11-06 三端一致（同任务多事件基础）
+PASS  I08 单元格编辑入口存在（点击进入编辑态）  :: {"editor":1}
+PASS  I09 Esc 取消编辑：还原原值且未置脏  :: {"before":"业务工作台","after":"业务工作台","disabled_before":true,"disabled_after":true}
+PASS  I10 空输入被前置校验拦截（横幅报错）且未落盘  :: {"banner":"前置校验未通过，未向服务器提交（共 1 项）：[T005] 任务项：任务项不能为空","rev":17}
+PASS  I11 非法输入（超长 250 字）被拦截且未落盘  :: {"banner":"前置校验未通过，未向服务器提交（共 1 项）：[T005] 二级：二级长度超过 200","rev":17}
+PASS  SAVE 保存返回 200 且带 revision  :: {"status":200,"body":{"ok":true,"revision":18}}
+PASS  I12 还原合法值后保存成功（revision 仅 +1）  :: {"rev":18}
+PASS  SAVE 保存返回 200 且带 revision  :: {"status":200,"body":{"ok":true,"revision":19}}
+PASS  I13 新增行已持久化（36 行，含新增行）  :: {"n":36,"id":"T037"}
+PASS  SAVE 保存返回 200 且带 revision  :: {"status":200,"body":{"ok":true,"revision":20}}
+PASS  I14 删除行已持久化（回到 35 行）  :: {"n":35}
+PASS  I15 新增人员已保存（身份池 13 人）  :: {"n":13}
+PASS  I16 新增人员仍写 identity_added 审计  :: {"has":true}
+PASS  I17 /api/history 仍返回人员池（identity_added）记录  :: {"pool":1}
+PASS  I18 普通负责人：本人行可编辑 / 他人行只读  :: {"ownRow":"T002","other":"T004","ownDisabled":false,"otherDisabled":true}
+PASS  I19 点击他人行只读单元格给出中文提示  :: "当前身份「王言」对第 T004 行的「设计」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"
+PASS  I20 隔离实例真实浏览器下载日报  :: {"name":"蓉城战役日报-20261015.xlsx","size":20560}
+PASS  I21 隔离实例真实浏览器下载 WBS 导出  :: {"name":"蓉城战役WBS-20261015.xlsx","size":1183231}
+PASS  I22 无事件实例真实浏览器下载日报  :: {"name":"蓉城战役日报-20261015.xlsx","size":17695}
+PASS  I23 无事件实例摘要为兜底一行  :: [{"line":"今日无阻塞、延期或变更。","importance":"","conclusion":"","level1":"","level2":"","task":"","owner":"","at":"","basis":""}]
+PASS  I24 隔离会话全程无外部请求  :: []
+PASS  I25 无页面脚本错误  :: []
+
+[iso] PASS=35 FAIL=0

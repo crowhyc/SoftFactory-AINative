@@ -1,0 +1,31 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+== 1. 运行态 ==
+PASS  D-01 运行容器存在，镜像 wbs-rongcheng:20261015141900
+PASS  D-02 容器网络模式 host（绑定宿主 0.0.0.0:4180）
+PASS  D-03 宿主监听 0.0.0.0:4180（实测 *:4180）
+PASS  D-04 容器 healthcheck healthy
+== 2. health 三端 ==
+  127.0.0.1 -> {"ok":true,"service":"wbs-rongcheng","revision":10}
+PASS  D-05 127.0.0.1:4180 health ok
+  0.0.0.0  -> {"ok":true,"service":"wbs-rongcheng","revision":10}
+PASS  D-06 0.0.0.0:4180 health ok
+  公网 47.108.129.157 -> (rc=0) {"ok":true,"service":"wbs-rongcheng","revision":10}
+PASS  D-07 公网 47.108.129.157:4180 health ok（实测可达）
+== 3. 镜像内容 ==
+PASS  D-08 镜像内无 node_modules / package-lock.json
+PASS  D-09 package.json 零运行依赖（dependencies/devDependencies 均为空）
+PASS  D-10 随包 SheetJS 版本锁定 0.18.5
+== 4. 服务端返回资源 与 快照 sha256 一致 ==
+PASS  D-11/public/app.js 服务端=运行目录=快照（d49cc9e2fce5）
+PASS  D-11/public/styles.css 服务端=运行目录=快照（62771efb859c）
+PASS  D-11/public/index.html 服务端=运行目录=快照（4438496e27be）
+PASS  D-11/public/vendor/xlsx.full.min.js 服务端=运行目录=快照（c9506197caf8）
+PASS  D-11/public/template.xlsx 服务端=运行目录=快照（e01c269699ad）
+PASS  D-12/server.js 运行目录=源码快照（d9b29f0001fe）
+PASS  D-12/package.json 运行目录=源码快照（781b49af340c）
+PASS  D-13 容器内 server.js = 运行目录（d9b29f0001fe）
+== 5. 现场数据未被本轮改动 ==
+PASS  D-14 现场 revision 仍为 10（未被复验改动）
+PASS  D-15 复验窗口内未新增数据备份（无写入）
+
+[deploy] PASS=20 FAIL=0

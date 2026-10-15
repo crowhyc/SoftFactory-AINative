@@ -1,0 +1,653 @@
+{
+  "started_at": "2026-10-15T06:54:04.579Z",
+  "checks": [
+    {
+      "id": "I01 隔离实例页面渲染 35 行",
+      "ok": true,
+      "detail": {
+        "rows": 35
+      }
+    },
+    {
+      "id": "I02 阶段下拉「开发→阻塞」已进入页面草稿",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "SAVE 保存返回 200 且带 revision",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "revision": 12
+        }
+      }
+    },
+    {
+      "id": "I03 页面显示 / API / 磁盘三端一致（T003 开发=阻塞）",
+      "ok": true,
+      "detail": {
+        "api": "阻塞",
+        "disk": "阻塞"
+      }
+    },
+    {
+      "id": "SAVE 保存返回 200 且带 revision",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "revision": 13
+        }
+      }
+    },
+    {
+      "id": "I04 T004 测试=已完成 三端一致",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "SAVE 保存返回 200 且带 revision",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "revision": 14
+        }
+      }
+    },
+    {
+      "id": "I05 T006 设计=延期 三端一致",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "SAVE 保存返回 200 且带 revision",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "revision": 15
+        }
+      }
+    },
+    {
+      "id": "I-DESIGN-PROGRESS T007 设计进度=已开始（补齐五色覆盖）",
+      "ok": true,
+      "detail": {
+        "v": "已开始"
+      }
+    },
+    {
+      "id": "SAVE 保存返回 200 且带 revision",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "revision": 16
+        }
+      }
+    },
+    {
+      "id": "I06 日期编辑入口改「产品计划 → 11-05」三端一致",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "SAVE 保存返回 200 且带 revision",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "revision": 17
+        }
+      }
+    },
+    {
+      "id": "I07 T006 开发计划 → 11-06 三端一致（同任务多事件基础）",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "I08 单元格编辑入口存在（点击进入编辑态）",
+      "ok": true,
+      "detail": {
+        "editor": 1
+      }
+    },
+    {
+      "id": "I09 Esc 取消编辑：还原原值且未置脏",
+      "ok": true,
+      "detail": {
+        "before": "业务工作台",
+        "after": "业务工作台",
+        "disabled_before": true,
+        "disabled_after": true
+      }
+    },
+    {
+      "id": "I10 空输入被前置校验拦截（横幅报错）且未落盘",
+      "ok": true,
+      "detail": {
+        "banner": "前置校验未通过，未向服务器提交（共 1 项）：[T005] 任务项：任务项不能为空",
+        "rev": 17
+      }
+    },
+    {
+      "id": "I11 非法输入（超长 250 字）被拦截且未落盘",
+      "ok": true,
+      "detail": {
+        "banner": "前置校验未通过，未向服务器提交（共 1 项）：[T005] 二级：二级长度超过 200",
+        "rev": 17
+      }
+    },
+    {
+      "id": "SAVE 保存返回 200 且带 revision",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "revision": 18
+        }
+      }
+    },
+    {
+      "id": "I12 还原合法值后保存成功（revision 仅 +1）",
+      "ok": true,
+      "detail": {
+        "rev": 18
+      }
+    },
+    {
+      "id": "SAVE 保存返回 200 且带 revision",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "revision": 19
+        }
+      }
+    },
+    {
+      "id": "I13 新增行已持久化（36 行，含新增行）",
+      "ok": true,
+      "detail": {
+        "n": 36,
+        "id": "T037"
+      }
+    },
+    {
+      "id": "SAVE 保存返回 200 且带 revision",
+      "ok": true,
+      "detail": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "revision": 20
+        }
+      }
+    },
+    {
+      "id": "I14 删除行已持久化（回到 35 行）",
+      "ok": true,
+      "detail": {
+        "n": 35
+      }
+    },
+    {
+      "id": "I15 新增人员已保存（身份池 13 人）",
+      "ok": true,
+      "detail": {
+        "n": 13
+      }
+    },
+    {
+      "id": "I16 新增人员仍写 identity_added 审计",
+      "ok": true,
+      "detail": {
+        "has": true
+      }
+    },
+    {
+      "id": "I17 /api/history 仍返回人员池（identity_added）记录",
+      "ok": true,
+      "detail": {
+        "pool": 1
+      }
+    },
+    {
+      "id": "I18 普通负责人：本人行可编辑 / 他人行只读",
+      "ok": true,
+      "detail": {
+        "ownRow": "T002",
+        "other": "T004",
+        "ownDisabled": false,
+        "otherDisabled": true
+      }
+    },
+    {
+      "id": "I19 点击他人行只读单元格给出中文提示",
+      "ok": true,
+      "detail": "当前身份「王言」对第 T004 行的「设计」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"
+    },
+    {
+      "id": "I20 隔离实例真实浏览器下载日报",
+      "ok": true,
+      "detail": {
+        "name": "蓉城战役日报-20261015.xlsx",
+        "size": 20560
+      }
+    },
+    {
+      "id": "I21 隔离实例真实浏览器下载 WBS 导出",
+      "ok": true,
+      "detail": {
+        "name": "蓉城战役WBS-20261015.xlsx",
+        "size": 1183231
+      }
+    },
+    {
+      "id": "I22 无事件实例真实浏览器下载日报",
+      "ok": true,
+      "detail": {
+        "name": "蓉城战役日报-20261015.xlsx",
+        "size": 17695
+      }
+    },
+    {
+      "id": "I23 无事件实例摘要为兜底一行",
+      "ok": true,
+      "detail": [
+        {
+          "line": "今日无阻塞、延期或变更。",
+          "importance": "",
+          "conclusion": "",
+          "level1": "",
+          "level2": "",
+          "task": "",
+          "owner": "",
+          "at": "",
+          "basis": ""
+        }
+      ]
+    },
+    {
+      "id": "I24 隔离会话全程无外部请求",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "id": "I25 无页面脚本错误",
+      "ok": true,
+      "detail": []
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4260/",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4260/styles.css",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4260/vendor/xlsx.full.min.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4260/app.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/wbs",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/health",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/wbs",
+      "method": "PUT"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/wbs",
+      "method": "PUT"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/wbs",
+      "method": "PUT"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/wbs",
+      "method": "PUT"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/wbs",
+      "method": "PUT"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/wbs",
+      "method": "PUT"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/wbs",
+      "method": "PUT"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/wbs",
+      "method": "PUT"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/wbs",
+      "method": "PUT"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/wbs",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/wbs",
+      "method": "PUT"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/daily?tz=Asia%2FShanghai&date=2026-10-15",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4260/api/daily?tz=Asia%2FShanghai&date=2026-10-15",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4260/template.xlsx",
+      "method": "GET"
+    }
+  ],
+  "servers": {
+    "A": {
+      "base": "http://127.0.0.1:4260",
+      "health": {
+        "ok": true,
+        "service": "wbs-rongcheng",
+        "revision": 11
+      },
+      "data": "/qv/iso/isoA"
+    },
+    "B": {
+      "base": "http://127.0.0.1:4261",
+      "health": {
+        "ok": true,
+        "service": "wbs-rongcheng",
+        "revision": 11
+      },
+      "data": "/qv/iso/isoB"
+    }
+  },
+  "daily_at_export": {
+    "ok": true,
+    "date": "2026-10-15",
+    "tz": "Asia/Shanghai",
+    "summary": [
+      {
+        "line": "【延期·高风险】客户端 / 业务工作台 / 代码开发 @郑述文：设计延期。",
+        "importance": "延期·高风险",
+        "conclusion": "设计延期",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "代码开发",
+        "owner": "郑述文",
+        "at": "2026-10-15T06:54:08.599Z",
+        "basis": "当日阶段状态变更"
+      },
+      {
+        "line": "【阻塞·高风险】客户端 / 业务工作台 / 概要设计&评审 @王言：阶段更新为阻塞。",
+        "importance": "阻塞·高风险",
+        "conclusion": "阶段更新为阻塞",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "概要设计&评审",
+        "owner": "王言",
+        "at": "2026-10-15T06:54:06.992Z",
+        "basis": "当日阶段状态变更"
+      },
+      {
+        "line": "【延期·高风险】客户端 / 业务工作台 / 需求拆分 @王言：设计 10-14 到期未更新，判定延期。",
+        "importance": "延期·高风险",
+        "conclusion": "设计 10-14 到期未更新，判定延期",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "需求拆分",
+        "owner": "王言",
+        "at": "",
+        "basis": "计划日期早于今天且今日未更新"
+      },
+      {
+        "line": "【完成】客户端 / 业务工作台 / 详细设计与评审 @张航瑞：阶段已完成。",
+        "importance": "完成",
+        "conclusion": "阶段已完成",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "详细设计与评审",
+        "owner": "张航瑞",
+        "at": "2026-10-15T06:54:07.819Z",
+        "basis": "当日阶段状态变更"
+      },
+      {
+        "line": "【普通】客户端 / 业务工作台 / 程序设计 @张航瑞：产品计划 11-23 → 11-05。",
+        "importance": "普通",
+        "conclusion": "产品计划 11-23 → 11-05",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "程序设计",
+        "owner": "张航瑞",
+        "at": "2026-10-15T06:54:10.184Z",
+        "basis": "当日日期变更"
+      },
+      {
+        "line": "【普通】客户端 / 业务工作台 / 代码开发 @郑述文：开发计划 11-17 → 11-06。",
+        "importance": "普通",
+        "conclusion": "开发计划 11-17 → 11-06",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "代码开发",
+        "owner": "郑述文",
+        "at": "2026-10-15T06:54:10.984Z",
+        "basis": "当日日期变更"
+      },
+      {
+        "line": "【普通】客户端 / 业务工作台 / 代码提交 @郑述文：设计进度 未开始 → 已开始。",
+        "importance": "普通",
+        "conclusion": "设计进度 未开始 → 已开始",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "代码提交",
+        "owner": "郑述文",
+        "at": "2026-10-15T06:54:09.404Z",
+        "basis": "当日阶段状态变更"
+      }
+    ],
+    "blocked": [
+      {
+        "id": "T003",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "概要设计&评审",
+        "owner": "王言",
+        "demo": "",
+        "dates": {
+          "design": "2026-11-14",
+          "dev": "2026-11-17",
+          "test": "2026-11-20",
+          "product": "2026-11-23",
+          "demo_prep": "2026-11-26"
+        },
+        "note": "",
+        "status": "进行中",
+        "phases": {
+          "design": "未开始",
+          "dev": "阻塞",
+          "test": "未开始",
+          "product": "未开始",
+          "demo_prep": "未开始"
+        }
+      },
+      {
+        "id": "T002",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "需求拆分",
+        "owner": "王言",
+        "demo": "是",
+        "dates": {
+          "design": "2026-10-14",
+          "dev": "2026-11-17",
+          "test": "2026-11-20",
+          "product": "2026-11-23",
+          "demo_prep": "2026-11-26"
+        },
+        "note": "",
+        "status": "进行中",
+        "phases": {
+          "design": "延期",
+          "dev": "未开始",
+          "test": "未开始",
+          "product": "未开始",
+          "demo_prep": "未开始"
+        }
+      },
+      {
+        "id": "T006",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "代码开发",
+        "owner": "郑述文",
+        "demo": "",
+        "dates": {
+          "design": "2026-11-14",
+          "dev": "2026-11-06",
+          "test": "2026-11-20",
+          "product": "2026-11-23",
+          "demo_prep": "2026-11-26"
+        },
+        "note": "",
+        "status": "进行中",
+        "phases": {
+          "design": "延期",
+          "dev": "未开始",
+          "test": "未开始",
+          "product": "未开始",
+          "demo_prep": "未开始"
+        }
+      }
+    ],
+    "changes": [
+      {
+        "task_id": "T006",
+        "field": "phases.design.status",
+        "at": "2026-10-15T06:54:08.599Z",
+        "identity": "项目负责人",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "代码开发",
+        "owner": "郑述文",
+        "old": "未开始",
+        "new": "延期"
+      },
+      {
+        "task_id": "T003",
+        "field": "phases.dev.status",
+        "at": "2026-10-15T06:54:06.992Z",
+        "identity": "项目负责人",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "概要设计&评审",
+        "owner": "王言",
+        "old": "未开始",
+        "new": "阻塞"
+      },
+      {
+        "task_id": "T004",
+        "field": "phases.test.status",
+        "at": "2026-10-15T06:54:07.819Z",
+        "identity": "项目负责人",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "详细设计与评审",
+        "owner": "张航瑞",
+        "old": "未开始",
+        "new": "已完成"
+      },
+      {
+        "task_id": "T007",
+        "field": "phases.design.status",
+        "at": "2026-10-15T06:54:09.404Z",
+        "identity": "项目负责人",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "代码提交",
+        "owner": "郑述文",
+        "old": "未开始",
+        "new": "已开始"
+      },
+      {
+        "task_id": "T005",
+        "field": "dates.product",
+        "at": "2026-10-15T06:54:10.184Z",
+        "identity": "项目负责人",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "程序设计",
+        "owner": "张航瑞",
+        "old": "2026-11-23",
+        "new": "2026-11-05"
+      },
+      {
+        "task_id": "T006",
+        "field": "dates.dev",
+        "at": "2026-10-15T06:54:10.984Z",
+        "identity": "项目负责人",
+        "level1": "客户端",
+        "level2": "业务工作台",
+        "task": "代码开发",
+        "owner": "郑述文",
+        "old": "2026-11-17",
+        "new": "2026-11-06"
+      },
+      {
+        "task_id": "",
+        "field": "人员池",
+        "at": "2026-10-15T06:54:22.530Z",
+        "identity": "项目负责人",
+        "level1": "",
+        "level2": "",
+        "task": "新增人员 验证员甲",
+        "owner": "",
+        "old": "",
+        "new": "验证员甲"
+      }
+    ],
+    "counts": {
+      "summary": 7,
+      "blocked": 3,
+      "changes": 7
+    }
+  },
+  "summary": {
+    "pass": 35,
+    "fail": 0,
+    "dailyA": "/qv/downloads/iso-蓉城战役日报-20261015.xlsx",
+    "wbsA": "/qv/downloads/iso-蓉城战役WBS-20261015.xlsx",
+    "dailyQuiet": "/qv/downloads/quiet-蓉城战役日报-20261015.xlsx"
+  }
+}

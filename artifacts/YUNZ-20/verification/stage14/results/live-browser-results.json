@@ -1,0 +1,204 @@
+{
+  "base": "http://127.0.0.1:4180",
+  "started_at": "2026-10-15T06:42:52.280Z",
+  "checks": [
+    {
+      "id": "L01 首页身份层可见且人员池渲染 12 项",
+      "ok": true,
+      "detail": {
+        "identity_items": 12
+      }
+    },
+    {
+      "id": "L02 项目负责人进入工作台且行数=35",
+      "ok": true,
+      "detail": {
+        "workbench_visible": true,
+        "rows": 35
+      }
+    },
+    {
+      "id": "L03 表头 12 列且与预期一致",
+      "ok": true,
+      "detail": [
+        "序号",
+        "一级",
+        "二级",
+        "任务项",
+        "负责人",
+        "设计",
+        "开发",
+        "测试",
+        "产品",
+        "演示准备",
+        "进展说明",
+        "操作"
+      ]
+    },
+    {
+      "id": "L04 页面无「是否演示范围」列/入口",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "L05 页面无旧全局「状态」列/控件",
+      "ok": true,
+      "detail": null
+    },
+    {
+      "id": "L06 阶段下拉 175 个常显",
+      "ok": true,
+      "detail": {
+        "phase_selects": 175
+      }
+    },
+    {
+      "id": "L07 日期输入 175 个常显",
+      "ok": true,
+      "detail": {
+        "date_inputs": 175
+      }
+    },
+    {
+      "id": "L08 健康探针显示服务正常",
+      "ok": true,
+      "detail": "探针：服务正常 · v10"
+    },
+    {
+      "id": "L09 普通负责人视角他人行日期输入为 disabled",
+      "ok": true,
+      "detail": {
+        "id": "T004",
+        "owner": "张航瑞",
+        "disabled": true
+      }
+    },
+    {
+      "id": "L10 点击只读单元格给出明确中文提示（无静默无反应）",
+      "ok": true,
+      "detail": {
+        "hint": "当前身份「王言」对第 T004 行的「设计」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）",
+        "visible": true
+      }
+    },
+    {
+      "id": "L11 点击只读阶段控件给出中文只读提示",
+      "ok": true,
+      "detail": "当前身份「王言」对第 T004 行的「设计进度」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"
+    },
+    {
+      "id": "L12 点击「导出日报」触发真实浏览器下载",
+      "ok": true,
+      "detail": {
+        "name": "蓉城战役日报-20261015.xlsx",
+        "size": 69005
+      }
+    },
+    {
+      "id": "L13 导出日报成功横幅含 sheet 行数并与 API 一致",
+      "ok": true,
+      "detail": {
+        "banner": "已导出日报 蓉城战役日报-20261015.xlsx：sheet「今日摘要」196 行、「阻塞与延期」32 行（2026-10-15 Asia/Shanghai 自然日口径；日报只含两个 sheet、今日摘要只保留 A 列；旧 status 不进日报、WBS 导出与页面）。",
+        "api_summary": 196
+      }
+    },
+    {
+      "id": "L14 横幅标明只含两个 sheet 且今日摘要只保留 A 列",
+      "ok": true,
+      "detail": "已导出日报 蓉城战役日报-20261015.xlsx：sheet「今日摘要」196 行、「阻塞与延期」32 行（2026-10-15 Asia/Shanghai 自然日口径；日报只含两个 sheet、今日摘要只保留 A 列；旧 status 不进日报、WBS 导出与页面）。"
+    },
+    {
+      "id": "L15 点击「导出 Excel」触发真实浏览器下载 WBS",
+      "ok": true,
+      "detail": {
+        "name": "蓉城战役WBS-20261015.xlsx",
+        "size": 1183061
+      }
+    },
+    {
+      "id": "L16 全程无外部网络请求",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "id": "L17 只读验证未发出任何写请求",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "id": "L18 无页面脚本错误",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "id": "L19 /api/history 仍返回且含 identity_added 人员池记录",
+      "ok": true,
+      "detail": {
+        "total": 236,
+        "pool": 3
+      }
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4180/",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4180/styles.css",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4180/vendor/xlsx.full.min.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4180/app.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4180/api/wbs",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4180/api/health",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4180/api/daily?tz=Asia%2FShanghai&date=2026-10-15",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4180/api/wbs",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4180/api/daily?tz=Asia%2FShanghai&date=2026-10-15",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4180/template.xlsx",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4180/api/history?tz=Asia%2FShanghai&date=2026-10-15",
+      "method": "GET"
+    }
+  ],
+  "summary": {
+    "pass": 19,
+    "fail": 0,
+    "daily": {
+      "name": "蓉城战役日报-20261015.xlsx",
+      "path": "/qv/downloads/live-蓉城战役日报-20261015.xlsx",
+      "size": 69005
+    },
+    "wbs": {
+      "name": "蓉城战役WBS-20261015.xlsx",
+      "path": "/qv/downloads/live-蓉城战役WBS-20261015.xlsx",
+      "size": 1183061
+    }
+  }
+}

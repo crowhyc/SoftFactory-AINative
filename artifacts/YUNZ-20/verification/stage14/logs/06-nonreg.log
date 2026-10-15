@@ -1,0 +1,22 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  N01 D-3 进入工作台后身份遮罩不可见（display/visibility/rects 三重）  :: {"display":"none","visibility":"visible","hidden":true,"opacity":"1","rects":0}
+PASS  N02 D-3 顶栏按钮未被遮罩覆盖（elementFromPoint 命中自身）  :: {"tag":"BUTTON","id":"export-btn","covered":false}
+PASS  N03 CH-8 点击 K 列进展说明打开编辑器面板（编辑入口可发现）  :: {"visible":true}
+PASS  N04 CH-1 预览渲染 Markdown（strong/em/标题）  :: {"strong":1,"em":1,"h":1}
+PASS  N05 CH-1 原始 HTML 未注入（无 img/script/iframe 元素）  :: 0
+PASS  N06 CH-1 原始 HTML 未执行（onerror/script 未触发）  :: {"xss":"undefined","xss2":"undefined"}
+PASS  N07 CH-1 原始 HTML 以字面文本显示（textContent 含原文）  :: "标题行加粗 与 斜体<img src=x onerror=\"window.__xss=1\"><script>window.__xss2=1</script>列表项"
+PASS  N08 CH-8 进展说明保存：API 与磁盘逐字等于输入（原始 Markdown 存储）  :: {"api":"# 标题行\n**加粗** 与 *斜体*\n<img src=x onerror=\"","status":200}
+PASS  N09 CH-1 K 列摘要为纯文本（去 Markdown、无注入元素）  :: {"text":"标题行 加粗 与 斜体 <img src=x onerror=\"window.__xss=1\"> <script>window.__xss2=1</script…点击打开编辑","danger":0}
+PASS  N09b 关闭进展说明面板后遮罩消失（无残留 blocker）  :: ""
+PASS  N10 D-3 返回首页后身份遮罩恢复可见  :: true
+PASS  N11 验收1 刷新后身份保持并直接进入工作台  :: {"workbench":true,"layer":false,"identity":"项目负责人"}
+PASS  N12 验收3 王言编辑本人行日期并保存：页面/API/磁盘三端一致  :: {"id":"T002","api":"2026-12-30"}
+PASS  N13 CH-3 五档阶段控件 computed 背景色与五色映射逐档一致  :: [{"value":"未开始","bg":"rgb(158, 158, 158)","cls":"phase-select phase-block phase-未开始","optBg":"rgb(158, 158, 158)"},{"value":"已开始","bg":"rgb(47, 128, 237)","cls":"phase-select phase-block phase-已开始","optBg":"rgb(47, 128, 237)"},{"value":"已完成","bg":"rgb(39, 174, 96)","cls":"phase-select phase-block phase-已完成","optBg":"rgb(39, 174, 96)"},{"value":"延期","bg":"rgb(231, 76, 60)","cls":"phase-select phase-block phase-延期","optBg":"rgb(231, 76, 60)"},{"value":"阻塞","bg":"rgb(255, 212, 0)","cls":"phase-select phase-block phase-阻塞","optBg":"rgb(255, 212, 0)"}]
+PASS  N13b CH-3 五档下拉 option 同样带对应颜色类  :: ["phase-select phase-block phase-未开始","phase-select phase-block phase-已开始","phase-select phase-block phase-已完成","phase-select phase-block phase-延期","phase-select phase-block phase-阻塞"]
+PASS  N14 CH-9 网页无「是否演示范围」列/编辑入口  :: ""
+PASS  N15 CH-10 网页表头无旧全局「状态」列  :: ["序号","一级","二级","任务项","负责人","设计","开发","测试","产品","演示准备","进展说明","操作"]
+PASS  N16 验收10 全程无外部网络请求  :: []
+PASS  N17 无页面脚本错误  :: []
+
+[nonreg] PASS=19 FAIL=0

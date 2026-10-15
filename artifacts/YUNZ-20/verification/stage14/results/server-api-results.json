@@ -1,0 +1,27 @@
+{
+  "pass": 21,
+  "fail": 0,
+  "log": [
+    "PASS  A-01 隔离实例 /api/health ok  :: {\"ok\": true, \"service\": \"wbs-rongcheng\", \"revision\": 11}",
+    "PASS  A-02 启动即迁移（revision 10 -> 11），35 行 phases 齐全  :: {\"revision\": 11, \"tasks\": 35}",
+    "PASS  A-02b 迁移审计 175 条且不进日报（type=migrated）",
+    "PASS  A-03 并发 PUT：恰好一个 200、一个 409  :: [200, 409]",
+    "PASS  A-04 并发后 revision 只 +1（以先到者为准）  :: 12",
+    "PASS  A-04b 并发写入内容为后到者以外的一方（无交叉污染）  :: \"需求拆分-并发\"",
+    "PASS  A-05 旧 If-Match -> 409 conflict 且未覆盖（磁盘无 STALE 内容）  :: {\"code\": 409, \"reason\": \"conflict\", \"disk\": \"概要设计&评审\"}",
+    "PASS  A-05b 被拒写入不落盘（字节未变）",
+    "PASS  A-06 缺 If-Match -> 409  :: {\"code\": 409, \"resp\": {\"ok\": false, \"reason\": \"conflict\", \"current\": 12}}",
+    "PASS  A-07 非法 payload -> 400 且带字段错误  :: {\"code\": 400, \"n_errors\": 3, \"first\": [{\"id\": \"BAD ID!!\", \"field\": \"id\", \"message\": \"任务 id 只允许字母、数字、下划线与连字符\"}]}",
+    "PASS  A-08 400 后磁盘字节未变（不落盘）  :: {}",
+    "PASS  A-08b 400 后 revision 未变",
+    "PASS  A-09 连续 10 次保存均 200 且 revision 逐次 +1  :: {\"iter\": [{\"i\": 1, \"status\": 200, \"rev_before\": 12, \"rev_after\": 13}, {\"i\": 2, \"status\": 200, \"rev_before\": 13, \"rev_after\": 14}, {\"i\": 3, \"status\": 200, \"rev_before\": 14, \"rev_after\": 15}, {\"i\": 4, \"status\": 200, \"rev_before\": 15, \"rev_after\": 16}, {\"i\": 5, \"status\": 200, \"rev_before\": 16, \"rev_after\": 17}, {\"i\": 6, \"status\": 200, \"rev_before\": 17, \"rev_after\": 18}, {\"i\": 7, \"status\": 200, \"rev_before\": 18, \"rev_after\": 19}, {\"i\": 8, \"status\": 200, \"rev_before\": 19, \"rev_after\": 20}, {\"i\": 9, \"status\": 200, \"rev_before\": 20, \"rev_after\": 21}, {\"i\": 10, \"status\": 200, \"rev_before\": 21, \"rev_after\": 22}], \"final\": 22}",
+    "PASS  A-10 10 次保存后 35 条任务 id 无重复、字段集合与基线一致（无丢失/无未知字段被清除）  :: {\"ids\": 35, \"unique\": 35}",
+    "PASS  A-11 10 次保存后每条任务 dates/phases 五键齐全",
+    "PASS  A-11b 10 条 note 逐条落盘（每轮写入未被覆盖）  :: [\"第1次\", \"第2次\", \"第3次\", \"第4次\", \"第5次\", \"第6次\", \"第7次\", \"第8次\", \"第9次\", \"第10次\"]",
+    "PASS  A-12 原子写后数据目录无 .tmp/.part 残留  :: []",
+    "PASS  A-13 重启后 health ok 且 revision/数据不变  :: {\"health\": {\"ok\": true, \"service\": \"wbs-rongcheng\", \"revision\": 22}, \"revision\": 22}",
+    "PASS  A-14 重启后 wbs.json 逐字节不变（迁移幂等 / 无二次迁移）  :: {\"before\": \"30808dd99231\", \"after\": \"30808dd99231\"}",
+    "PASS  A-15 重启后 notes 仍保留（10 条写入未丢）  :: 10",
+    "PASS  A-16 重启后旧全局 status 仍逐条保留"
+  ]
+}
