@@ -1,0 +1,101 @@
+{
+ "pass": 10,
+ "fail": 0,
+ "results": [
+  {
+   "name": "N1-01 搜索筛选按任务项收敛行数",
+   "ok": true,
+   "detail": {
+    "got": 1,
+    "expect": 1
+   }
+  },
+  {
+   "name": "N1-02 负责人筛选按负责人收敛行数",
+   "ok": true,
+   "detail": {
+    "got": 9,
+    "expect": 9
+   }
+  },
+  {
+   "name": "N2-01 CH-2 操作列「编辑」进入行编辑态（常显编辑器出现）",
+   "ok": true,
+   "detail": {
+    "inputs": 8,
+    "btn": "完成"
+   }
+  },
+  {
+   "name": "N2-02 CH-2 操作列「完成」退出行编辑态（文本编辑器收起，常显阶段控件保留）",
+   "ok": true,
+   "detail": {
+    "textEditors": 0,
+    "phaseSelects": 5,
+    "btn": "编辑"
+   }
+  },
+  {
+   "name": "N3-01 CH-8 Markdown 子集渲染（h2/strong/li/安全链接）",
+   "ok": true,
+   "detail": {
+    "h2": 1,
+    "strong": 1,
+    "li": 2,
+    "a": 1
+   }
+  },
+  {
+   "name": "N3-02 CH-8 保存往返：API note 与输入逐字一致",
+   "ok": true,
+   "detail": {
+    "size": 82
+   }
+  },
+  {
+   "name": "N4-01 新增行可保存，新行默认 phases 全 未开始、日期为空",
+   "ok": true,
+   "detail": {
+    "rows": 36,
+    "id": "T037",
+    "phases": {
+     "design": "未开始",
+     "dev": "未开始",
+     "test": "未开始",
+     "product": "未开始",
+     "demo_prep": "未开始"
+    }
+   }
+  },
+  {
+   "name": "N4-02 删除行可保存（含确认框），行数回到起点",
+   "ok": true,
+   "detail": {
+    "rows": 35
+   }
+  },
+  {
+   "name": "N5-01 空输入（任务项为空）被拦截：中文错误提示 + 未发出写请求 + 数据未变",
+   "ok": true,
+   "detail": {
+    "errBanner": "前置校验未通过，未向服务器提交（共 1 项）：[T002] 任务项：任务项不能为空",
+    "writesBefore": 3,
+    "writesAfter": 3,
+    "revBefore": 15,
+    "revAfter": 15,
+    "saveState": {
+     "disabled": false,
+     "status": "身份：项目负责人 · 版本：15 · 有未保存修改"
+    }
+   }
+  },
+  {
+   "name": "N6-01 不回归抽样全程无外部请求 / 无 pageerror",
+   "ok": true,
+   "detail": {
+    "external": [],
+    "pageErrors": []
+   }
+  }
+ ]
+}

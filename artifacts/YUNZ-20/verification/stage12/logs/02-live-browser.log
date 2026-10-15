@@ -1,0 +1,36 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  R1-01 首屏身份层可交互（12 身份按钮可见）  :: ["项目负责人","李欢","王言","张航瑞","郑述文","崔文建","余宇","黄逸偲","陈江","肖恒韵","蒋涛涛","林剑"]
+PASS  R1-02 D-3 回归：身份层 computed display=none 且工作台可见  :: {"layer":"none","wb":"block","layerHiddenAttr":true}
+PASS  R2-01 表头恰好 12 列且顺序正确（无「状态」列）  :: ["序号","一级","二级","任务项","负责人","设计","开发","测试","产品","演示准备","进展说明","操作"]
+PASS  R2-02 表头不含「状态」/「是否演示范围」  :: ["序号","一级","二级","任务项","负责人","设计","开发","测试","产品","演示准备","进展说明","操作"]
+PASS  R2-03 工作台无任何 demo 编辑入口 / 无 demo 文本  :: {"demoField":0,"statusField":0,"statusFilter":0,"demoText":false,"statusText":false,"statusTh":0}
+PASS  R2-04 工作台无 status 字段入口 / 无状态列 / 无状态筛选  :: {"demoField":0,"statusField":0,"statusFilter":0,"demoText":false,"statusText":false,"statusTh":0}
+PASS  R2-05 顶部控件：身份选择 / 搜索 / 负责人筛选 / 导出 / 日报 均在位  :: null
+PASS  R2-06 表格渲染 35 行且每行 12 单元格  :: {"n":35,"first":{"id":"T002","cells":12}}
+PASS  R3-01 每行 5 个阶段下拉，顺序 design/dev/test/product/demo_prep  :: {"rows":35,"cells":175}
+PASS  R3-02 五阶段下拉全部常显（未进入行编辑态即可见）  :: []
+PASS  R3-03 页面阶段值与 /api/wbs 逐条一致（35×5=175）  :: []
+PASS  R3-04 当前值背景色 = 五色映射（灰/蓝/绿/红/黄）  :: []
+PASS  R3-05 下拉 5 个 option 枚举齐全且各自带 phase-<值> 类  :: [{"v":"未开始","c":"phase-未开始"},{"v":"已开始","c":"phase-已开始"},{"v":"已完成","c":"phase-已完成"},{"v":"延期","c":"phase-延期"},{"v":"阻塞","c":"phase-阻塞"}]
+PASS  R3-06 option 五色在样式表中确有定义且与映射一致  :: {"未开始":"rgb(158, 158, 158)","已开始":"rgb(47, 128, 237)","已完成":"rgb(39, 174, 96)","延期":"rgb(231, 76, 60)","阻塞":"rgb(255, 212, 0)"}
+PASS  R4-01 项目负责人：全部 175 个阶段控件可编辑（disabled=false）  :: []
+PASS  R4-02 项目负责人：新增行 / 新增人员 可见  :: {"addRow":false,"addPerson":false}
+PASS  R4-03 普通负责人（王言）：本人行阶段控件全部可编辑  :: {"own":45,"ownEditable":45,"other":130,"otherLocked":130,"sampleOwners":{"T002":"王言","T003":"王言","T004":"张航瑞","T005":"张航瑞","T006":"郑述文","T007":"郑述文","T008":"林剑","T009":"余宇","T010":"余宇","T011":"余宇","T012":"王言","T013":"蒋涛涛","T014":"王言","T015":"王言","T016":"蒋涛涛","T017":"蒋涛涛","T018":"蒋涛涛","T019":"蒋涛涛","T020":"蒋涛涛","T021":"蒋涛涛","T022":"蒋涛涛","T023":"王言","T024":"陈江","T025":"陈江","T026":"王言","T027":"王言","T028":"王言","T029":"肖恒韵","T030":"肖恒韵","T031":"肖恒韵","T032":"肖恒韵","T033":"肖恒韵","T034":"肖恒韵","T035":"肖恒韵","T036":"肖恒韵"}}
+PASS  R4-04 普通负责人（王言）：他人行阶段控件全部 disabled  :: {"own":45,"ownEditable":45,"other":130,"otherLocked":130,"sampleOwners":{"T002":"王言","T003":"王言","T004":"张航瑞","T005":"张航瑞","T006":"郑述文","T007":"郑述文","T008":"林剑","T009":"余宇","T010":"余宇","T011":"余宇","T012":"王言","T013":"蒋涛涛","T014":"王言","T015":"王言","T016":"蒋涛涛","T017":"蒋涛涛","T018":"蒋涛涛","T019":"蒋涛涛","T020":"蒋涛涛","T021":"蒋涛涛","T022":"蒋涛涛","T023":"王言","T024":"陈江","T025":"陈江","T026":"王言","T027":"王言","T028":"王言","T029":"肖恒韵","T030":"肖恒韵","T031":"肖恒韵","T032":"肖恒韵","T033":"肖恒韵","T034":"肖恒韵","T035":"肖恒韵","T036":"肖恒韵"}}
+PASS  R4-05 点击无权限行阶段控件给出中文只读提示  :: {"target":{"id":"T004","sel":"phases.design","disabled":true},"hint":{"hidden":false,"text":"当前身份「王言」对第 T004 行的「设计进度」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"}}
+PASS  R4-06 点击无权限行阶段区块（下拉外沿）同样给中文提示  :: {"hidden":false,"text":"当前身份「王言」对第 T004 行的「设计进度」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"}
+PASS  R4-07 只读点击未产生任何写请求（保存按钮仍禁用）  :: []
+PASS  R5-00 /api/daily 取回成功且结构含 summary/blocked/changes/counts  :: {"summary":196,"blocked":32,"changes":201}
+PASS  R5-01 导出 Excel 真实下载成功且文件名符合模板  :: {"name":"蓉城战役WBS-20261015.xlsx","size":1183061}
+PASS  R5-02 导出提示文案含 A–K + 5 进度列 + demo 保留 + 旧 status 不导出  :: "已按原模板导出 35 行 A–K 数据 + K 后 5 个阶段进度列（含颜色），文件名 蓉城战役WBS-20261015.xlsx（第 1/2 行与合并单元格保持原样；demo 原值保留，旧 status 不导出）。"
+PASS  R5-03 导出日报真实下载成功且文件名符合模板  :: {"name":"蓉城战役日报-20261015.xlsx","size":219629}
+PASS  R5-04 日报提示文案含三 sheet 名称  :: "已导出日报 蓉城战役日报-20261015.xlsx：sheet「今日摘要」196 行、「阻塞与延期」32 行、「当日变更」201 行（2026-10-15 Asia/Shanghai 自然日口径；旧 status 不进日报、WBS 导出与页面）。"
+PASS  R6-01 CH-8 抽样：进展说明面板可打开且编辑区可用  :: {"vis":true,"editable":true}
+PASS  R6-02 CH-8 安全抽样：原始 HTML 未解析为节点 / 未触发 alert  :: {"script":0,"html":"<p>&lt;script&gt;alert(1)&lt;/script&gt;<br>&lt;img src=x onerror=\"alert(2)\"&gt;<br>![](http://example.com/remote.png)</","pwned":0}
+PASS  R6-03 CH-8 抽样：未保存关闭走确认框且面板可关闭  :: {"confirmShown":true,"closed":true}
+PASS  R7-01 全程无外部网络请求（页面资源全本地）  :: []
+PASS  R7-02 只读矩阵全程零写请求（现场 4180 未被写入）  :: []
+PASS  R7-03 无 pageerror / 无 alert 弹窗  :: {"pageErrors":[],"dialogs":[],"consoleErrors":[]}
+PASS  R7-04 现场健康探针仍 ok（未受影响）  :: {"ok":true,"service":"wbs-rongcheng","revision":10}
+== LIVE 汇总：PASS=33 FAIL=0 请求数=8 ==
+[stage12-live] 容器退出码 0

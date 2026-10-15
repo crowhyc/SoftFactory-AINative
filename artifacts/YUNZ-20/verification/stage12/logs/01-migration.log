@@ -1,0 +1,33 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+== M1 迁移：从迁移前备份启动（/opt/wbs-rongcheng/data/wbs.json.20261015040405.bak）==
+迁移前输入：8df26205246619c4ded1d393356b99afd1eee307e4799c820fdf1b31d85a83d0  /opt/wbs-rongcheng/data/wbs.json.20261015040405.bak
+启动前 data 目录：
+audit.log
+wbs.json
+wbs.seed.json
+健康：{"ok":true,"service":"wbs-rongcheng","revision":10}
+PASS  M1-01 revision 9→10（递增 +1）
+PASS  M1-02 全 35 行 phases 齐全且取值合法（五键/五枚举）
+PASS  M1-03 phases 与算法逐条一致（日期 < 今天 → 延期，否则 未开始）
+PASS  M1-04 demo / status 原值与迁移前逐条一致
+PASS  M1-05 迁移前时间戳备份存在且与输入逐字节一致（可回滚）
+PASS  M1-06 审计每阶段一条 type=migrated、身份「系统迁移」、175 条且无重复
+PASS  M1-07 迁移行不出现在日报任何 sheet / 不产生今日摘要事件
+== M2 幂等：重启同一实例（不再迁移）==
+重启前 wbs.json=4e6eb6eb4d06a1e4d2da0da5364439736ebaf8b2f73d4fba4645adac9c69ed37 audit=175 bak=1 | 重启后 wbs.json=4e6eb6eb4d06a1e4d2da0da5364439736ebaf8b2f73d4fba4645adac9c69ed37 audit=175 bak=1
+重启后健康：{"ok":true,"service":"wbs-rongcheng","revision":10}
+PASS  M2-01 重启后 wbs.json 逐字节不变（无二次迁移）
+PASS  M2-02 重启后审计行数不变（未追加 migrated）
+PASS  M2-03 重启后备份数不变（不再生成迁移备份）
+== M3 边界用例：恰好今天 / 昨天 / 阶段日期缺失 / 非法日期 ==
+boundary rows: T002, T003
+boundary input written: /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-32-2cbfbb62fd57/workdir/scratch/stage12-mig3/wbs.json
+PASS  M3-01 边界行判定正确（昨天→延期；恰好今天/缺失/未来→未开始）
+PASS  M3-02 非法日历日期（2026-02-30）不判延期
+PASS  M3-03 边界实例迁移后 revision 递增且审计 175 条
+== M4 保存后 revision 正常递增（隔离实例，迁移后写入）==
+PUT 结果：{"ok":true,"revision":11}
+revision 10 → 11
+PASS  M4-01 迁移后保存 revision +1
+PASS  M4-02 过时 If-Match 返回 409 且不覆盖
+== 汇总：PASS=15 FAIL=0 ==

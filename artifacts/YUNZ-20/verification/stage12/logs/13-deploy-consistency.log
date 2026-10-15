@@ -1,0 +1,30 @@
+== 部署与绑定口径（2026-10-15 13:05:48+0800）==
+-- docker ps --
+wbs-rongcheng | wbs-rongcheng:20261015123713 | Up 28 minutes (healthy) | 
+-- env --
+["WBS_HOST=0.0.0.0","WBS_PORT=4180","PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin","NODE_VERSION=24.21.0","YARN_VERSION=1.22.22","NODE_ENV=production","WBS_DATA_DIR=/app/data"]
+-- network/mounts --
+host | [{"Type":"bind","Source":"/opt/wbs-rongcheng/data","Destination":"/app/data","Mode":"","RW":true,"Propagation":"rprivate"}]
+-- health 127.0.0.1 --
+{"ok":true,"service":"wbs-rongcheng","revision":10}
+-- health 0.0.0.0 --
+{"ok":true,"service":"wbs-rongcheng","revision":10}
+-- health 公网 47.108.129.157:4180 --
+http_code=200 time=0.001
+-- 镜像内 node_modules --
+ls: cannot access '/app/node_modules': No such file or directory
+-- 镜像文件树（/app） --
+data
+package.json
+public
+server.js
+---
+/app/public:
+app.js
+index.html
+styles.css
+template.xlsx
+vendor
+ls: cannot access '/app/deploy': No such file or directory
+-- 现场 health 复核 --
+{"ok":true,"service":"wbs-rongcheng","revision":10}

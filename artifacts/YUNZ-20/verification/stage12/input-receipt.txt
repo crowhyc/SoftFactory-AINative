@@ -1,0 +1,26 @@
+# Stage12 输入回执（两条证据链核对）  2026-10-15 13:07:26+0800
+
+## 链 A：作者自报（不作为结论证据）
+- YUNZ-31 交付评论：01a13dde-3975-7b64-affd-025f32dffee0（2026-10-15T04:42:16Z）
+- 作者自测证据目录：/opt/SoftFactory-AINative/artifacts/YUNZ-20/selftest/stage11/
+- 作者自报：server.js d9b29f00… / app.js 8665d0fc… / index.html 4438496e… / styles.css 62771efb… / 镜像 wbs-rongcheng:20261015123713 / 迁移前备份 8df26205…
+
+## 链 B：本任务独立复算（结论证据）
+- 复算时间：2026-10-15 13:07:26+0800；复算方式：sha256sum 运行目录 + 源码快照 + docker inspect
+d9b29f0001fece55ec8c7010ea4c4526f62b70f37538f1761439e0936df4ec33  /opt/wbs-rongcheng/server.js
+8665d0fc639f637744ec2c9e14fbde1a3dcd6b853841448f99bbf3063f76c325  /opt/wbs-rongcheng/public/app.js
+4438496e27be970030f6c032df8c2920e4fcb39795b515d728965d4a52a5c0aa  /opt/wbs-rongcheng/public/index.html
+62771efb859cc4f51e49a99c6975828c2073aa07638a6f3faa027a435bc501db  /opt/wbs-rongcheng/public/styles.css
+d9b29f0001fece55ec8c7010ea4c4526f62b70f37538f1761439e0936df4ec33  /opt/SoftFactory-AINative/artifacts/YUNZ-20/wbs-rongcheng/server.js
+8665d0fc639f637744ec2c9e14fbde1a3dcd6b853841448f99bbf3063f76c325  /opt/SoftFactory-AINative/artifacts/YUNZ-20/wbs-rongcheng/public/app.js
+4438496e27be970030f6c032df8c2920e4fcb39795b515d728965d4a52a5c0aa  /opt/SoftFactory-AINative/artifacts/YUNZ-20/wbs-rongcheng/public/index.html
+62771efb859cc4f51e49a99c6975828c2073aa07638a6f3faa027a435bc501db  /opt/SoftFactory-AINative/artifacts/YUNZ-20/wbs-rongcheng/public/styles.css
+- 迁移前备份 sha256：8df26205246619c4ded1d393356b99afd1eee307e4799c820fdf1b31d85a83d0  /opt/wbs-rongcheng/data/wbs.json.20261015040405.bak
+- 现场镜像 id：sha256:b29f3366d1c1fa888297d3a0061dd52eb97120991ad07316841a91235ead4903
+- 结论：四文件哈希 + 镜像 + 备份哈希全部 MATCH（详见 logs/11-live-receipts.log、results/hash-compare.txt）
+
+## 交付物定位
+- 运行产物（只读）：/opt/wbs-rongcheng/（server.js public/* data/wbs.json data/audit.log）
+- 源码快照（只读）：/opt/SoftFactory-AINative/artifacts/YUNZ-20/wbs-rongcheng/
+- 作者自测：/opt/SoftFactory-AINative/artifacts/YUNZ-20/selftest/stage11/
+- 本任务证据：/opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage12/

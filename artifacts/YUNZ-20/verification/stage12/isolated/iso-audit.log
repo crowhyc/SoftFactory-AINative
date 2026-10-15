@@ -1,0 +1,5 @@
+{"ts": "2026-10-15T01:00:00.000Z", "identity": "项目负责人", "revision": 1, "changed": [], "added": 0, "removed": 0, "old": {"T002": {"status": "进行中"}}, "new": {"T002": {"status": "已完成"}}, "snapshot": {"T002": {"level1": "客户端", "level2": "业务工作台", "task": "需求拆分", "owner": "王言"}}}
+{"ts":"2026-10-15T04:55:23.248Z","identity":"项目负责人","revision":2,"changed":[{"id":"T003","fields":["phases.dev.status"]}],"added":0,"removed":0,"old":{"T003":{"phases.dev.status":"未开始"}},"new":{"T003":{"phases.dev.status":"延期"}},"snapshot":{"T003":{"level1":"客户端","level2":"业务工作台","task":"概要设计&评审","owner":"王言"}}}
+{"ts":"2026-10-15T04:55:23.903Z","identity":"王言","revision":3,"changed":[{"id":"T003","fields":["phases.test.status"]}],"added":0,"removed":0,"old":{"T003":{"phases.test.status":"未开始"}},"new":{"T003":{"phases.test.status":"阻塞"}},"snapshot":{"T003":{"level1":"客户端","level2":"业务工作台","task":"概要设计&评审","owner":"王言"}}}
+{"ts":"2026-10-15T04:55:24.551Z","identity":"项目负责人","revision":4,"changed":[],"added":0,"removed":0,"old":{},"new":{},"snapshot":{}}
+{"type":"identity_added","identity":"项目负责人","name":"验收测试员A","at":"2026-10-15T04:55:24.551Z"}

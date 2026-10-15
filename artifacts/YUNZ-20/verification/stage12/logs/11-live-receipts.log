@@ -1,0 +1,23 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+== 输入回执（作者自报 vs 本任务独立复算）==
+现场健康：{"ok":true,"service":"wbs-rongcheng","revision":10}
+作者自报（YUNZ-31 评论）与独立复算：见 logs/11-live-receipts.log 上方 hash 对照
+d9b29f0001fece55ec8c7010ea4c4526f62b70f37538f1761439e0936df4ec33  /opt/wbs-rongcheng/server.js
+8665d0fc639f637744ec2c9e14fbde1a3dcd6b853841448f99bbf3063f76c325  /opt/wbs-rongcheng/public/app.js
+4438496e27be970030f6c032df8c2920e4fcb39795b515d728965d4a52a5c0aa  /opt/wbs-rongcheng/public/index.html
+62771efb859cc4f51e49a99c6975828c2073aa07638a6f3faa027a435bc501db  /opt/wbs-rongcheng/public/styles.css
+d9b29f0001fece55ec8c7010ea4c4526f62b70f37538f1761439e0936df4ec33  /opt/SoftFactory-AINative/artifacts/YUNZ-20/wbs-rongcheng/server.js
+8665d0fc639f637744ec2c9e14fbde1a3dcd6b853841448f99bbf3063f76c325  /opt/SoftFactory-AINative/artifacts/YUNZ-20/wbs-rongcheng/public/app.js
+4438496e27be970030f6c032df8c2920e4fcb39795b515d728965d4a52a5c0aa  /opt/SoftFactory-AINative/artifacts/YUNZ-20/wbs-rongcheng/public/index.html
+62771efb859cc4f51e49a99c6975828c2073aa07638a6f3faa027a435bc501db  /opt/SoftFactory-AINative/artifacts/YUNZ-20/wbs-rongcheng/public/styles.css
+PASS  L-01 CH-9：现场 demo 与原值逐条一致（35 行，未写空/未清空）
+PASS  L-02 CH-10：旧 status 仍在 JSON 且保留原值（逐条）
+PASS  L-03 CH-10：全行 phases 五键齐全、取值仅限五枚举
+PASS  L-04 CH-10：dates.* 与 phases.* 独立（互不覆盖，日期原值未变）
+PASS  L-05 现场 wbs.json（磁盘）与 /api/wbs 一致，revision 正常
+PASS  L-06 迁移审计：175 条 migrated / 身份 系统迁移 / 迁移前备份 sha256 与作者自报一致
+PASS  L-07 现场 /api/daily 今日：不含迁移行、不引用旧 status
+PASS  L-08 服务端返回的 index.html/app.js/styles.css 与源码快照逐字节一致
+PASS  L-09 运行态绑定 0.0.0.0:4180（容器 env + 两个地址 health）
+PASS  L-10 镜像内无 node_modules
+== 现场汇总：PASS=10 FAIL=0 ==

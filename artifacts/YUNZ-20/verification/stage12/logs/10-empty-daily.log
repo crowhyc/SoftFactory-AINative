@@ -1,0 +1,27 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+empty-events data written: /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-32-2cbfbb62fd57/workdir/scratch/stage12-empty
+无事件隔离实例健康：{"ok":true,"service":"wbs-rongcheng","revision":1}
+API 日报：{"ok":true,"date":"2026-10-15","tz":"Asia/Shanghai","summary":[{"line":"今日无阻塞、延期或变更。","importance":"","conclusion":"","level1":"","level2":"","task":"","owner":"","at":"","basis":""}],"blocked":[],"changes":[],"counts":{"summary":1,"blocked":0,"changes":0}}
+banner: 已导出日报 蓉城战役日报-20261015.xlsx：sheet「今日摘要」1 行、「阻塞与延期」0 行、「当日变更」0 行（2026-10-15 Asia/Shanghai 自然日口径；旧 status 不进日报、WBS 导出与页面）。
+下载文件: empty-daily.xlsx (19254 bytes)
+--- 读回 ---
+PASS  EMPTY-D1 日报 sheet 名称与数量正确  :: ['今日摘要', '阻塞与延期', '当日变更']
+PASS  EMPTY-D2 今日摘要 分列结构（微信文本行/重要度/结论/一级/二级/任务项/负责人/时间/依据）  :: ['微信文本行', '重要度', '结论', '一级', '二级', '任务项', '负责人', '时间', '依据']
+PASS  EMPTY-D3 今日摘要 行数 = API 事件数 + 表头  :: {'api': 1}
+PASS  EMPTY-D4 今日摘要 逐行与 API 分列一致（含时间/依据）  :: []
+PASS  EMPTY-D5 今日摘要 逐字断言「【重要度】一级 / 二级 / 任务项 @负责人：结论。」  :: []
+PASS  EMPTY-D6 重要度前缀取值合法（延期·高风险/阻塞·高风险/完成/普通 或兜底空值）  :: ['']
+PASS  EMPTY-D7 今日摘要 排序：延期 > 阻塞 > 到期未更新判定延期 > 完成 > 普通变更  :: []
+PASS  EMPTY-D9 阻塞与延期 表头 = A–K（含 是否演示范围）+ 五进度列  :: ['一级', '二级', '任务项', '负责人', '是否演示范围', '设计', '开发', '测试', '产品', '演示准备', '进展说明', '设计进度', '开发进度', '测试进度', '产品进度', '演示准备进度']
+PASS  EMPTY-D10 阻塞与延期 仅含命中延期/阻塞的行且行序与 API 一致  :: {'api': [], 'sheet': []}
+PASS  EMPTY-D11 阻塞与延期 每行至少一阶段命中延期/阻塞、五进度列与 JSON 一致  :: {'rows': 0}
+PASS  EMPTY-D12 阻塞与延期 是否演示范围原值保留  :: {'has_nonempty_demo': False}
+PASS  EMPTY-D13 阻塞与延期 阻塞行排前  :: []
+PASS  EMPTY-D14 当日变更 字段级明细列（一级/二级/任务项/负责人/改动字段/旧值/新值/时间/操作身份）  :: ['一级', '二级', '任务项', '负责人', '改动字段', '旧值', '新值', '时间', '操作身份']
+PASS  EMPTY-D15 当日变更 逐行与 API 明细一致（0 行）  :: []
+PASS  EMPTY-D16 当日变更 按重要度排序（延期>阻塞>完成>普通）  :: []
+PASS  EMPTY-D17 迁移审计行未出现在日报任何 sheet  :: None
+PASS  EMPTY-D18 旧 status 未进入日报任何 sheet  :: []
+PASS  EMPTY-D20 无事件兜底行「今日无阻塞、延期或变更。」  :: {'summary': ['今日无阻塞、延期或变更。', '', '', '', '', '', '', '-', ''], 'blocked_rows': 0, 'change_rows': 0}
+== EMPTY 读回汇总：FAIL=0 ==
+读回退出码 0

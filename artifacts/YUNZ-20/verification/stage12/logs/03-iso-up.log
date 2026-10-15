@@ -1,0 +1,11 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+iso write data written: /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-32-2cbfbb62fd57/workdir/scratch/stage12-write
+rows: X=T002 Y=T003 Z=T004 (Z.demo=是)
+隔离写入实例健康：{"ok":true,"service":"wbs-rongcheng","revision":1}
+隔离数据目录：/opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-32-2cbfbb62fd57/workdir/scratch/stage12-write/data（/opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-32-2cbfbb62fd57/workdir/scratch/stage12-write 直接挂载为 /app/data）
+total 44
+drwxr-xr-x 2 1000 1000  4096 Oct 15 12:55 .
+drwxr-xr-x 5 root root  4096 Oct 15 12:55 ..
+-rw-r--r-- 1 1000 1000   325 Oct 15 12:55 audit.log
+-rw-r--r-- 1 1000 1000 13303 Oct 15 12:55 wbs.json
+-rw-r--r-- 1 1000 1000 13172 Oct 15 12:55 wbs.seed.json

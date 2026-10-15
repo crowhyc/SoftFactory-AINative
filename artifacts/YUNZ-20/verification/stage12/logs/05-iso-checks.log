@@ -1,0 +1,19 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+== 审计明细与三端一致 ==
+PASS  A-01 字段级审计：phases.dev.status 旧值→新值 + 身份 + 时间（点击保存流程）
+PASS  A-02 三端一致：页面保存后的字段在 API 与磁盘 wbs.json 中一致
+PASS  A-03 CH-9：磁盘 demo 原值（是）未被写入流程清空
+== 并发 PUT 409 不覆盖 ==
+当前 revision=4
+race payloads written: /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-32-2cbfbb62fd57/workdir/scratch/race-a.json / /opt/SoftFactory-AINative/.multica-workspaces/yunzhidian-f03e0d551ffa/yunz-32-2cbfbb62fd57/workdir/scratch/race-b.json
+并发响应码：A=200 B=409
+PASS  B-01 并发 PUT：恰好一个成功、一个 409（无丢失更新）
+PASS  B-02 409 未覆盖：最终值等于成功方 payload、revision 只 +1
+并发后 revision=5
+== 过时 If-Match 顺序重放（确定性 409）==
+过时 If-Match（=4）响应码 409，body={"ok":false,"reason":"conflict","current":5}
+PASS  B-03 过时 If-Match → 409 且数据/版本不变
+== 重启持久（隔离实例）==
+PASS  C-01 重启后 API 数据与重启前磁盘快照一致（值 + revision）
+PASS  C-02 重启后磁盘文件逐字节不变（未被重启改写）
+== 汇总：PASS=8 FAIL=0 ==

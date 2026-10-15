@@ -1,0 +1,2 @@
+[migrate] 已生成 phases（每阶段一条 migrated 审计，身份：系统迁移），revision -> 10，备份：/app/data/wbs.json.20261015044944.bak
+wbs-rongcheng listening on http://0.0.0.0:4182 (data: /app/data)
