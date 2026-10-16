@@ -1,0 +1,10 @@
+=== 自测矩阵 10 · 页面全程无外部请求、详情与统计交互 0 次新增下载、无 pageerror；/api/stats 不构成下载路径 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage19/browser.log' 'PASS  矩阵10a' 'PASS  矩阵10b' && require '/opt/wbs-rongcheng/tests/.tmp/stage19/statcheck.log' 'PASS  矩阵10b' && echo 'PASS=3 FAIL=0'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵10a
+OK    PASS  矩阵10b
+PASS=2 FAIL=0
+OK    PASS  矩阵10b
+PASS=1 FAIL=0
+PASS=3 FAIL=0

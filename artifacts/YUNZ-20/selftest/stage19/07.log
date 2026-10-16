@@ -1,0 +1,11 @@
+=== 自测矩阵 07 · 桌面 1600px 与 375px：按钮与统计不重叠、不溢出、无横向页面滚动；弹层可滚动且可关闭 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage19/browser.log' 'PASS  矩阵07a' 'PASS  矩阵07b' 'PASS  矩阵07c' 'PASS  矩阵07d' 'PASS  矩阵07e' 'PASS  矩阵07f'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵07a
+OK    PASS  矩阵07b
+OK    PASS  矩阵07c
+OK    PASS  矩阵07d
+OK    PASS  矩阵07e
+OK    PASS  矩阵07f
+PASS=6 FAIL=0

@@ -315,6 +315,12 @@ button, input, select { font: inherit; color: inherit; }
 .overview-badge.phase-阻塞 { background: #ffd400; color: #3a2e00; border-color: #e6bf00; }
 .overview-badge-name { opacity: .95; }
 .overview-badge-value { font-weight: 600; }
+/* CH-15：全量统计区右侧「详情」按钮 + 分阶段只读详情面板（样式复用总览徽标，颜色完全同源）。 */
+.overview-detail-btn { flex: 0 0 auto; }
+.overview-detail-card { max-width: 820px; width: 100%; }
+.overview-detail-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.overview-detail-head h2 { margin: 0; flex: 1 1 auto; }
+.overview-detail-rows { max-height: 52vh; overflow: auto; padding-right: 2px; }
 
 .table-wrap {
   margin-top: 12px;
@@ -570,6 +576,9 @@ tr.row-dirty .cell-id { border-left: 3px solid #f59e0b; }
 /* 手机（窄视口）：面板全屏 + 「编辑 / 预览」标签切换 */
 @media (max-width: 768px) {
   .overview-note { margin-left: 0; flex-basis: 100%; }
+  .overview-detail-btn { margin-left: auto; }
+  .overview-detail-head h2 { flex-basis: 100%; }
+  .overview-detail-rows { max-height: 60vh; }
   .note-panel { padding: 0; }
   .note-dialog { width: 100vw; height: 100vh; border: 0; border-radius: 0; }
   .note-tabs { display: flex; }

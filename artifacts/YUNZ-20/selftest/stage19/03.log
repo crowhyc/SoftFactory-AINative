@@ -1,0 +1,20 @@
+=== 自测矩阵 03 · 隔离数据构造（含 1/1/1 与 0 行边界）：aggregate 与 phases 都与 /api/stats 完全一致，两组结果服务端同源 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage19/statcheck.log' 'PASS  矩阵01a' 'PASS  矩阵01b' 'PASS  矩阵02a' 'PASS  矩阵02b' 'PASS  矩阵02c' 'PASS  矩阵02d' 'PASS  矩阵02e' 'PASS  矩阵02f' 'PASS  矩阵03a' 'PASS  矩阵03b' 'PASS  矩阵03c' 'PASS  矩阵03d' 'PASS  矩阵03e' 'PASS  矩阵04a' 'PASS  矩阵04b'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵01a
+OK    PASS  矩阵01b
+OK    PASS  矩阵02a
+OK    PASS  矩阵02b
+OK    PASS  矩阵02c
+OK    PASS  矩阵02d
+OK    PASS  矩阵02e
+OK    PASS  矩阵02f
+OK    PASS  矩阵03a
+OK    PASS  矩阵03b
+OK    PASS  矩阵03c
+OK    PASS  矩阵03d
+OK    PASS  矩阵03e
+OK    PASS  矩阵04a
+OK    PASS  矩阵04b
+PASS=15 FAIL=0

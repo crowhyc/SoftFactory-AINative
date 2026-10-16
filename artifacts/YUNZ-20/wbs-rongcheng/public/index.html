@@ -36,11 +36,12 @@
     </div>
   </header>
 
-  <section id="phase-overview" class="phase-overview" aria-label="各阶段状态占比总览">
+  <section id="phase-overview" class="phase-overview" aria-label="全部五阶段合并统计与分阶段详情">
     <div class="overview-head">
-      <span class="overview-title">各阶段状态占比</span>
+      <span class="overview-title">全部五阶段合并</span>
       <span id="overview-total" class="overview-total">共 0 条</span>
-      <span class="overview-note">按五个阶段分别统计，分母 = 当前任务总数</span>
+      <span class="overview-note">五个阶段合计，分母 = 当前任务总数 × 5</span>
+      <button id="overview-detail-btn" type="button" class="btn btn-mini overview-detail-btn" aria-controls="overview-detail-panel">详情</button>
     </div>
     <div id="overview-rows" class="overview-rows"></div>
   </section>
@@ -80,7 +81,7 @@
           <th class="col-date">设计</th>
           <th class="col-date">开发</th>
           <th class="col-date">测试</th>
-          <th class="col-date">产品</th>
+          <th class="col-date">产品验收</th>
           <th class="col-date">演示准备</th>
           <th class="col-note">进展说明</th>
           <th class="col-op">操作</th>
@@ -166,6 +167,18 @@
       <button id="note-confirm-cancel" type="button" class="btn">取消</button>
       <button id="note-confirm-exit" type="button" class="btn btn-primary">继续退出</button>
     </div>
+  </div>
+</div>
+
+<div id="overview-detail-panel" class="modal overview-detail-panel" hidden>
+  <div class="modal-card overview-detail-card" role="dialog" aria-modal="true" aria-labelledby="overview-detail-title">
+    <header class="overview-detail-head">
+      <h2 id="overview-detail-title">分阶段状态占比</h2>
+      <span id="overview-detail-total" class="overview-total">共 0 条</span>
+      <button id="overview-detail-close" type="button" class="btn btn-mini">关闭</button>
+    </header>
+    <p class="modal-sub">按五个阶段分别统计（设计 / 开发 / 测试 / 产品验收 / 演示准备），分母 = 当前任务总数。</p>
+    <div id="overview-detail-rows" class="overview-rows overview-detail-rows"></div>
   </div>
 </div>
 

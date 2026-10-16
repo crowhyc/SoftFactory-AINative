@@ -1,0 +1,22 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+[env] 被测服务 http://127.0.0.1:4296（data: /opt/wbs-rongcheng/tests/.tmp/stage19-stats/data）
+PASS  矩阵01a /api/stats 同时给出两组结果：aggregate（全量合并，statuses[5]）+ phases（分阶段，5 × statuses[5]），结构自描述、顺序固定  :: {"total":36,"aggregateDenominator":180,"phases":["design","dev","test","product","demo_prep"]}
+PASS  矩阵01b 全量分母 = 任务总数 × 5（聚合层自描述 denominator），与 phases 分母 = 任务总数（CH-14 原口径）并存  :: {"total":36,"aggregateDenominator":180}
+PASS  矩阵02a 组合一（mixed）：aggregate 与 phases 的 count / percentage 与 /api/wbs 独立复算逐项一致  :: {"total":36,"keys":3}
+PASS  矩阵02b 组合二（skew，每阶段单状态满编）：aggregate 五状态计数 = 任务总数（每状态 36），占比各 20.0%  :: {"total":36,"keys":3}
+PASS  矩阵02c 组合三（single，阶段间状态互斥）：aggregate 与 phases 逐项一致  :: {"total":36,"keys":3}
+PASS  矩阵03a 聚合层最大余数法：分母 15 的 14/1 分布下五项合计恰为 100.0%（未开始 93.3 / 已开始 6.7）  :: ["14/93.3","1/6.7","0/0.0","0/0.0","0/0.0"]
+PASS  矩阵03b 同一组数据下 aggregate 与 phases 两组结果仍与独立复算逐项一致（两组各自补齐、互不影响）  :: {"total":3,"keys":3}
+PASS  矩阵03c 阶段层保真：1/1/1 分布下单阶段五项合计仍恰为 100.0%（最大余数法 33.4 / 33.3 / 33.3 / 0.0 / 0.0，CH-14 口径不回归）  :: "33.4,33.3,33.3,0,0"
+PASS  矩阵03d 任务总数为 0：不除零、不报错（HTTP 200），aggregate（分母 0）与 phases 全部为「0 0.0%」  :: {"aggregate":"0 0.0% | 0 0.0% | 0 0.0% | 0 0.0% | 0 0.0%","phases":"0 0.0% | 0 0.0% | 0 0.0% | 0 0.0% | 0 0.0%"}
+PASS  矩阵03e 脏数据防御：任一行缺 phases 时聚合计数之和 ≠ 分母，aggregate / phases 都只做 1 位小数截断、不臆造补齐到 100.0%  :: {"total":36,"aggregateSum":97.2,"未开始":{"value":"未开始","count":175,"percentage":97.2}}
+PASS  矩阵04a 阶段显示名：phases[3].name = 「产品验收」（其余四个阶段名不变），接口 key 仍为 product  :: {"names":["设计","开发","测试","产品验收","演示准备"],"keys":["design","dev","test","product","demo_prep"]}
+PASS  矩阵04b JSON 字段不变：文档内仍为 task.phases.product（含 phases.<阶段> 五键），A–K 原数据未被改写  :: {"keys":["design","dev","test","product","demo_prep"],"tasks":36}
+PASS  只读口径：/api/stats 与 /api/wbs 读同一份文档（同 revision、同 total），连读 5 次不改盘、不写审计、不改 revision  :: {"revision":0,"size":21233}
+PASS  只读口径：/api/stats 仅接受 GET（POST / PUT / DELETE 均 405，不产生任何写入路径）  :: {"post":405,"put":405,"del":405}
+PASS  矩阵10b /api/stats 不构成下载路径（application/json、无 Content-Disposition、no-store）  :: {"contentType":"application/json; charset=utf-8","disposition":null}
+PASS  矩阵02d aggregate 与 phases 同源：aggregate 五状态计数逐项等于 phases 五阶段同状态计数之和（一次遍历、无二次统计）  :: "59,24,24,34,39"
+PASS  矩阵02e 保存后口径随文档走：PUT 改为 7 行后 aggregate（分母 35）与 phases 两组结果都与独立复算一致  :: {"total":7,"keys":3}
+PASS  矩阵02f 保存后 revision 同步（/api/stats.revision 与 /api/wbs.meta.revision 一致），aggregate 分母随任务数重算  :: {"status":200,"statsRevision":1,"denominator":35}
+---
+PASS=18 FAIL=0

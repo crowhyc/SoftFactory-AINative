@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # YUNZ-37 / 变更包 #7（CH-14 阶段状态占比总览 + GET /api/stats）部署与镜像自检。
+# CH-15 同步（YUNZ-39 / 变更包 #8）：顶部形态改为单行全量合并 + 详情只读面板，live 冒烟随之断言
+# 「aggregate 全量组合并 + phases 分阶段组并存」，并核对页面「详情」入口 DOM。
 # 复用 stage15 → stage13 → stage9 的容器/绑定/health/镜像/资源一致性口径（BIND_HOST=0.0.0.0），
 # 并追加 CH-14 live 冒烟：/api/stats 口径、只读语义、页面总览条 DOM 与五色样式。
 # 前置：已用 deploy/deploy.sh 重建容器（本脚本只校验运行现场，不重建）。
@@ -47,12 +49,19 @@ const countsOk = !!wbs && phasesOk && stats.total === wbs.tasks.length &&
     return c === stats.phases[index].statuses[j].count;
   }));
 const revisionOk = !!wbs && !!stats && stats.revision === wbs.meta.revision;
+const aggOk = !!stats && !!stats.aggregate && Array.isArray(stats.aggregate.statuses) && stats.aggregate.statuses.length === 5 &&
+  stats.aggregate.denominator === stats.total * 5 && phasesOk &&
+  Math.abs(stats.aggregate.statuses.reduce((a, s) => a + s.percentage, 0) - 100) < 1e-9 &&
+  stats.aggregate.statuses.map((s) => s.value).join(",") === PHASE_ENUM.join(",") &&
+  PHASE_ENUM.every((v, j) => stats.aggregate.statuses[j].count === stats.phases.reduce((a, p) => a + p.statuses[j].count, 0));
 const map = {};
 if (phasesOk) stats.phases.forEach((p) => p.statuses.forEach((s) => { map[s.value] = (s.count + " " + s.percentage.toFixed(1) + "%"); }));
 console.log("phasesOk=" + flag(phasesOk));
 console.log("sumOk=" + flag(sumOk));
 console.log("countsOk=" + flag(countsOk));
 console.log("revisionOk=" + flag(revisionOk));
+console.log("aggOk=" + flag(aggOk));
+console.log("aggDenominator=" + (stats && stats.aggregate ? stats.aggregate.denominator : "null"));
 console.log("total=" + (stats ? stats.total : "null"));
 console.log("design=" + (map["未开始"] || "-") + "|" + (map["已开始"] || "-") + "|" + (map["已完成"] || "-") + "|" + (map["延期"] || "-") + "|" + (map["阻塞"] || "-"));
 ' "$STATS_JSON" "$WBS_JSON" 2>/dev/null || echo "parse=false")"
@@ -78,6 +87,11 @@ if [ "$(smoke_get revisionOk)" = true ]; then
 else
   bad "live /api/stats revision 与 /api/wbs 不一致"
 fi
+if [ "$(smoke_get aggOk)" = true ]; then
+  ok "live /api/stats 同时给出 aggregate（分母 = 任务总数 × 5 = $(smoke_get aggDenominator)，五状态合计 100.0%，计数 = 五阶段同状态之和）与 phases 分阶段两组结果"
+else
+  bad "live /api/stats 的 aggregate 口径不符"
+fi
 echo "     设计阶段样例：$(smoke_get design)"
 
 STATS_STATUS="$(curl -s -o /dev/null -w '%{http_code}' -X POST "http://127.0.0.1:$PORT/api/stats" 2>/dev/null || true)"
@@ -96,7 +110,7 @@ fi
 INDEXHTML="$(curl -fsS "http://127.0.0.1:$PORT/" 2>/dev/null || true)"
 APPJS="$(curl -fsS "http://127.0.0.1:$PORT/app.js" 2>/dev/null || true)"
 STYLES="$(curl -fsS "http://127.0.0.1:$PORT/styles.css" 2>/dev/null || true)"
-for token in 'id="phase-overview"' 'id="overview-rows"' 'id="overview-total"'; do
+for token in 'id="phase-overview"' 'id="overview-rows"' 'id="overview-total"' 'id="overview-detail-btn"' 'id="overview-detail-panel"'; do
   if printf '%s' "$INDEXHTML" | grep -Fq -- "$token"; then
     ok "live 页面含总览条 DOM $token"
   else
@@ -104,12 +118,13 @@ for token in 'id="phase-overview"' 'id="overview-rows"' 'id="overview-total"'; d
   fi
 done
 case "$APPJS" in
-  *"/api/stats"*"refreshOverview"*"overview-badge"*) ok "live app.js 含 CH-14 总览实现（/api/stats 读取 + 刷新 + 徽标渲染，原样渲染服务端口径）";;
-  *) bad "live app.js 未含 CH-14 总览实现";;
+  *"/api/stats"*"refreshOverview"*"overview-badge"*"renderOverviewDetail"*"openOverviewDetail"*)
+    ok "live app.js 含 CH-14 / CH-15 统计实现（/api/stats 读取 + 刷新 + 全量/详情徽标渲染，原样渲染服务端口径）";;
+  *) bad "live app.js 未含 CH-14 / CH-15 统计实现";;
 esac
-BLOCK="$(printf '%s' "$APPJS" | sed -n '/CH-14 阶段状态占比总览/,/function bindEvents/p')"
+BLOCK="$(printf '%s' "$APPJS" | sed -n '/CH-14 \/ CH-15 全量统计/,/function bindEvents/p')"
 if [ -z "$BLOCK" ]; then
-  bad "live app.js 未定位到 CH-14 总览代码块"
+  bad "live app.js 未定位到 CH-14 / CH-15 统计代码块"
 elif printf '%s' "$BLOCK" | grep -Eq '\.filter\(|\.reduce\(|Math\.(round|floor|ceil)'; then
   bad "live CH-14 总览代码块内出现本地统计痕迹（filter / reduce / Math 取整）"
 else

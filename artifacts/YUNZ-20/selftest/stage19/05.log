@@ -1,0 +1,8 @@
+=== 自测矩阵 05 · WBS 导出：L2:P2 显示「产品验收进度」；A–K 与模板首两行保真、五阶段五色、Q1 导出日期标签不回归；不带统计区 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage19/browser.log' 'PASS  矩阵08e' 'PASS  矩阵08f' 'PASS  矩阵08g'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵08e
+OK    PASS  矩阵08f
+OK    PASS  矩阵08g
+PASS=3 FAIL=0

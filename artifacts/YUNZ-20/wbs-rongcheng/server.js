@@ -24,7 +24,7 @@ const DATE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
 /* CH-10：五阶段独立进度。phases.<key> 取值为下列五枚举之一；字段级审计路径写作 phases.<key>.status。 */
 const PHASE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
 const PHASE_ENUM = ['未开始', '已开始', '已完成', '延期', '阻塞'];
-const PHASE_LABELS = { design: '设计', dev: '开发', test: '测试', product: '产品', demo_prep: '演示准备' };
+const PHASE_LABELS = { design: '设计', dev: '开发', test: '测试', product: '产品验收', demo_prep: '演示准备' };
 const MIGRATION_IDENTITY = '系统迁移';
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const TASK_FIELDS = ['level1', 'level2', 'task', 'owner', 'demo', 'note'];
@@ -609,7 +609,7 @@ function dailyOverview(doc, dateStr, tz) {
    同日更新过的阶段按其当前（最新）状态归类，不再派生「到期未更新」；已完成阶段不判延期、也不派生；
    一任务多事件允许多行，各自标签与结论独立。
    排序：延期条目在前、阻塞条目在后；同类内按任务顺序（一级 / 二级 / 任务项）与阶段顺序
-   （设计 → 开发 → 测试 → 产品 → 演示准备）稳定排列。 */
+   （设计 → 开发 → 测试 → 产品验收 → 演示准备）稳定排列。 */
 function dailyText(doc, dateStr, tz) {
   const records = historyRecords(dateStr, tz).filter((record) => record.field !== 'status');
   const tasks = (doc && Array.isArray(doc.tasks)) ? doc.tasks : [];
@@ -749,11 +749,15 @@ function phasePercentages(counts, total) {
   return tenths.map(function (value) { return value / BASE; });
 }
 
-/* CH-14：只按五个阶段分别统计五种状态的数量 + 占比（不做跨阶段合并总数）。
-   返回结构自描述且顺序稳定：phases 按 PHASE_KEYS、每个阶段 statuses 按 PHASE_ENUM 固定顺序。 */
+/* CH-15：一次遍历同时给出两组结果（同源、无二次统计）：
+   - aggregate：顶部「全部五阶段合并」全量统计，分母 = 任务总数 × 5；
+   - phases：CH-14 原口径的分阶段统计，分母 = 任务总数。
+   返回结构自描述且顺序稳定：aggregate.statuses 与每个 phase.statuses 都按 PHASE_ENUM 固定顺序，
+   phases 按 PHASE_KEYS 固定顺序；两项百分比各自用最大余数法补齐到 100.0%（0 行时全 0，不除零）。 */
 function statsOverview(doc) {
   var tasks = doc && Array.isArray(doc.tasks) ? doc.tasks : [];
   var total = tasks.length;
+  var aggregateCounts = PHASE_ENUM.map(function () { return 0; });
   var phases = PHASE_KEYS.map(function (key) {
     var counts = PHASE_ENUM.map(function () { return 0; });
     tasks.forEach(function (task) {
@@ -761,6 +765,7 @@ function statsOverview(doc) {
       var index = PHASE_ENUM.indexOf(progress);
       if (index !== -1) counts[index] += 1;
     });
+    counts.forEach(function (count, index) { aggregateCounts[index] += count; });
     var percentages = phasePercentages(counts, total);
     return {
       key: key,
@@ -770,9 +775,19 @@ function statsOverview(doc) {
       })
     };
   });
+  var aggregateDenominator = total * PHASE_KEYS.length;
+  var aggregatePercentages = phasePercentages(aggregateCounts, aggregateDenominator);
   return {
     total: total,
     revision: doc && doc.meta ? doc.meta.revision : null,
+    aggregate: {
+      key: 'aggregate',
+      name: '全部五阶段合并',
+      denominator: aggregateDenominator,
+      statuses: PHASE_ENUM.map(function (value, index) {
+        return { value: value, count: aggregateCounts[index], percentage: aggregatePercentages[index] };
+      })
+    },
     phases: phases
   };
 }
@@ -914,7 +929,8 @@ function handler(req, res) {
     res.end('405 Method Not Allowed');
     return;
   }
-  /* CH-14：各阶段状态「数量 + 占比」只读总览。与 /api/wbs 读同一份文档（同一口径、同一 revision）；
+  /* CH-14 / CH-15：全量（aggregate）+ 分阶段（phases）状态「数量 + 占比」只读统计，两组结果同源。
+     与 /api/wbs 读同一份文档（同一口径、同一 revision）；
      纯读接口：不改权限矩阵、不写审计、不产生任何下载路径。 */
   if (pathname === '/api/stats') {
     if (req.method !== 'GET') {

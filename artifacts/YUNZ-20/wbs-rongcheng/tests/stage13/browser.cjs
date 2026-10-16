@@ -340,7 +340,8 @@ function trackPage(page) {
       wbsShape.sheetNames.length === 1 &&
       JSON.stringify(wbsShape.row1.slice(0, 11)) === JSON.stringify(wbsShape.templateRow1.slice(0, 11)) &&
       JSON.stringify(wbsShape.header.slice(0, 11)) === JSON.stringify(wbsShape.templateRow2.slice(0, 11)) &&
-      JSON.stringify(wbsShape.header.slice(11, 16)) === JSON.stringify(['设计进度', '开发进度', '测试进度', '产品进度', '演示准备进度']) &&
+      /* CH-15（YUNZ-39）同步：导出 L2:P2 五进度表头随网页列头改名，产品进度 → 产品验收进度。 */
+      JSON.stringify(wbsShape.header.slice(11, 16)) === JSON.stringify(['设计进度', '开发进度', '测试进度', '产品验收进度', '演示准备进度']) &&
       /^导出日期：\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(String(wbsShape.row1[16])),
       { sheets: wbsShape.sheetNames, l2p: wbsShape.header.slice(11, 16), q1: wbsShape.row1[16] });
 

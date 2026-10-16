@@ -1,0 +1,8 @@
+=== 自测矩阵 01 · 顶部只剩一组「全部五阶段合并」全量统计：五阶段合并 count/percentage、五种状态齐显、行内计数合计 = 任务总数 × 5、右侧有「详情」按钮 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage19/browser.log' 'PASS  矩阵01a' 'PASS  矩阵01b' 'PASS  矩阵01c'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵01a
+OK    PASS  矩阵01b
+OK    PASS  矩阵01c
+PASS=3 FAIL=0

@@ -3,12 +3,12 @@
 (function (global) {
   var PM = '项目负责人';
   var DATE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
-  var DATE_LABELS = { design: '设计', dev: '开发', test: '测试', product: '产品', demo_prep: '演示准备' };
+  var DATE_LABELS = { design: '设计', dev: '开发', test: '测试', product: '产品验收', demo_prep: '演示准备' };
   /* CH-10：五阶段独立进度（phases.<key>，取值见 PHASES）。 */
   var PHASE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
   var PHASES = ['未开始', '已开始', '已完成', '延期', '阻塞'];
-  var PHASE_LABELS = { design: '设计', dev: '开发', test: '测试', product: '产品', demo_prep: '演示准备' };
-  var PHASE_HEADERS = ['设计进度', '开发进度', '测试进度', '产品进度', '演示准备进度'];
+  var PHASE_LABELS = { design: '设计', dev: '开发', test: '测试', product: '产品验收', demo_prep: '演示准备' };
+  var PHASE_HEADERS = ['设计进度', '开发进度', '测试进度', '产品验收进度', '演示准备进度'];
   /* 五色映射：未开始=灰、已开始=蓝、已完成=绿、延期=红、阻塞=黄。 */
   var PHASE_HEX = { '未开始': '9E9E9E', '已开始': '2F80ED', '已完成': '27AE60', '延期': 'E74C3C', '阻塞': 'FFD400' };
   var PHASE_TEXT = { '未开始': 'FFFFFF', '已开始': 'FFFFFF', '已完成': 'FFFFFF', '延期': 'FFFFFF', '阻塞': '3A2E00' };
@@ -16,7 +16,7 @@
     id: '序号',
     level1: '一级', level2: '二级', task: '任务项', owner: '负责人', demo: '是否演示范围',
     note: '进展说明',
-    'dates.design': '设计', 'dates.dev': '开发', 'dates.test': '测试', 'dates.product': '产品', 'dates.demo_prep': '演示准备'
+    'dates.design': '设计', 'dates.dev': '开发', 'dates.test': '测试', 'dates.product': '产品验收', 'dates.demo_prep': '演示准备'
   };
   PHASE_KEYS.forEach(function (key) {
     FIELD_LABELS['phases.' + key] = PHASE_HEADERS[PHASE_KEYS.indexOf(key)];
@@ -719,8 +719,10 @@
     /* CH-13：日报文本弹层。 */
     dailyPanel: { open: false },
     dailyText: '',
-    /* CH-14：各阶段状态占比总览（最近一次 /api/stats 响应，口径唯一来源是服务端）。 */
-    stats: null
+    /* CH-14 / CH-15：全量统计 + 分阶段详情（最近一次 /api/stats 响应，口径唯一来源是服务端）。 */
+    stats: null,
+    /* CH-15：「详情」只读面板开关（只读展示，不参与权限矩阵与草稿状态）。 */
+    overviewDetail: { open: false }
   };
 
   function $(id) { return document.getElementById(id); }
@@ -1734,6 +1736,7 @@
     hideBanner();
     state.editingRows = {};
     closeAddPersonPanel();
+    closeOverviewDetail();
     $('identity-error').hidden = true;
     if (state.doc) renderIdentityLayer();
     $('workbench').hidden = true;
@@ -1798,10 +1801,11 @@
     }
   }
 
-  /* -------------------------------------------------- CH-14 阶段状态占比总览 */
+  /* ------------------------------------- CH-14 / CH-15 全量统计 + 分阶段详情 */
 
-  /* 只读总览条：口径唯一来源是服务端 /api/stats（与 /api/wbs 同一份文档）。
-     前端不做任何统计、不二次四舍五入，只按「状态名 + 数量 + 百分比」做等价格式化。 */
+  /* 只读统计：口径唯一来源是服务端 /api/stats（与 /api/wbs 同一份文档）。
+     服务端一次给出两组结果（aggregate 全量合并 / phases 分阶段），前端不做任何统计、
+     不二次四舍五入，只按「状态名 + 数量 + 百分比」做等价格式化。 */
   async function fetchStats() {
     var response = await fetch('/api/stats', { cache: 'no-store' });
     if (!response.ok) throw new Error('总览读取失败 HTTP ' + response.status);
@@ -1835,32 +1839,74 @@
     return badge;
   }
 
-  /* 渲染总览：每个阶段独立一行（阶段名 + 五种状态徽标），不做跨阶段合并。 */
+  /* 一行：标签 + 五种状态徽标（全量区与详情区共用同一渲染，保持两区完全同源同形）。 */
+  function buildOverviewRow(key, name, statuses) {
+    var row = document.createElement('div');
+    row.className = 'overview-row';
+    row.setAttribute('data-phase', key);
+    var label = document.createElement('span');
+    label.className = 'overview-phase';
+    label.textContent = name;
+    row.appendChild(label);
+    var badges = document.createElement('div');
+    badges.className = 'overview-badges';
+    (statuses || []).forEach(function (status) { badges.appendChild(buildOverviewBadge(status)); });
+    row.appendChild(badges);
+    return row;
+  }
+
+  /* CH-15：顶部只保留一组「全部五阶段合并」全量统计（aggregate，分母 = 任务总数 × 5）；
+     分阶段明细（phases，CH-14 口径）移入右侧「详情」只读面板，两区都原样渲染服务端口径。 */
   function renderOverview(stats) {
     var rows = $('overview-rows');
     state.stats = stats || null;
+    var aggregate = stats && stats.aggregate ? stats.aggregate : null;
     var phases = stats && Array.isArray(stats.phases) ? stats.phases : [];
     if (rows) {
       rows.textContent = '';
-      phases.forEach(function (phase) {
-        var row = document.createElement('div');
-        row.className = 'overview-row';
-        row.setAttribute('data-phase', phase.key);
-        var label = document.createElement('span');
-        label.className = 'overview-phase';
-        label.textContent = phase.name;
-        row.appendChild(label);
-        var badges = document.createElement('div');
-        badges.className = 'overview-badges';
-        (phase.statuses || []).forEach(function (status) { badges.appendChild(buildOverviewBadge(status)); });
-        row.appendChild(badges);
-        rows.appendChild(row);
-      });
+      if (aggregate) {
+        rows.appendChild(buildOverviewRow(
+          aggregate.key || 'aggregate',
+          aggregate.name || '全部五阶段合并',
+          Array.isArray(aggregate.statuses) ? aggregate.statuses : []
+        ));
+      }
     }
+    renderOverviewDetail(phases);
     var total = stats && stats.total != null ? overviewNumber(stats.total) : 0;
     var totalEl = $('overview-total');
     if (totalEl) totalEl.textContent = '共 ' + total + ' 条';
-    return { phases: phases.length, total: total };
+    var detailTotalEl = $('overview-detail-total');
+    if (detailTotalEl) detailTotalEl.textContent = '共 ' + total + ' 条';
+    return { aggregate: aggregate && Array.isArray(aggregate.statuses) ? aggregate.statuses.length : 0, phases: phases.length, total: total };
+  }
+
+  /* 详情面板内容：五个阶段各一行（阶段名 + 五种状态徽标），只读。 */
+  function renderOverviewDetail(phases) {
+    var rows = $('overview-detail-rows');
+    if (!rows) return 0;
+    rows.textContent = '';
+    (phases || []).forEach(function (phase) {
+      rows.appendChild(buildOverviewRow(phase.key, phase.name, phase.statuses));
+    });
+    return (phases || []).length;
+  }
+
+  /* CH-15：打开 / 关闭只读详情面板。只做显隐，不触碰任何编辑草稿与编辑器状态。 */
+  function openOverviewDetail() {
+    var panel = $('overview-detail-panel');
+    if (!panel) return { ok: false };
+    panel.hidden = false;
+    state.overviewDetail.open = true;
+    try { $('overview-detail-close').focus(); } catch (e) { /* 忽略 */ }
+    return { ok: true };
+  }
+
+  function closeOverviewDetail() {
+    var panel = $('overview-detail-panel');
+    if (panel && !panel.hidden) panel.hidden = true;
+    state.overviewDetail.open = false;
+    return { ok: true };
   }
 
   /* 刷新时机：进入工作台 / 保存 / 新增 / 删除 / 身份切换回到工作台，以及任何写操作成功后。
@@ -1888,6 +1934,9 @@
     $('save-btn').addEventListener('click', function () { save(); });
     $('add-row-btn').addEventListener('click', function () { addRow(); });
     $('export-btn').addEventListener('click', function () { exportXlsx(); });
+    /* CH-15：全量统计区右侧「详情」只读面板（按钮 + 关闭 + Esc）。 */
+    $('overview-detail-btn').addEventListener('click', function () { openOverviewDetail(); });
+    $('overview-detail-close').addEventListener('click', function () { closeOverviewDetail(); });
     $('daily-btn').addEventListener('click', function () { exportDailyReport(); });
     /* CH-13 日报文本弹层：复制 / 关闭 / Esc。 */
     $('daily-copy').addEventListener('click', function () { copyDailyText(); });
@@ -1918,7 +1967,9 @@
     });
     document.addEventListener('keydown', function (event) {
       if (event.key !== 'Escape') return;
-      /* CH-13：日报弹层在最上层，Esc 先关它（只读展示，无需确认）。 */
+      /* CH-15：只读「详情」面板在最上层，Esc 先关它（只读展示，无需确认、不动草稿）。 */
+      if (!$('overview-detail-panel').hidden) { event.preventDefault(); closeOverviewDetail(); return; }
+      /* CH-13：日报弹层，Esc 关它（只读展示，无需确认）。 */
       if (!$('daily-panel').hidden) { event.preventDefault(); closeDailyPanel(); return; }
       if (!$('note-confirm').hidden) { event.preventDefault(); cancelNoteConfirm(); return; }
       if (!state.notePanel.open) return;
@@ -1986,6 +2037,9 @@
     checkHealth: checkHealth,
     fetchStats: fetchStats,
     renderOverview: renderOverview,
+    renderOverviewDetail: renderOverviewDetail,
+    openOverviewDetail: openOverviewDetail,
+    closeOverviewDetail: closeOverviewDetail,
     refreshOverview: refreshOverview,
     openNotePanel: openNotePanel,
     closeNotePanel: closeNotePanel,

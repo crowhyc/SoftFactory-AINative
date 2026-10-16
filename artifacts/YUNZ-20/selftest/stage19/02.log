@@ -1,0 +1,12 @@
+=== 自测矩阵 02 · 「详情」只读面板：五阶段各自占比、打开/关闭按钮与 Esc、伪响应原样渲染、不影响未保存草稿 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage19/browser.log' 'PASS  矩阵02a' 'PASS  矩阵02b' 'PASS  矩阵02c' 'PASS  矩阵02d' 'PASS  矩阵02e' 'PASS  矩阵02f' 'PASS  矩阵02g'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵02a
+OK    PASS  矩阵02b
+OK    PASS  矩阵02c
+OK    PASS  矩阵02d
+OK    PASS  矩阵02e
+OK    PASS  矩阵02f
+OK    PASS  矩阵02g
+PASS=7 FAIL=0

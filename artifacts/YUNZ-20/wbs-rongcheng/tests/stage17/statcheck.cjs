@@ -1,5 +1,7 @@
 'use strict';
 /* YUNZ-37 / 变更包 #7（CH-14 阶段状态占比总览 + GET /api/stats）服务端口径自测。
+   CH-15 同步（YUNZ-39 / 变更包 #8）：阶段显示名「产品」→「产品验收」（接口 key 仍为 product），
+   本套件同步该显示名常量；分母 / 最大余数法 / 只读语义等 CH-14 口径断言不变。
    运行在宿主（Node 标准库 + 被测服务，无浏览器依赖）：起隔离数据目录的被测服务，构造多组
    「五阶段 × 五状态」数据组合，逐条断言 02 / 03 / 只读与边界口径。宿主 node 为 docker 包装脚本，
    因此所有路径都用 APP_DIR 内的相对路径（容器以 cwd 挂载同一路径）。
@@ -18,7 +20,7 @@ const DATA_DIR = path.join(OUTDIR, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'wbs.json');
 const AUDIT_FILE = path.join(DATA_DIR, 'audit.log');
 const PHASE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
-const PHASE_LABELS = { design: '设计', dev: '开发', test: '测试', product: '产品', demo_prep: '演示准备' };
+const PHASE_LABELS = { design: '设计', dev: '开发', test: '测试', product: '产品验收', demo_prep: '演示准备' };
 const PHASE_ENUM = ['未开始', '已开始', '已完成', '延期', '阻塞'];
 
 const results = { checked_at: new Date().toISOString(), base: BASE, checks: [] };

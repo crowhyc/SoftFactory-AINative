@@ -1,0 +1,18 @@
+=== 自测矩阵 06 · 保存 / 新增 / 删除 / 身份切换后全量与详情实时重算，无陈旧数据；九身份可见；查看不改审计与 revision ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage19/browser.log' 'PASS  矩阵05a' 'PASS  矩阵05b' 'PASS  矩阵05c' 'PASS  矩阵05d' 'PASS  矩阵05e' 'PASS  矩阵05f' 'PASS  矩阵05g' 'PASS  矩阵05h' 'PASS  矩阵05i' 'PASS  矩阵05j' 'PASS  矩阵05k' 'PASS  矩阵06a' 'PASS  矩阵06b'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵05a
+OK    PASS  矩阵05b
+OK    PASS  矩阵05c
+OK    PASS  矩阵05d
+OK    PASS  矩阵05e
+OK    PASS  矩阵05f
+OK    PASS  矩阵05g
+OK    PASS  矩阵05h
+OK    PASS  矩阵05i
+OK    PASS  矩阵05j
+OK    PASS  矩阵05k
+OK    PASS  矩阵06a
+OK    PASS  矩阵06b
+PASS=13 FAIL=0

@@ -1,0 +1,16 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+[env] 被测服务 http://127.0.0.1:4295（data: /opt/wbs-rongcheng/tests/.tmp/stage17-stats/data）
+PASS  矩阵02a /api/stats 结构自描述且稳定（ok / total / revision / phases[5]，每阶段 statuses[5]：value+count+percentage 一位小数）  :: {"total":36,"keys":["design","dev","test","product","demo_prep"]}
+PASS  矩阵02b 组合一（mixed）：五阶段 × 五状态 count / percentage 与 /api/wbs 独立复算逐项一致  :: {"total":36,"phases":5}
+PASS  矩阵02c 组合二（skew）：单状态满编 / 大量 0 项组合下 count / percentage 仍逐项一致  :: {"total":36,"phases":5}
+PASS  矩阵02d 组合三（single）：每阶段单状态 100.0% / 其余 0.0%  :: {"total":36,"phases":5}
+PASS  矩阵03a 完整体边界：1/1/1 分布下单阶段五项合计恰为 100.0%（最大余数法 33.4 / 33.3 / 33.3 / 0.0 / 0.0）  :: "1/33.4 1/33.3 1/33.3 0/0 0/0"
+PASS  矩阵03b 任务总数为 0：不除零、不报错（HTTP 200），五阶段 × 五状态全部为「0 0.0%」  :: "0 0.0% | 0 0.0% | 0 0.0% | 0 0.0% | 0 0.0%"
+PASS  矩阵03c 脏数据防御：任一行缺 phases 时计数之和 ≠ 总数，服务端只做 1 位小数截断、不臆造占比（不强行补到 100.0%）  :: {"total":36,"未开始":{"value":"未开始","count":35,"percentage":97.2},"sum":97.2}
+PASS  只读口径：/api/stats 与 /api/wbs 读同一份文档（同 revision、同数据），连读 5 次不改盘、不写审计、不改 revision  :: {"revision":0,"size":19433}
+PASS  只读口径：/api/stats 仅接受 GET（POST / PUT / DELETE 均 405，不产生任何写入路径）  :: {"post":405,"put":405,"del":405}
+PASS  矩阵10b /api/stats 不构成下载路径（application/json、无 Content-Disposition、no-store）  :: {"contentType":"application/json; charset=utf-8","disposition":null}
+PASS  矩阵02e 保存后口径随文档走：PUT 改为 3 行后 /api/stats 的 total / count / percentage 与独立复算一致  :: {"total":3,"phases":5}
+PASS  矩阵02f 保存后 revision 同步（/api/stats.revision 与 /api/wbs.meta.revision 一致）  :: {"status":200,"statsRevision":1}
+---
+PASS=12 FAIL=0

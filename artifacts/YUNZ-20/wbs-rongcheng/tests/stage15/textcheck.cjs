@@ -154,7 +154,8 @@ const findTask = (doc, id) => doc.tasks.find((task) => task.id === id);
       line('延期·高风险', 'T001', '设计 ' + mmdd(yesterday) + ' 到期未更新，判定延期'),
       line('延期·高风险', 'T002', '开发 ' + mmdd(yesterday) + ' 到期未更新，判定延期'),
       line('延期·高风险', 'T007', '测试延期'),
-      line('延期·高风险', 'T011', '产品延期'),
+      /* CH-15（YUNZ-39）同步：日报阶段结论标签随阶段显示名改名，产品延期 → 产品验收延期。 */
+      line('延期·高风险', 'T011', '产品验收延期'),
       line('阻塞·高风险', 'T002', '测试阻塞'),
       line('阻塞·高风险', 'T004', '测试更新为阻塞')
     ];
@@ -182,7 +183,7 @@ const findTask = (doc, id) => doc.tasks.find((task) => task.id === id);
       lines.indexOf(line('延期·高风险', 'T002', '开发 ' + mmdd(yesterday) + ' 到期未更新，判定延期')) !== -1 &&
       lines.indexOf(line('延期·高风险', 'T001', '设计 ' + mmdd(yesterday) + ' 到期未更新，判定延期')) !== -1 &&
       lines.filter((l) => l.indexOf('到期未更新，判定延期') !== -1).length === 2 &&
-      lines.indexOf(line('延期·高风险', 'T011', '产品延期')) !== -1,
+      lines.indexOf(line('延期·高风险', 'T011', '产品验收延期')) !== -1,
       { derived: lines.filter((l) => l.indexOf('到期未更新') !== -1), plain: lines.filter((l) => l.indexOf('延期。') === l.length - 3) });
 
     check('矩阵04 去重规则：今日更新过的阶段（状态 T003 / 日期 T006）按实际状态归类，不再派生「到期未更新」',

@@ -1,0 +1,367 @@
+{
+  "exists": true,
+  "hidden": false,
+  "buttons": 1,
+  "total": "共 36 条",
+  "detailTotal": "共 36 条",
+  "bodyText": "\n    \n      全部五阶段合并\n      共 36 条\n      五个阶段合计，分母 = 当前任务总数 × 5\n      详情\n    \n    全部五阶段合并未开始 61 33.9%已开始 24 13.3%已完成 25 13.9%延期 34 18.9%阻塞 36 20.0%\n  ",
+  "detailBtnText": "详情",
+  "detailHidden": false,
+  "detailCard": true,
+  "topRows": [
+    {
+      "phase": "aggregate",
+      "label": "全部五阶段合并",
+      "badges": [
+        {
+          "status": "未开始",
+          "count": "61",
+          "percentage": "33.9",
+          "text": "未开始 61 33.9%",
+          "bg": "rgb(158, 158, 158)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 110,
+          "clientWidth": 110
+        },
+        {
+          "status": "已开始",
+          "count": "24",
+          "percentage": "13.3",
+          "text": "已开始 24 13.3%",
+          "bg": "rgb(47, 128, 237)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 110,
+          "clientWidth": 110
+        },
+        {
+          "status": "已完成",
+          "count": "25",
+          "percentage": "13.9",
+          "text": "已完成 25 13.9%",
+          "bg": "rgb(39, 174, 96)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 110,
+          "clientWidth": 110
+        },
+        {
+          "status": "延期",
+          "count": "34",
+          "percentage": "18.9",
+          "text": "延期 34 18.9%",
+          "bg": "rgb(231, 76, 60)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 98,
+          "clientWidth": 98
+        },
+        {
+          "status": "阻塞",
+          "count": "36",
+          "percentage": "20.0",
+          "text": "阻塞 36 20.0%",
+          "bg": "rgb(255, 212, 0)",
+          "color": "rgb(58, 46, 0)",
+          "scrollWidth": 98,
+          "clientWidth": 98
+        }
+      ]
+    }
+  ],
+  "detailRows": [
+    {
+      "phase": "design",
+      "label": "设计",
+      "badges": [
+        {
+          "status": "未开始",
+          "count": "8",
+          "percentage": "22.2",
+          "text": "未开始 8 22.2%",
+          "bg": "rgb(158, 158, 158)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 103,
+          "clientWidth": 103
+        },
+        {
+          "status": "已开始",
+          "count": "7",
+          "percentage": "19.5",
+          "text": "已开始 7 19.5%",
+          "bg": "rgb(47, 128, 237)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 103,
+          "clientWidth": 103
+        },
+        {
+          "status": "已完成",
+          "count": "8",
+          "percentage": "22.2",
+          "text": "已完成 8 22.2%",
+          "bg": "rgb(39, 174, 96)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 103,
+          "clientWidth": 103
+        },
+        {
+          "status": "延期",
+          "count": "7",
+          "percentage": "19.4",
+          "text": "延期 7 19.4%",
+          "bg": "rgb(231, 76, 60)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 91,
+          "clientWidth": 91
+        },
+        {
+          "status": "阻塞",
+          "count": "6",
+          "percentage": "16.7",
+          "text": "阻塞 6 16.7%",
+          "bg": "rgb(255, 212, 0)",
+          "color": "rgb(58, 46, 0)",
+          "scrollWidth": 91,
+          "clientWidth": 91
+        }
+      ]
+    },
+    {
+      "phase": "dev",
+      "label": "开发",
+      "badges": [
+        {
+          "status": "未开始",
+          "count": "6",
+          "percentage": "16.7",
+          "text": "未开始 6 16.7%",
+          "bg": "rgb(158, 158, 158)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 103,
+          "clientWidth": 103
+        },
+        {
+          "status": "已开始",
+          "count": "8",
+          "percentage": "22.2",
+          "text": "已开始 8 22.2%",
+          "bg": "rgb(47, 128, 237)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 103,
+          "clientWidth": 103
+        },
+        {
+          "status": "已完成",
+          "count": "8",
+          "percentage": "22.2",
+          "text": "已完成 8 22.2%",
+          "bg": "rgb(39, 174, 96)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 103,
+          "clientWidth": 103
+        },
+        {
+          "status": "延期",
+          "count": "7",
+          "percentage": "19.5",
+          "text": "延期 7 19.5%",
+          "bg": "rgb(231, 76, 60)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 91,
+          "clientWidth": 91
+        },
+        {
+          "status": "阻塞",
+          "count": "7",
+          "percentage": "19.4",
+          "text": "阻塞 7 19.4%",
+          "bg": "rgb(255, 212, 0)",
+          "color": "rgb(58, 46, 0)",
+          "scrollWidth": 91,
+          "clientWidth": 91
+        }
+      ]
+    },
+    {
+      "phase": "test",
+      "label": "测试",
+      "badges": [
+        {
+          "status": "未开始",
+          "count": "6",
+          "percentage": "16.7",
+          "text": "未开始 6 16.7%",
+          "bg": "rgb(158, 158, 158)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 103,
+          "clientWidth": 103
+        },
+        {
+          "status": "已开始",
+          "count": "5",
+          "percentage": "13.9",
+          "text": "已开始 5 13.9%",
+          "bg": "rgb(47, 128, 237)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 103,
+          "clientWidth": 103
+        },
+        {
+          "status": "已完成",
+          "count": "5",
+          "percentage": "13.9",
+          "text": "已完成 5 13.9%",
+          "bg": "rgb(39, 174, 96)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 103,
+          "clientWidth": 103
+        },
+        {
+          "status": "延期",
+          "count": "16",
+          "percentage": "44.4",
+          "text": "延期 16 44.4%",
+          "bg": "rgb(231, 76, 60)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 98,
+          "clientWidth": 98
+        },
+        {
+          "status": "阻塞",
+          "count": "4",
+          "percentage": "11.1",
+          "text": "阻塞 4 11.1%",
+          "bg": "rgb(255, 212, 0)",
+          "color": "rgb(58, 46, 0)",
+          "scrollWidth": 91,
+          "clientWidth": 91
+        }
+      ]
+    },
+    {
+      "phase": "product",
+      "label": "产品验收",
+      "badges": [
+        {
+          "status": "未开始",
+          "count": "5",
+          "percentage": "13.9",
+          "text": "未开始 5 13.9%",
+          "bg": "rgb(158, 158, 158)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 103,
+          "clientWidth": 103
+        },
+        {
+          "status": "已开始",
+          "count": "4",
+          "percentage": "11.1",
+          "text": "已开始 4 11.1%",
+          "bg": "rgb(47, 128, 237)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 103,
+          "clientWidth": 103
+        },
+        {
+          "status": "已完成",
+          "count": "4",
+          "percentage": "11.1",
+          "text": "已完成 4 11.1%",
+          "bg": "rgb(39, 174, 96)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 103,
+          "clientWidth": 103
+        },
+        {
+          "status": "延期",
+          "count": "4",
+          "percentage": "11.1",
+          "text": "延期 4 11.1%",
+          "bg": "rgb(231, 76, 60)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 91,
+          "clientWidth": 91
+        },
+        {
+          "status": "阻塞",
+          "count": "19",
+          "percentage": "52.8",
+          "text": "阻塞 19 52.8%",
+          "bg": "rgb(255, 212, 0)",
+          "color": "rgb(58, 46, 0)",
+          "scrollWidth": 98,
+          "clientWidth": 98
+        }
+      ]
+    },
+    {
+      "phase": "demo_prep",
+      "label": "演示准备",
+      "badges": [
+        {
+          "status": "未开始",
+          "count": "36",
+          "percentage": "100.0",
+          "text": "未开始 36 100.0%",
+          "bg": "rgb(158, 158, 158)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 117,
+          "clientWidth": 117
+        },
+        {
+          "status": "已开始",
+          "count": "0",
+          "percentage": "0.0",
+          "text": "已开始 0 0.0%",
+          "bg": "rgb(47, 128, 237)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 97,
+          "clientWidth": 97
+        },
+        {
+          "status": "已完成",
+          "count": "0",
+          "percentage": "0.0",
+          "text": "已完成 0 0.0%",
+          "bg": "rgb(39, 174, 96)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 97,
+          "clientWidth": 97
+        },
+        {
+          "status": "延期",
+          "count": "0",
+          "percentage": "0.0",
+          "text": "延期 0 0.0%",
+          "bg": "rgb(231, 76, 60)",
+          "color": "rgb(255, 255, 255)",
+          "scrollWidth": 85,
+          "clientWidth": 85
+        },
+        {
+          "status": "阻塞",
+          "count": "0",
+          "percentage": "0.0",
+          "text": "阻塞 0 0.0%",
+          "bg": "rgb(255, 212, 0)",
+          "color": "rgb(58, 46, 0)",
+          "scrollWidth": 85,
+          "clientWidth": 85
+        }
+      ]
+    }
+  ],
+  "bar": {
+    "top": 208,
+    "bottom": 426,
+    "left": 16,
+    "right": 359,
+    "width": 343
+  },
+  "wrap": {
+    "top": 724,
+    "bottom": 3492,
+    "left": 16,
+    "right": 359,
+    "width": 343
+  },
+  "afterTopbar": true,
+  "beforeToolbar": true
+}

@@ -1,0 +1,24 @@
+{
+  "base": "http://127.0.0.1:4180",
+  "total": "共 34 条",
+  "aggregate": [
+    "未开始 83 48.8%",
+    "已开始 28 16.5%",
+    "已完成 58 34.1%",
+    "延期 1 0.6%",
+    "阻塞 0 0.0%"
+  ],
+  "detailRows": 5,
+  "headers": [
+    "设计",
+    "开发",
+    "测试",
+    "产品验收",
+    "演示准备"
+  ],
+  "detailOpenThenEsc": true,
+  "mobileNoPageScroll": true,
+  "liveStatsTotal": 34,
+  "mismatches": [],
+  "pageErrors": []
+}

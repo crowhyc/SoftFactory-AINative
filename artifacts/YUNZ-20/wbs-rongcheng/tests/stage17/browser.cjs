@@ -1,5 +1,7 @@
 'use strict';
 /* YUNZ-37 / 变更包 #7（CH-14 阶段状态占比总览 + GET /api/stats）真实浏览器自测。
+   CH-15 同步（YUNZ-39 / 变更包 #8）：顶部形态由「五阶段各一行」改为「单行全量合并统计 + 详情只读面板」，
+   本套件已按该取代关系同步形态断言（分阶段阶段口径与其余断言强度不降低；更完整的 CH-15 断言见 tests/stage19/）。
    运行环境：mcr.microsoft.com/playwright:v1.55.0-jammy 容器（chromium 140，与 playwright 1.55.0 对齐）；
    宿主为 CentOS 7，无法直接运行该 Chromium，浏览器只在测试容器内运行，不进产物、不进镜像。
    被测服务（server.js）由本脚本自行 spawn（隔离数据目录 + 构造数据），结束后回收；
@@ -21,7 +23,7 @@ const OUTDIR = process.env.OUTDIR || '/app/tests/.tmp/stage17-out';
 const DATA_DIR = process.env.DATA_DIR || '/app/tests/.tmp/stage17-browser-data';
 const TZ = 'Asia/Shanghai';
 const PHASE_KEYS = ['design', 'dev', 'test', 'product', 'demo_prep'];
-const PHASE_LABELS = { design: '设计', dev: '开发', test: '测试', product: '产品', demo_prep: '演示准备' };
+const PHASE_LABELS = { design: '设计', dev: '开发', test: '测试', product: '产品验收', demo_prep: '演示准备' };
 const PHASE_ENUM = ['未开始', '已开始', '已完成', '延期', '阻塞'];
 /* 五色映射（与表格阶段控件、导出填充一致）：未开始=灰 / 已开始=蓝 / 已完成=绿 / 延期=红 / 阻塞=黄。 */
 const PHASE_COLORS = {
@@ -163,19 +165,27 @@ function trackPage(page) {
       await page.evaluate((name) => { window.localStorage.setItem('wbs.identity', name); }, identity || '项目负责人');
       await page.reload();
       await page.waitForFunction(() => document.querySelectorAll('#wbs-body tr').length > 0, null, { timeout: 15000 });
-      await page.waitForFunction(() => document.querySelectorAll('#overview-rows .overview-row').length === 5, null, { timeout: 15000 });
+      await page.waitForFunction(() => document.querySelectorAll('#overview-rows .overview-row').length === 1 &&
+        document.querySelectorAll('#overview-rows .overview-badge').length === 5 &&
+        document.querySelectorAll('#overview-detail-rows .overview-row').length === 5, null, { timeout: 15000 });
       await page.waitForTimeout(150);
     };
-    /* 计数/百分比/DOM 三口径同源比对：总览以「服务端 /api/stats 原样渲染」为准。 */
+    /* 计数/百分比/DOM 三口径同源比对：总览以「服务端 /api/stats 原样渲染」为准。
+       CH-15：rows = 详情面板的分阶段五行（阶段口径不变）；topRows = 顶部单行全量合并统计。 */
     const readOverview = () => page.evaluate(() => {
       const bar = document.getElementById('phase-overview');
-      const rows = Array.from(document.querySelectorAll('#overview-rows .overview-row'));
+      const rows = Array.from(document.querySelectorAll('#overview-detail-rows .overview-row'));
+      const topRows = Array.from(document.querySelectorAll('#overview-rows .overview-row'));
+      const panel = document.getElementById('overview-detail-panel');
       return {
         exists: !!bar,
         hidden: bar ? bar.hidden : null,
         buttons: bar ? bar.querySelectorAll('button').length : -1,
         total: document.getElementById('overview-total') ? document.getElementById('overview-total').textContent : '',
+        detailTotal: document.getElementById('overview-detail-total') ? document.getElementById('overview-detail-total').textContent : '',
+        detailHidden: panel ? panel.hidden : null,
         bodyText: bar ? bar.textContent : '',
+        topRows: topRows.map((row) => ({ phase: row.getAttribute('data-phase'), label: row.querySelector('.overview-phase') ? row.querySelector('.overview-phase').textContent : null, badges: Array.from(row.querySelectorAll('.overview-badge')).map((badge) => ({ status: badge.getAttribute('data-status'), count: badge.getAttribute('data-count'), percentage: badge.getAttribute('data-percentage'), text: badge.textContent })) })),
         rows: rows.map((row) => ({
           phase: row.getAttribute('data-phase'),
           label: row.querySelector('.overview-phase') ? row.querySelector('.overview-phase').textContent : null,
@@ -196,14 +206,14 @@ function trackPage(page) {
         }))
       };
     });
-    const domSignature = () => page.evaluate(() => Array.from(document.querySelectorAll('#overview-rows .overview-row'))
+    const domSignature = () => page.evaluate(() => Array.from(document.querySelectorAll('#overview-detail-rows .overview-row'))
       .map((row) => row.getAttribute('data-phase') + ':' + Array.from(row.querySelectorAll('.overview-badge'))
         .map((b) => b.getAttribute('data-status') + '=' + b.getAttribute('data-count') + '/' + b.getAttribute('data-percentage')).join(','))
       .join('|'));
     const waitSignature = async (stats, timeout) => {
       const expected = signatureOf(stats);
       await page.waitForFunction((want) => {
-        const got = Array.from(document.querySelectorAll('#overview-rows .overview-row'))
+        const got = Array.from(document.querySelectorAll('#overview-detail-rows .overview-row'))
           .map((row) => row.getAttribute('data-phase') + ':' + Array.from(row.querySelectorAll('.overview-badge'))
             .map((b) => b.getAttribute('data-status') + '=' + b.getAttribute('data-count') + '/' + b.getAttribute('data-percentage')).join(','))
           .join('|');
@@ -241,7 +251,12 @@ function trackPage(page) {
     await openWorkbench('项目负责人');
     const stats0 = (await api('/api/stats')).body;
     const view0 = await readOverview();
-    compareOverview('矩阵01a 工作台顶部常驻总览条可见，五阶段各自独立一行、每行五项状态徽标，内容与 /api/stats 完全一致', view0, stats0);
+    compareOverview('矩阵01a 工作台顶部常驻总览条可见，分阶段五行（详情面板内）每行五项状态徽标，内容与 /api/stats.phases 完全一致', view0, stats0);
+    const topOk = view0.topRows.length === 1 && view0.topRows[0].phase === 'aggregate' &&
+      view0.topRows[0].badges.map((badge) => badge.percentage).join(',') === stats0.aggregate.statuses.map((status) => status.percentage.toFixed(1)).join(',') &&
+      view0.topRows[0].badges.reduce((sum, badge) => sum + Number(badge.count), 0) === stats0.total * 5;
+    check('矩阵01d 顶部单行 = 全部五阶段合并全量统计（分母 = 任务总数 × 5），与 /api/stats.aggregate 原样一致',
+      topOk, { 顶部: view0.topRows[0] && view0.topRows[0].badges.map((badge) => badge.text) });
 
     const layout = await page.evaluate(() => {
       const bar = document.getElementById('phase-overview');
@@ -260,16 +275,20 @@ function trackPage(page) {
       layout.toolbar.bottom <= layout.wrap.top + 1 && layout.bar.left === layout.topbar.left && layout.bar.right === layout.topbar.right,
       layout);
 
-    const mergeFree = view0.rows.every((row) => row.tagged) && view0.rows.map((row) => row.phase).join(',') === PHASE_KEYS.join(',') &&
+    const shapeOk = view0.topRows.length === 1 && view0.topRows[0].phase === 'aggregate' &&
+      view0.rows.every((row) => row.tagged) && view0.rows.map((row) => row.phase).join(',') === PHASE_KEYS.join(',') &&
       view0.rows.map((row) => row.label).join(',') === PHASE_KEYS.map((key) => PHASE_LABELS[key]).join(',') &&
-      !/合计|总计|全部阶段|跨阶段/.test(view0.bodyText) && view0.bodyText.indexOf(String(stats0.total * 5)) === -1 &&
-      view0.buttons === 0;
-    check('矩阵01c 无跨阶段合并行（5 行 = 5 阶段，行内计数合计 = 任务总数而非跨阶段累加），总览条内无手动刷新按钮',
-      mergeFree, { rows: view0.rows.map((row) => row.phase), buttons: view0.buttons });
+      view0.buttons === 1 && view0.detailHidden === true;
+    check('矩阵01c CH-15 形态：顶部为单行跨阶段合并（全量），分阶段五行仍在详情面板内各成一组；总览区无手动刷新按钮，只有「详情」',
+      shapeOk, { top: view0.topRows.length, rows: view0.rows.map((row) => row.phase), buttons: view0.buttons, detailHidden: view0.detailHidden });
 
     /* ============ 矩阵02：前端原样渲染服务端口径（不自行统计、不二次四舍五入） ============ */
     const doctored = {
       ok: true, total: 99, revision: 999,
+      aggregate: {
+        key: 'aggregate', name: '全部五阶段合并', denominator: 495,
+        statuses: PHASE_ENUM.map((value, j) => ({ value, count: j === 0 ? 7 : 0, percentage: j === 0 ? 7.7 : 0 }))
+      },
       phases: PHASE_KEYS.map((key, index) => ({
         key, name: PHASE_LABELS[key],
         statuses: PHASE_ENUM.map((value, j) => ({
@@ -284,16 +303,19 @@ function trackPage(page) {
     await page.waitForTimeout(200);
     await page.selectOption('#identity-select', '项目负责人');
     await page.waitForFunction(() => {
-      const badge = document.querySelector('#overview-rows .overview-row .overview-badge');
+      const badge = document.querySelector('#overview-detail-rows .overview-row .overview-badge');
+      const topBadge = document.querySelector('#overview-rows .overview-row .overview-badge');
       const total = document.getElementById('overview-total');
-      return !!badge && badge.textContent === '未开始 7 7.7%' && !!total && total.textContent.indexOf('共 99 条') !== -1;
+      return !!badge && badge.textContent === '未开始 7 7.7%' && !!topBadge && topBadge.textContent === '未开始 7 7.7%' &&
+        !!total && total.textContent.indexOf('共 99 条') !== -1;
     }, null, { timeout: 8000 });
     const doctoredView = await readOverview();
     const doctoredOk = doctoredView.rows.length === 5 && doctoredView.rows.every((row) => row.badges.length === 5) &&
       doctoredView.rows[0].badges[0].text === '未开始 7 7.7%' && doctoredView.total.indexOf('共 99 条') !== -1 &&
       doctoredView.rows[1].badges[0].text === '未开始 0 0.0%';
     check('矩阵02a 前端原样渲染服务端口径：当接口返回与任务数不符的 count / percentage 时逐字渲染（7 7.7%），不做本地统计、不二次四舍五入、不补齐 100.0%',
-      doctoredOk, { first: doctoredView.rows[0] && doctoredView.rows[0].badges[0], total: doctoredView.total });
+      doctoredOk && doctoredView.topRows[0].badges[0].text === '未开始 7 7.7%',
+      { first: doctoredView.rows[0] && doctoredView.rows[0].badges[0], top: doctoredView.topRows[0] && doctoredView.topRows[0].badges[0], total: doctoredView.total });
     await page.unroute('**/api/stats');
     await page.selectOption('#identity-select', '王言');
     await page.waitForTimeout(150);
@@ -398,7 +420,7 @@ function trackPage(page) {
       await openWorkbench(identity);
       const statsNow = (await api('/api/stats')).body;
       const view = await readOverview();
-      if (!view.exists || view.hidden || view.rows.length !== 5) identityProblems.push(identity + ' 看不到总览条');
+      if (!view.exists || view.hidden || view.rows.length !== 5 || view.topRows.length !== 1) identityProblems.push(identity + ' 看不到总览条');
       if (signatureOf(statsNow) !== await domSignature()) identityProblems.push(identity + ' 总览与 /api/stats 不一致');
       const pm = identity === '项目负责人';
       const editable = await page.evaluate(() => document.querySelectorAll('#wbs-body select.phase-select:not([disabled])').length);
@@ -450,7 +472,7 @@ function trackPage(page) {
     const mobile = await measure();
     const mobileStats = (await api('/api/stats')).body;
     const mobileView = await readOverview();
-    compareOverview('矩阵07b 375px 手机宽度：五阶段五行仍各成一组、徽标五项齐全、文案与 /api/stats 一致', mobileView, mobileStats);
+    compareOverview('矩阵07b 375px 手机宽度：分阶段五行（详情面板内）仍各成一组、徽标五项齐全、文案与 /api/stats.phases 一致', mobileView, mobileStats);
     check('矩阵07c 375px：文本与数字不溢出、不遮挡表格、无横向页面滚动（表格仍由 .table-wrap 内部横向滚动）',
       mobile.docScrollWidth <= mobile.docClientWidth + 1 && mobile.bodyScrollWidth <= mobile.innerWidth + 1 &&
       mobile.overlapping === 0 && mobile.badgesOutOfViewport === 0 && mobile.rowsOutOfViewport === 0 &&

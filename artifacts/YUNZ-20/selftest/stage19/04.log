@@ -1,0 +1,9 @@
+=== 自测矩阵 04 · 改名：网页五列头 / 全量·详情标签 / 阶段控件 / 日报文本结论全部改为「产品验收」；JSON 与接口 key 保持 product；A–K 原数据未改写 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage19/browser.log' 'PASS  矩阵08a' 'PASS  矩阵08b' 'PASS  矩阵08c' 'PASS  矩阵08d'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵08a
+OK    PASS  矩阵08b
+OK    PASS  矩阵08c
+OK    PASS  矩阵08d
+PASS=4 FAIL=0
