@@ -1,0 +1,79 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+[stage20] 六个隔离实例就绪（4310-4315）
+YUNZ-40 / Stage20 服务端口径复验  时间 2026-10-16T15:55:29.252004
+PASS  01/isoA-http  :: {"status": 200, "content_type": "application/json; charset=utf-8"}
+PASS  01/isoA-not-a-download  :: {"content_type": "application/json; charset=utf-8"}
+PASS  01/isoA/schema
+PASS  01/isoA/phases-meta
+PASS  01/isoA/counts
+PASS  01/isoA/percentages
+PASS  01/isoA/sum-100  :: {"aggregate_tenths": 1000, "phases_tenths": [1000, 1000, 1000, 1000, 1000]}
+PASS  01/isoA/key-product  :: {"product_key_present": true}
+PASS  01/isoA/no-renamed-key
+PASS  01/isoA/label-3A  :: ["设计", "开发", "测试", "产品验收", "演示准备"]
+PASS  01/isoA/same-source-with-api-wbs
+PASS  01/isoB-http  :: {"status": 200, "content_type": "application/json; charset=utf-8"}
+PASS  01/isoB-not-a-download  :: {"content_type": "application/json; charset=utf-8"}
+PASS  01/isoB/schema
+PASS  01/isoB/phases-meta
+PASS  01/isoB/counts
+PASS  01/isoB/percentages
+PASS  01/isoB/sum-100  :: {"aggregate_tenths": 1000, "phases_tenths": [1000, 1000, 1000, 1000, 1000]}
+PASS  01/isoB/key-product  :: {"product_key_present": true}
+PASS  01/isoB/no-renamed-key
+PASS  01/isoB/label-3A  :: ["设计", "开发", "测试", "产品验收", "演示准备"]
+PASS  01/isoB/same-source-with-api-wbs
+PASS  01/isoC-http  :: {"status": 200, "content_type": "application/json; charset=utf-8"}
+PASS  01/isoC-not-a-download  :: {"content_type": "application/json; charset=utf-8"}
+PASS  01/isoC/schema
+PASS  01/isoC/phases-meta
+PASS  01/isoC/counts
+PASS  01/isoC/percentages
+PASS  01/isoC/sum-truncate-only  :: {"aggregate_tenths": 0, "phases_tenths": [0, 0, 0, 0, 0]}
+PASS  01/isoC/key-product  :: {"product_key_present": true}
+PASS  01/isoC/no-renamed-key
+PASS  01/isoC/label-3A  :: ["设计", "开发", "测试", "产品验收", "演示准备"]
+PASS  01/isoC/same-source-with-api-wbs
+PASS  01/isoS-http  :: {"status": 200, "content_type": "application/json; charset=utf-8"}
+PASS  01/isoS-not-a-download  :: {"content_type": "application/json; charset=utf-8"}
+PASS  01/isoS/schema
+PASS  01/isoS/phases-meta
+PASS  01/isoS/counts
+PASS  01/isoS/percentages
+PASS  01/isoS/sum-100  :: {"aggregate_tenths": 1000, "phases_tenths": [1000, 1000, 1000, 1000, 1000]}
+PASS  01/isoS/key-product  :: {"product_key_present": true}
+PASS  01/isoS/no-renamed-key
+PASS  01/isoS/label-3A  :: ["设计", "开发", "测试", "产品验收", "演示准备"]
+PASS  01/isoS/same-source-with-api-wbs
+PASS  02/0 行不除零：total=0 / denominator=0 / 全 0 且不报错  :: {"total": 0, "denominator": 0, "aggregate": [["未开始", 0, 0], ["已开始", 0, 0], ["已完成", 0, 0], ["延期", 0, 0], ["阻塞", 0, 0]]}
+PASS  02/0 行状态仍显示 0 0.0%（五种状态齐显且值为 0）  :: [["未开始", 0, 0], ["已开始", 0, 0], ["已完成", 0, 0], ["延期", 0, 0], ["阻塞", 0, 0]]
+PASS  03/脏数据（一行缺 product 键）启动即被一次性迁移归一：/api/stats 仍自洽  :: {"total": 3, "aggregate_counts": [15, 0, 0, 0, 0]}
+PASS  03/归一后 aggregate 计数 = 15 = 3 x 5，五项合计 100.0  :: {"aggregate_pct": [100, 0, 0, 0, 0]}
+PASS  04/查看统计与日报不写审计、不改数据文件（隔离实例 10 轮）  :: {"before": [{"exists": true, "size": 2195, "sha256": "d70b320228bdf03108195e5fc044806f3e0202d1fd20b03eb10cbcaa6eca2e76", "mtime": 1792137325.9954488}, {"exists": true, "size": 406, "sha256": "7a1db8ba8fc455493d5bfb0376225d70fd7fe42f072a44faf084be30ca0ef485", "mtime": 1792137325.9954488}], "after": [{"exists": true, "size": 2195, "sha256": "d70b320228bdf03108195e5fc044806f3e0202d1fd20b03eb10cbcaa6eca2e76", "mtime": 1792137325.9954488}, {"exists": true, "size": 406, "sha256": "7a1db8ba8fc455493d5bfb0376225d70fd7fe42f072a44faf084be30ca0ef485", "mtime": 1792137325.9954488}]}
+PASS  04/只读查看后 revision 不变  :: {"stats_revision": 7, "wbs_revision": 7}
+PASS  04//api/stats 仅 GET（PUT -> 405）  :: {"status": 405}
+PASS  05/日报文本弹层数据源阶段结论含「产品验收」（JSON key 仍 product）  :: {"body": ["【延期·高风险】客户端 / 业务工作台 / 概要设计&评审 @王言：产品验收延期。", "【阻塞·高风险】客户端 / 业务工作台 / 业需导入 @李欢：设计阻塞。"]}
+PASS  06/过期 If-Match -> 409 conflict 且带 current  :: {"status": 409, "payload": {"ok": false, "reason": "conflict", "current": 0}}
+PASS  06/非法 payload -> 400 errors 且不落盘  :: {"status": 400, "errors": [{"id": "Q001", "field": "task", "message": "任务项不能为空"}, {"id": "Q002", "field": "dates.design", "message": "日期格式必须为 YYYY-MM-DD"}], "unchanged": true}
+PASS  07/seed 数据启动迁移：36 行补齐五阶段且旧 status 保留  :: {"total": 36, "phase_counts_sum": [36, 36, 36, 36, 36], "status_kept": true}
+PASS  07/迁移审计恰好 36 x 5 = 180 条（幂等，无重复迁移）  :: {"migrated_audit_lines": 180}
+PASS  08/查看现场统计与历史不写审计、不改 revision 文件  :: {"before": {"exists": true, "size": 84695, "sha256": "dc7e974d607ec50056479ede11895b889a84592338b08341d9f3999efbf2b514", "mtime": 1792133265.3569043}, "after": {"exists": true, "size": 84695, "sha256": "dc7e974d607ec50056479ede11895b889a84592338b08341d9f3999efbf2b514", "mtime": 1792133265.3569043}}
+PASS  08//api/history 可用（日期取样）且含 identity_added 事件（人员池 3 条，CH-7/CH-12 回归）  :: {"status": 200, "today_count": 0, "status_1015": 200, "pool_rows": [["新增人员 肖恒韵", "肖恒韵"], ["新增人员 蒋涛涛", "蒋涛涛"], ["新增人员 林剑", "林剑"]]}
+PASS  08/现场 /api/stats 结构自描述  :: {"total": 34, "denominator": 170}
+PASS  08-live/same-source-with-api-wbs
+PASS  08b/A–K 原值与备份逐行一致（仅允许行被外部删除）  :: {"backup": "wbs.json.20261016144702.bak", "diffs": [], "removed_rows": ["T025"]}
+PASS  08b/A–K 业务文本未被改名污染（无把「产品」改写成「产品验收」的行）  :: {"hits": []}
+PASS  08b/A–K 含「产品」字样的行保持不变（本轮现场 0 行，风险面在隔离数据覆盖）  :: {"rows_with_product_in_AK": 0}
+PASS=63 FAIL=0
+[stage20] 重启 isoB 验证重启持久与迁移幂等
+PASS  重启持久/isoB 重启后 total=12 且 /api/stats 仍 200
+PASS  重启持久/isoB 重启后 aggregate 逐项与期望一致
+PASS  重启持久/isoB 重启未改写 revision（仍 0）
+PASS=3 FAIL=0
+[stage20] 脏数据「只截断不补齐」分支（直接模块调用，数据文件路径不可达）
+PASS  03/脏数据 total=3 且五键齐备（缺键行不计入）  :: 3
+PASS  03/脏数据 aggregate 计数 = [12,1,1,0,0]（一行缺 product 键 -> 分母 15 但计数 14）  :: {"actual":[12,1,1,0,0],"expected":[12,1,1,0,0]}
+PASS  03/脏数据 aggregate 只截断：80.0/6.6/6.6/0.0/0.0，五项合计 93.2 < 100.0  :: {"actual":[80,6.6,6.6,0,0],"expected":[80,6.6,6.6,0,0]}
+PASS  03/脏数据 product 阶段计数 = [2,0,0,0,0]（2 != 3），占比 66.6 不补齐  :: {"counts":[2,0,0,0,0],"percentages":[66.6,0,0,0,0]}
+PASS  03/脏数据下仍不报错且 phases 键名与显示名正确  :: ["design:设计","dev:开发","test:测试","product:产品验收","demo_prep:演示准备"]
+PASS=5 FAIL=0

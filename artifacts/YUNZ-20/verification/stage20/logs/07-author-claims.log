@@ -1,0 +1,27 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  10/作者自报 server.js sha256 与实测一致  :: 807f7624c5f06551…
+PASS  10/作者自报 public/index.html sha256 与实测一致  :: a1b1c035904cad72…
+PASS  10/作者自报 public/app.js sha256 与实测一致  :: 02b940727e3fdaba…
+PASS  10/作者自报 public/styles.css sha256 与实测一致  :: 094674194747680b…
+PASS  10/作者自测产物存在 README.md  :: 9961 字节
+PASS  10/作者自测产物存在 01.log  :: 474 字节
+PASS  10/作者自测产物存在 02.log  :: 578 字节
+PASS  10/作者自测产物存在 03.log  :: 906 字节
+PASS  10/作者自测产物存在 04.log  :: 506 字节
+PASS  10/作者自测产物存在 05.log  :: 441 字节
+PASS  10/作者自测产物存在 06.log  :: 829 字节
+PASS  10/作者自测产物存在 07.log  :: 526 字节
+PASS  10/作者自测产物存在 08.log  :: 18659 字节
+PASS  10/作者自测产物存在 09.log  :: 9207 字节
+PASS  10/作者自测产物存在 10.log  :: 527 字节
+PASS  10/作者自测产物存在 matrix-summary.txt  :: 2925 字节
+PASS  10/作者自测 browser/ 与 live/ 子目录存在  :: 8 / 6 文件
+PASS  10/作者自测日志 0 FAIL，PASS 行数 188  :: （自报，非本任务证据）
+PASS  10/作者自测脚本存在 tests/verify_stage19.sh
+PASS  10/作者自测脚本存在 tests/stage19/run.sh
+PASS  10/作者自测脚本存在 tests/stage19/browser.cjs
+PASS  10/作者自测脚本存在 tests/stage19/statcheck.cjs
+PASS  10/作者自测脚本存在 tests/stage19/deploy_check.sh
+PASS  10/现场实测（作者自报 live total=34 / denominator=170 / revision=15）  :: total=34 denominator=170 revision=15
+PASS  10/自报现场数值与实测一致
+PASS=25 FAIL=0

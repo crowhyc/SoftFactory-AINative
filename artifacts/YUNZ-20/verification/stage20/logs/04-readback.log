@@ -1,0 +1,17 @@
+导出文件：/opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage20/downloads/isoB-蓉城战役WBS-20261016.xlsx
+导出时快照：/opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage20/downloads/isoB-wbs-at-export.json（12 行，revision 0）
+PASS  16b/导出文件为单 sheet  :: ["工作表1"]
+PASS  16b/数据行数 = 任务数（末行 = N+2 = 14），无超出数据区的残留单元格，列界 = Q  :: {"max_cell_row": 14, "max_col": "Q", "n": 12, "dimension_ref": "A1:Q38"}
+PASS  16b/A1:C1 合并保留  :: ["A1:C1"]
+PASS  16b/第 1 行 A–K 与模板逐格一致  :: []
+PASS  16b/第 2 行 A–K 与模板逐格一致（不改原文）  :: []
+PASS  16b/L2:P2 五进度表头 = 设计/开发/测试/产品验收/演示准备（含「产品验收进度」）  :: ["设计进度", "开发进度", "测试进度", "产品验收进度", "演示准备进度"]
+PASS  15a/Excel 表头确实使用「产品验收」而非旧「产品」  :: "产品验收进度"
+PASS  16b/A–K 数据区与导出时 /api/wbs 逐行逐格一致（含 E 列 demo 原值保留，CH-9 回归）  :: []
+PASS  16b/L–P 数据区文字 = phases 五阶段值  :: []
+PASS  16b/L–P 数据区五阶段五色填充与状态一致（灰/蓝/绿/红/黄）  :: []
+PASS  16b/Q1 导出日期标签保留（导出日期：YYYY-MM-DD HH:mm）  :: "导出日期：2026-10-16 15:55"
+PASS  16b/A–K 数据区不含旧 status 值（status 不导出，CH-1 回归）  :: []
+PASS  16b/导出文件不带 CH-14/CH-15 统计区（无「全部五阶段合并」「阶段状态占比」/百分号文本）  :: []
+PASS  16b/导出文件不含被改名的统计标签（产品验收仅出现在 L2 表头与进度值中）  :: ["产品验收进度"]
+PASS=14 FAIL=0

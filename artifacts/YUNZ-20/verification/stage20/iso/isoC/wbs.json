@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "name": "1023 蓉城战役 WBS 清单",
+    "revision": 0,
+    "updated_at": "2026-10-16T00:00:00.000Z",
+    "source": "1023 蓉城战役 WBS 清单.xlsx",
+    "source_sha256": "e01c269699adad8df3c28c05cff0634c7a1fbe4a62bb5ef2a3baf51490317483"
+  },
+  "identities": [
+    "项目负责人",
+    "李欢",
+    "王言",
+    "张航瑞",
+    "郑述文",
+    "崔文建",
+    "余宇",
+    "黄逸偲",
+    "陈江"
+  ],
+  "tasks": []
+}

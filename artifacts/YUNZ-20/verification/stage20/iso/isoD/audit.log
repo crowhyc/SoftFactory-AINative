@@ -1,0 +1,15 @@
+{"type":"migrated","identity":"系统迁移","task_id":"Q001","phase":"design","field":"phases.design.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}
+{"type":"migrated","identity":"系统迁移","task_id":"Q001","phase":"dev","field":"phases.dev.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}
+{"type":"migrated","identity":"系统迁移","task_id":"Q001","phase":"test","field":"phases.test.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}
+{"type":"migrated","identity":"系统迁移","task_id":"Q001","phase":"product","field":"phases.product.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}
+{"type":"migrated","identity":"系统迁移","task_id":"Q001","phase":"demo_prep","field":"phases.demo_prep.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}
+{"type":"migrated","identity":"系统迁移","task_id":"Q002","phase":"design","field":"phases.design.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}
+{"type":"migrated","identity":"系统迁移","task_id":"Q002","phase":"dev","field":"phases.dev.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}
+{"type":"migrated","identity":"系统迁移","task_id":"Q002","phase":"test","field":"phases.test.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}
+{"type":"migrated","identity":"系统迁移","task_id":"Q002","phase":"product","field":"phases.product.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}
+{"type":"migrated","identity":"系统迁移","task_id":"Q002","phase":"demo_prep","field":"phases.demo_prep.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}
+{"type":"migrated","identity":"系统迁移","task_id":"Q003","phase":"design","field":"phases.design.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}
+{"type":"migrated","identity":"系统迁移","task_id":"Q003","phase":"dev","field":"phases.dev.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}
+{"type":"migrated","identity":"系统迁移","task_id":"Q003","phase":"test","field":"phases.test.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}
+{"type":"migrated","identity":"系统迁移","task_id":"Q003","phase":"product","field":"phases.product.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}
+{"type":"migrated","identity":"系统迁移","task_id":"Q003","phase":"demo_prep","field":"phases.demo_prep.status","old":"","new":"未开始","at":"2026-10-16T07:55:28.426Z","revision":1}

@@ -1,0 +1,1 @@
+{"ts": "2026-10-16T07:55:25Z", "identity": "项目负责人", "revision": 7, "changed": [{"id": "Q003", "fields": ["phases.product.status"]}], "added": 0, "removed": 0, "old": {"Q003": {"phases.product.status": "未开始"}}, "new": {"Q003": {"phases.product.status": "延期"}}, "snapshot": {"Q003": {"level1": "客户端", "level2": "业务工作台", "task": "概要设计&评审", "owner": "王言"}}}

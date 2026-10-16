@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "name": "1023 蓉城战役 WBS 清单",
+    "revision": 1,
+    "updated_at": "2026-10-16T07:55:28.426Z",
+    "source": "1023 蓉城战役 WBS 清单.xlsx",
+    "source_sha256": "e01c269699adad8df3c28c05cff0634c7a1fbe4a62bb5ef2a3baf51490317483"
+  },
+  "identities": [
+    "项目负责人",
+    "李欢",
+    "王言",
+    "张航瑞",
+    "郑述文",
+    "崔文建",
+    "余宇",
+    "黄逸偲",
+    "陈江"
+  ],
+  "tasks": [
+    {
+      "id": "Q001",
+      "level1": "客户端",
+      "level2": "业务工作台",
+      "task": "业需导入",
+      "owner": "李欢",
+      "demo": "",
+      "status": "未开始",
+      "note": "",
+      "dates": {
+        "design": "2026-12-31",
+        "dev": "2026-12-31",
+        "test": "2026-12-31",
+        "product": "2026-12-31",
+        "demo_prep": "2026-12-31"
+      },
+      "phases": {
+        "design": "未开始",
+        "dev": "未开始",
+        "test": "未开始",
+        "product": "未开始",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "Q002",
+      "level1": "客户端",
+      "level2": "业务工作台",
+      "task": "需求拆分",
+      "owner": "王言",
+      "demo": "",
+      "status": "未开始",
+      "note": "",
+      "dates": {
+        "design": "2026-12-31",
+        "dev": "2026-12-31",
+        "test": "2026-12-31",
+        "product": "2026-12-31",
+        "demo_prep": "2026-12-31"
+      },
+      "phases": {
+        "design": "未开始",
+        "dev": "未开始",
+        "test": "未开始",
+        "product": "未开始",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "Q003",
+      "level1": "客户端",
+      "level2": "业务工作台",
+      "task": "概要设计&评审",
+      "owner": "王言",
+      "demo": "",
+      "status": "未开始",
+      "note": "",
+      "dates": {
+        "design": "2026-12-31",
+        "dev": "2026-12-31",
+        "test": "2026-12-31",
+        "product": "2026-12-31",
+        "demo_prep": "2026-12-31"
+      },
+      "phases": {
+        "design": "未开始",
+        "dev": "未开始",
+        "test": "未开始",
+        "product": "未开始",
+        "demo_prep": "未开始"
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+YUNZ-40 / Stage20 CH-15 复验矩阵（本任务复跑，结论依据）；总计 PASS=240 FAIL=0
+
+必测 1  全量统计结构（顶部只有一组全量统计；五徽标 = 状态名 + 数量 + 百分比；0 项显示 0 0.0%）
+        -> 01-iso-browser.log 10a–10g（9 PASS）；03-server-api.log 01/isoS、02（结构 + 0 行）
+        CH-14 对照：CH-14 的「顶部五段分行」在 #overview-rows 中已不存在（10c 断言 data-phase 只有 aggregate）；
+        该口径变更与作者自测 08 中同步后的 Stage17 断言一致（作者自报，非本任务证据）。
+必测 2  详情面板（右侧「详情」按钮；五阶段各 count + percentage；关闭与 Esc；不影响未保存草稿）
+        -> 01-iso-browser.log 11a–11g（10 PASS，含伪响应原样渲染断言「5 9.9%」证明前端不二次计算）
+必测 3  与 /api/stats 一致 + 隔离数据多组分布（1/1/1 与 0 行）+ 分母 = 总数 × 5 + 同源
+        -> 00-iso-data.log（构造与独立复算 9 PASS）；01-iso-browser.log 12/isoA…isoS（16 PASS）；
+           03-server-api.log 01/*（counts / percentages / schema / same-source-with-api-wbs，含 5 组分布）
+必测 4  占比边界（① 0 行不除零 ② 需补齐时合计恰 100.0% ③ 0 项仍显示 0 0.0%）
+        -> 01-iso-browser.log 13a/13b/13c；03-server-api.log 01/isoA sum-100、01/isoB sum-100；
+           isoB aggregate 19/20/20/1/0 -> 31.7/33.3/33.3/1.7/0（各阶段先截断合计仅 99.8）
+必测 5  五色一致（全量区 = 详情区 = 表格阶段控件；灰/蓝/绿/红/黄 computed style）
+        -> 01-iso-browser.log 14（isoS 五种状态三处逐项比对）；05-live-browser.log 20c（现场）
+必测 6  改名 3A（五列头 / 全量·详情标签 / 日报结论标签 = 产品验收；接口与 JSON key 仍 product；A–K 未改写）
+        -> 01-iso-browser.log 15a–15e；03-server-api.log 01/*/key-product、no-renamed-key、05（日报文本）、08b（现场 A–K 与备份逐行一致）
+必测 7  Excel 与日报（L2:P2 五进度表头含「产品验收进度」；A–K / 五色 / Q1 日期标签不回归；不带统计区）
+        -> 04-readback.log 16b/15a（14 PASS）；01-iso-browser.log 16a/16d（下载 1 次、统计与日报交互 0 下载）
+必测 8  刷新时机与只读性（保存 / 新增 / 删除 / 身份切换后重算；九身份可见；看统计与开关详情不写审计、不改 revision）
+        -> 01-iso-browser.log 17a–17f（保存 19→18/20→21、总数 12→13→12、分母 60→65→60、9 身份一致）；
+           03-server-api.log 04（隔离 10 轮 /api/stats + /api/daily 后 wbs.json 与 audit.log 字节未变）
+必测 9  不回归（CH-1…CH-14 抽样 + 验收条件抽样 + 无外部请求 / 无 pageerror）
+        -> 01-iso-browser.log 18a（五阶段控件）、18b（Markdown 转义与 XSS）、18c（人员池新增）、
+           18d（demo 隐藏）+ 04-readback（导出保留 E 列 demo）、18e（权限矩阵与只读提示）、18h（验收 1/2/3 三端一致）；
+           03-server-api.log 06（409/400）、07（迁移幂等 180 条 migrated 审计 + 旧 status 保留）、
+           08（/api/history 含 identity_added 人员池 3 条）、04（只读性）；重启用例见 03-server-api.log「重启持久/isoB」3 PASS
+必测 10 部署与一致性（0.0.0.0:4180；三端 health；镜像无 node_modules；服务端资源与入库快照 sha256 一致）
+        -> 06-deploy.log（17 PASS，含公网 health 实测 ok、五个静态资源 sha256 一致、运行镜像 wbs-rongcheng:20261016144702）
+
+作者自报核验（对照，不作为结论证据）：07-author-claims.log 25 PASS（自报 sha256 与实测一致、自测产物齐备、自测日志 0 FAIL）
+
+环境：Chromium 140.0.7339.16（playwright 官方镜像）/ node v24.21.0 / python3 3.6.8 / docker 26.1.4 / 2026-10-16

@@ -1,0 +1,19 @@
+YUNZ-40 / Stage20 隔离数据构造  时间 2026-10-16T15:55:08.285102
+seed：36 行 / 9 身份
+  构造 isoA：任务 3 行 -> /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage20/iso/isoA
+  构造 isoB：任务 12 行 -> /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage20/iso/isoB
+  构造 isoC：任务 0 行 -> /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage20/iso/isoC
+  构造 isoS：任务 3 行 -> /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage20/iso/isoS
+  构造 isoD：任务 3 行 -> /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage20/iso/isoD
+  构造 isoE：任务 36 行 -> /opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage20/iso/isoE
+PASS  构造-A/design 1/1/1 边界占比 = 33.4/33.3/33.3  :: [33.4, 33.3, 33.3, 0.0, 0.0]
+PASS  构造-B/aggregate 占比 = 31.7/33.3/33.3/1.7/0（各阶段先截断合计仅 99.8）  :: {"aggregate": [31.7, 33.3, 33.3, 1.7, 0.0], "counts": [19, 20, 20, 1, 0], "naive_sum": 99.8}
+PASS  构造-B/aggregate 分母 = 任务总数 x 5 = 60  :: 60
+PASS  构造-isoA/aggregate 与五阶段各自五项合计 = 100.0  :: {"aggregate": [86.7, 6.7, 6.6, 0.0, 0.0], "demo_prep": [100.0, 0.0, 0.0, 0.0, 0.0]}
+PASS  构造-isoB/aggregate 与五阶段各自五项合计 = 100.0  :: {"aggregate": [31.7, 33.3, 33.3, 1.7, 0.0], "demo_prep": [25.0, 33.4, 33.3, 8.3, 0.0]}
+PASS  构造-isoS/aggregate 与五阶段各自五项合计 = 100.0  :: {"aggregate": [60.0, 13.3, 13.3, 6.7, 6.7], "demo_prep": [100.0, 0.0, 0.0, 0.0, 0.0]}
+PASS  构造-C/0 行：分母 0、全 0 不除零
+PASS  构造-D/脏数据：product 计数之和 2 != 3，只截断 -> 合计 < 100.0  :: {"product": [66.6, 0.0, 0.0, 0.0, 0.0], "product_sum": 66.6, "aggregate_sum": 93.19999999999999}
+PASS  构造-期望值文件已落盘  :: "/opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage20/results/expected-stats.json"
+构造数据目录：/opt/SoftFactory-AINative/artifacts/YUNZ-20/verification/stage20/iso
+PASS=9 FAIL=0
