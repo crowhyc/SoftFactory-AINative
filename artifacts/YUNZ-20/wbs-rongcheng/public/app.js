@@ -718,7 +718,9 @@
     notePanel: { open: false, taskId: null, original: '', readonly: false, dirty: false, tab: 'edit' },
     /* CH-13：日报文本弹层。 */
     dailyPanel: { open: false },
-    dailyText: ''
+    dailyText: '',
+    /* CH-14：各阶段状态占比总览（最近一次 /api/stats 响应，口径唯一来源是服务端）。 */
+    stats: null
   };
 
   function $(id) { return document.getElementById(id); }
@@ -799,6 +801,7 @@
     $('identity-layer').hidden = true;
     $('workbench').hidden = false;
     render();
+    refreshOverview();
     showHint('已以「' + identity + '」身份进入工作台，' + (isPM(identity) ? '可编辑全部行并增删行。' : '仅“负责人 == ' + identity + '”的行可编辑。'));
   }
 
@@ -1167,6 +1170,7 @@
     state.filter = { q: '', owner: '', status: '' };
     $('search-input').value = '';
     render();
+    refreshOverview();
     showHint('已新增第 ' + task.id + ' 行，请补充一级 / 二级 / 任务项后保存。');
   }
 
@@ -1181,6 +1185,7 @@
     state.dirty = true;
     state.errorCells = {};
     render();
+    refreshOverview();
     showHint('已删除第 ' + id + ' 行，点击“保存”提交到服务器。');
   }
 
@@ -1244,6 +1249,7 @@
       state.dirty = false;
       state.errorCells = {};
       render();
+      await refreshOverview();
       showBanner('ok', '保存成功，服务器版本号已更新为 ' + result.revision + '（页面、API、磁盘三端一致）。');
       return { ok: true, revision: result.revision };
     }
@@ -1272,6 +1278,7 @@
     state.dirty = false;
     state.errorCells = {};
     render();
+    await refreshOverview();
     showHint('已从服务器重新加载版本 ' + state.revision + '。');
   }
 
@@ -1484,6 +1491,7 @@
       panel.original = value;
       panel.dirty = false;
       render();
+      await refreshOverview();
       var success = '第 ' + task.id + ' 行进展说明已保存，服务器版本号已更新为 ' + result.revision + '。';
       noteMessage(success + '（页面、API、磁盘三端一致）', false, true);
       showBanner('ok', '保存成功：' + success);
@@ -1712,6 +1720,7 @@
     closeAddPersonPanel();
     var saved = await persistIdentities();
     if (saved.ok) {
+      await refreshOverview();
       showBanner('ok', '已新增人员「' + name + '」，人员池已保存到服务器（版本 ' + saved.revision + '）；身份切换、负责人下拉、筛选下拉已同步。');
     } else {
       showBanner('warn', '已在本页加入「' + name + '」，但保存到服务器失败：' + saved.message + '。');
@@ -1786,6 +1795,81 @@
       state.health = 'bad';
       probe.className = 'health-probe bad';
       probe.textContent = '探针：不可达';
+    }
+  }
+
+  /* -------------------------------------------------- CH-14 阶段状态占比总览 */
+
+  /* 只读总览条：口径唯一来源是服务端 /api/stats（与 /api/wbs 同一份文档）。
+     前端不做任何统计、不二次四舍五入，只按「状态名 + 数量 + 百分比」做等价格式化。 */
+  async function fetchStats() {
+    var response = await fetch('/api/stats', { cache: 'no-store' });
+    if (!response.ok) throw new Error('总览读取失败 HTTP ' + response.status);
+    return response.json();
+  }
+
+  function overviewNumber(value) {
+    var number = Number(value);
+    return isFinite(number) ? number : 0;
+  }
+
+  /* 一个状态徽标：文本 = 「状态名 + 数量 + 百分比」，颜色类名与表格阶段控件同源（phase-<状态>）。 */
+  function buildOverviewBadge(status) {
+    var value = status && status.value != null ? String(status.value) : '';
+    var count = overviewNumber(status && status.count);
+    var percentage = overviewNumber(status && status.percentage);
+    var badge = document.createElement('span');
+    badge.className = 'overview-badge phase-' + value;
+    badge.setAttribute('data-status', value);
+    badge.setAttribute('data-count', String(count));
+    badge.setAttribute('data-percentage', percentage.toFixed(1));
+    badge.setAttribute('title', value + ' ' + count + ' ' + percentage.toFixed(1) + '%');
+    var name = document.createElement('span');
+    name.className = 'overview-badge-name';
+    name.textContent = value + ' ';
+    var num = document.createElement('span');
+    num.className = 'overview-badge-value';
+    num.textContent = count + ' ' + percentage.toFixed(1) + '%';
+    badge.appendChild(name);
+    badge.appendChild(num);
+    return badge;
+  }
+
+  /* 渲染总览：每个阶段独立一行（阶段名 + 五种状态徽标），不做跨阶段合并。 */
+  function renderOverview(stats) {
+    var rows = $('overview-rows');
+    state.stats = stats || null;
+    var phases = stats && Array.isArray(stats.phases) ? stats.phases : [];
+    if (rows) {
+      rows.textContent = '';
+      phases.forEach(function (phase) {
+        var row = document.createElement('div');
+        row.className = 'overview-row';
+        row.setAttribute('data-phase', phase.key);
+        var label = document.createElement('span');
+        label.className = 'overview-phase';
+        label.textContent = phase.name;
+        row.appendChild(label);
+        var badges = document.createElement('div');
+        badges.className = 'overview-badges';
+        (phase.statuses || []).forEach(function (status) { badges.appendChild(buildOverviewBadge(status)); });
+        row.appendChild(badges);
+        rows.appendChild(row);
+      });
+    }
+    var total = stats && stats.total != null ? overviewNumber(stats.total) : 0;
+    var totalEl = $('overview-total');
+    if (totalEl) totalEl.textContent = '共 ' + total + ' 条';
+    return { phases: phases.length, total: total };
+  }
+
+  /* 刷新时机：进入工作台 / 保存 / 新增 / 删除 / 身份切换回到工作台，以及任何写操作成功后。
+     读取失败时保留上一次已渲染内容，不打断工作台其它交互。 */
+  async function refreshOverview() {
+    try {
+      return renderOverview(await fetchStats());
+    } catch (err) {
+      return null;
     }
   }
 
@@ -1864,6 +1948,7 @@
       render();
       showHint('已按上次选择恢复身份「' + remembered + '」。');
     }
+    refreshOverview();
     checkHealth();
     setInterval(checkHealth, 30000);
   }
@@ -1899,6 +1984,9 @@
     downloadExport: downloadExport,
     exportFileName: exportFileName,
     checkHealth: checkHealth,
+    fetchStats: fetchStats,
+    renderOverview: renderOverview,
+    refreshOverview: refreshOverview,
     openNotePanel: openNotePanel,
     closeNotePanel: closeNotePanel,
     requestCloseNotePanel: requestCloseNotePanel,

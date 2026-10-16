@@ -1,0 +1,8 @@
+=== 自测矩阵 07 · 桌面与 375px：文本/数字不溢出、不遮挡表格、无横向页面滚动；五阶段仍各成一组 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage17/browser.log' 'PASS  矩阵07a' 'PASS  矩阵07b' 'PASS  矩阵07c'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵07a
+OK    PASS  矩阵07b
+OK    PASS  矩阵07c
+PASS=3 FAIL=0

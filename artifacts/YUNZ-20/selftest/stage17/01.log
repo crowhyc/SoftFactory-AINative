@@ -1,0 +1,8 @@
+=== 自测矩阵 01 · 顶部总览条可见：五阶段各自独立一组、每行五项状态徽标，无跨阶段合并行、无手动刷新按钮 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage17/browser.log' 'PASS  矩阵01a' 'PASS  矩阵01b' 'PASS  矩阵01c'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵01a
+OK    PASS  矩阵01b
+OK    PASS  矩阵01c
+PASS=3 FAIL=0

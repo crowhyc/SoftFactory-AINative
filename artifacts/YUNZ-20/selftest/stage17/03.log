@@ -1,0 +1,8 @@
+=== 自测矩阵 03 · 完整体边界：0 行不除零、五项合计恰为 100.0%（最大余数法 33.4 / 33.3 / 33.3）、脏数据不臆造占比 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage17/statcheck.log' 'PASS  矩阵03a' 'PASS  矩阵03b' 'PASS  矩阵03c'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵03a
+OK    PASS  矩阵03b
+OK    PASS  矩阵03c
+PASS=3 FAIL=0

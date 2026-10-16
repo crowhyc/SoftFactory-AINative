@@ -718,6 +718,65 @@ function sendStatic(req, res, file) {
   });
 }
 
+/* -------------------------------------------------------------- CH-14 阶段占比 */
+
+/* 最大余数法：counts 为同一阶段五种状态的计数（顺序 = PHASE_ENUM），total 为任务总数。
+   先按 1 位小数截断（以 0.1% 为单位做整数运算），再把差额按小数余数从大到小补给相应状态
+   （余数相同按状态顺序），保证五项合计恰为 100.0%；total 为 0 时全为 0，不除零也不补齐。
+   仅在「该阶段五项计数之和 == 任务总数」时补齐；数据缺 phases / 取值非法导致分母与计数不一致时
+   只做 1 位小数截断，不臆造占比。 */
+function phasePercentages(counts, total) {
+  var BASE = 10;
+  var FULL = 100 * BASE;
+  if (!total) return counts.map(function () { return 0; });
+  var tenths = [];
+  var remainders = [];
+  var counted = 0;
+  counts.forEach(function (count, index) {
+    var scaled = count * 100 * BASE;
+    tenths[index] = Math.floor(scaled / total);
+    remainders[index] = scaled % total;
+    counted += count;
+  });
+  if (counted !== total) return tenths.map(function (value) { return value / BASE; });
+  var used = tenths.reduce(function (sum, value) { return sum + value; }, 0);
+  var deficit = FULL - used;
+  var order = counts.map(function (count, index) { return index; }).sort(function (a, b) {
+    if (remainders[b] !== remainders[a]) return remainders[b] - remainders[a];
+    return a - b;
+  });
+  for (var i = 0; i < deficit; i += 1) tenths[order[i % order.length]] += 1;
+  return tenths.map(function (value) { return value / BASE; });
+}
+
+/* CH-14：只按五个阶段分别统计五种状态的数量 + 占比（不做跨阶段合并总数）。
+   返回结构自描述且顺序稳定：phases 按 PHASE_KEYS、每个阶段 statuses 按 PHASE_ENUM 固定顺序。 */
+function statsOverview(doc) {
+  var tasks = doc && Array.isArray(doc.tasks) ? doc.tasks : [];
+  var total = tasks.length;
+  var phases = PHASE_KEYS.map(function (key) {
+    var counts = PHASE_ENUM.map(function () { return 0; });
+    tasks.forEach(function (task) {
+      var progress = task && isPlainObject(task.phases) ? task.phases[key] : null;
+      var index = PHASE_ENUM.indexOf(progress);
+      if (index !== -1) counts[index] += 1;
+    });
+    var percentages = phasePercentages(counts, total);
+    return {
+      key: key,
+      name: PHASE_LABELS[key],
+      statuses: PHASE_ENUM.map(function (value, index) {
+        return { value: value, count: counts[index], percentage: percentages[index] };
+      })
+    };
+  });
+  return {
+    total: total,
+    revision: doc && doc.meta ? doc.meta.revision : null,
+    phases: phases
+  };
+}
+
 /* ------------------------------------------------------------------ 路由 */
 
 function sendJson(res, status, payload) {
@@ -855,6 +914,24 @@ function handler(req, res) {
     res.end('405 Method Not Allowed');
     return;
   }
+  /* CH-14：各阶段状态「数量 + 占比」只读总览。与 /api/wbs 读同一份文档（同一口径、同一 revision）；
+     纯读接口：不改权限矩阵、不写审计、不产生任何下载路径。 */
+  if (pathname === '/api/stats') {
+    if (req.method !== 'GET') {
+      res.writeHead(405, { 'Content-Type': 'text/plain; charset=utf-8', Allow: 'GET' });
+      res.end('405 Method Not Allowed');
+      return;
+    }
+    let doc = null;
+    try {
+      doc = loadDocument();
+    } catch (err) {
+      sendJson(res, 500, { ok: false, reason: 'storage', message: '数据文件不可读' });
+      return;
+    }
+    sendJson(res, 200, Object.assign({ ok: true }, statsOverview(doc)));
+    return;
+  }
   if (pathname === '/api/history') {
     if (req.method !== 'GET') {
       res.writeHead(405, { 'Content-Type': 'text/plain; charset=utf-8', Allow: 'GET' });
@@ -957,4 +1034,5 @@ module.exports = {
   diffFields, historyRecords, dayBounds, todayInTimeZone, DEFAULT_TZ
   , isValidDateString, PHASE_KEYS, PHASE_ENUM, PHASE_LABELS, MIGRATION_IDENTITY,
   needsMigration, migrateDocument, dailyOverview, dailyText, changeCategory, mmdd, compactStamp
+  , statsOverview, phasePercentages
 };

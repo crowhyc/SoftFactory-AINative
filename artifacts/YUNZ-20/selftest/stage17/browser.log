@@ -1,0 +1,28 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+[stage17] 运行 Chromium 容器（真实浏览器断言，隔离数据目录 /opt/wbs-rongcheng/tests/.tmp/stage17-browser-data）
+[env] 被测服务 http://127.0.0.1:4287（data: /data）
+[env] chromium=140.0.7339.16
+PASS  矩阵01a 工作台顶部常驻总览条可见，五阶段各自独立一行、每行五项状态徽标，内容与 /api/stats 完全一致  :: {"rows":5,"total":36}
+PASS  矩阵01b 总览条位于工作台顶部（页头之下、工具条与表格之上），不遮挡表格、不覆盖工具条  :: {"bar":{"top":108,"bottom":292,"left":16,"right":1584},"topbar":{"top":16,"bottom":96,"left":16,"right":1584},"toolbar":{"top":304,"bottom":384,"left":16,"right":1584},"wrap":{"top":440,"bottom":3208,"left":16,"right":1584},"afterTopbar":true,"beforeToolbar":true}
+PASS  矩阵01c 无跨阶段合并行（5 行 = 5 阶段，行内计数合计 = 任务总数而非跨阶段累加），总览条内无手动刷新按钮  :: {"rows":["design","dev","test","product","demo_prep"],"buttons":0}
+PASS  矩阵02a 前端原样渲染服务端口径：当接口返回与任务数不符的 count / percentage 时逐字渲染（7 7.7%），不做本地统计、不二次四舍五入、不补齐 100.0%  :: {"first":{"status":"未开始","count":"7","percentage":"7.7","text":"未开始 7 7.7%","bg":"rgb(158, 158, 158)","color":"rgb(255, 255, 255)","scrollWidth":97,"clientWidth":97},"total":"共 99 条"}
+PASS  矩阵02b 撤下伪响应后按真实 /api/stats 渲染（回到构造数据的 count / percentage）  :: {"rows":5,"total":36}
+PASS  矩阵04a 五种状态颜色与表格阶段控件逐项一致，且等于五色映射（未开始=灰 / 已开始=蓝 / 已完成=绿 / 延期=红 / 阻塞=黄）  :: {"表格控件取样":5,"徽标":25}
+PASS  矩阵04b 数量为 0 的状态同样显示「0 0.0%」（构造数据含 4 个 0 项状态）  :: {"zeroBadges":4}
+PASS  矩阵05a 本地草稿（未保存的阶段改动）不改动总览：总览口径唯一来源是服务端 /api/stats（保存前仍与服务器一致）  :: {"draft":true}
+PASS  矩阵05b 保存成功后总览实时重算刷新（phase select 改动已计入，= 最新 /api/stats，无陈旧数据）  :: {"rows":5,"total":36}
+PASS  矩阵05c 保存后确实发生变化（未开始 8 → 7、已完成 7 → 8），不是沿用旧值  :: {"before":[8,7,7,7,7],"after":[7,7,8,7,7]}
+PASS  矩阵05d 新增行保存成功后总览实时刷新（任务总数 36 → 37，占比按新分母重算）  :: {"rows":5,"total":37}
+PASS  矩阵05e 新增后分母与占比确实按 37 重算  :: {"total":37}
+PASS  矩阵05f 删除行保存成功后总览实时刷新（任务总数回到 36）  :: {"rows":5,"total":36}
+PASS  矩阵05g 身份切换回到工作台时实时重算刷新（含服务器侧改动，无陈旧数据）  :: {"rows":5,"total":36}
+PASS  矩阵06a 九个身份在工作台均可看到同一只读总览（内容与 /api/stats 一致）  :: {"identities":9}
+PASS  矩阵06b 非项目负责人点击他人行阶段控件仍给出中文只读提示（权限矩阵与只读提示不回归）  :: "当前身份「王言」对第 T001 行的「设计」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"
+PASS  矩阵07a 桌面 1600px：总览条文本/数字不溢出、不遮挡表格、无横向页面滚动  :: {"innerWidth":1600,"docScrollWidth":1600,"docClientWidth":1600,"bodyScrollWidth":1600,"bar":{"left":16,"right":1584,"top":108,"bottom":292,"width":1568},"barScrollWidth":1566,"barClientWidth":1566,"wrapTop":440,"wrap":{"left":16,"right":1584,"top":440,"bottom":3208,"width":1568},"wrapScrollable":false,"overlapping":0,"rowsOutOfViewport":0,"badgesOutOfViewport":0,"badges":25}
+PASS  矩阵07b 375px 手机宽度：五阶段五行仍各成一组、徽标五项齐全、文案与 /api/stats 一致  :: {"rows":5,"total":36}
+PASS  矩阵07c 375px：文本与数字不溢出、不遮挡表格、无横向页面滚动（表格仍由 .table-wrap 内部横向滚动）  :: {"innerWidth":375,"docScrollWidth":375,"docClientWidth":375,"bodyScrollWidth":375,"bar":{"left":16,"right":359,"top":208,"bottom":756,"width":343},"barScrollWidth":341,"barClientWidth":341,"wrapTop":1072,"wrap":{"left":16,"right":359,"top":1072,"bottom":3840,"width":343},"wrapScrollable":true,"overlapping":0,"rowsOutOfViewport":0,"badgesOutOfViewport":0,"badges":25}
+PASS  矩阵10a 全程 0 次新增下载（未调用 WBS_DOWNLOAD_HOOK、未创建任何 blob URL、页面无 a[download]）  :: {"hook":0,"objectUrl":0,"anchors":0}
+PASS  矩阵10b 全程无外部请求（无 CDN / 外链 / 远程图片），且无 pageerror / console error  :: {"requests":168,"external":[],"pageerrors":[]}
+---
+PASS=21 FAIL=0
+[stage17] 容器退出码 0；输出目录 /opt/wbs-rongcheng/tests/.tmp/stage17-out

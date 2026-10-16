@@ -1,0 +1,26 @@
+YUNZ-29 变更包 #3（CH-8）作者自测开始 2026-10-16T11:59:22+0800
+node: /bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+v24.21.0  python3: Python 3.6.8  docker: Docker version 26.1.4, build 5650f9b
+
+--- 准备 A：真实浏览器（Chromium 容器）用例集 ---
+浏览器用例集退出码 0（完整输出：/opt/wbs-rongcheng/tests/.tmp/stage17/regress-stage9/browser.log）
+--- 准备 B：服务端 note 上限 / 审计 / 历史接口用例集 ---
+服务端用例集退出码 0（完整输出：/opt/wbs-rongcheng/tests/.tmp/stage17/regress-stage9/server.log）
+
+01   K 列点击打开编辑面板（摘要单元格、整格可点、面板初始值） 通过（PASS=6 FAIL=0）
+02   摘要去 Markdown 与截断（纯逻辑 + DOM 单行省略） 通过（PASS=1 FAIL=0）
+03   桌面 90vw×80vh 双栏 / 手机全屏标签切换（视口与布局属性断言） 通过（PASS=9 FAIL=0）
+04   原始 HTML 转义不执行 / 远程图片不解析不加载 / 无外部资源请求 通过（PASS=4 FAIL=0）
+05   编辑保存后页面/API/磁盘三端一致 + 审计字段级 old→new 通过（PASS=3 FAIL=0）
+06   无权限行只读预览且无法提交                  通过（PASS=5 FAIL=0）
+07   未保存关闭确认：取消 / 继续退出两条路径 通过（PASS=7 FAIL=0）
+08   note 超 20000 拒绝并有中文提示（前端 + 服务端） 通过（PASS=2 FAIL=0）
+09   并发 PUT 409 不覆盖（前端 + 服务端）         通过（PASS=1 FAIL=0）
+10   重启后 note 与人员池持久（前端 + 服务端） 通过（PASS=1 FAIL=0）
+11   回归：M1 标签 / 日报弹层（CH-13 口径）/ WBS 导出 A–K / D-3 / CH-1…CH-7 通过（PASS=2 FAIL=0）
+12   既有 18 项矩阵回归（JS/DOM/导出；按当前部署口径跳过容器附加项） 通过（PASS=1 FAIL=0）
+13   Stage7 矩阵 01–14 回归（CH-1…CH-7 真实浏览器深度复跑） 通过（PASS=1 FAIL=0）
+14   部署与镜像自检（BIND_HOST=0.0.0.0 / 双端 health / 无 node_modules / 资源与源码一致） 通过（PASS=15 FAIL=0）
+
+结论：CH-8 作者自测矩阵 01–14 全部通过（浏览器用例集 0 / 服务端用例集 0）
+输出目录：/opt/wbs-rongcheng/tests/.tmp/stage17/regress-stage9

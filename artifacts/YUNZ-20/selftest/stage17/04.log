@@ -1,0 +1,7 @@
+=== 自测矩阵 04 · 五种状态颜色与表格阶段控件完全一致（且等于五色映射）；0 项仍显示「0 0.0%」 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage17/browser.log' 'PASS  矩阵04a' 'PASS  矩阵04b'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵04a
+OK    PASS  矩阵04b
+PASS=2 FAIL=0

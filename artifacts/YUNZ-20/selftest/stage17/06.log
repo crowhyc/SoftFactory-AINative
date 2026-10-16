@@ -1,0 +1,7 @@
+=== 自测矩阵 06 · 九个身份都能看到只读总览；权限矩阵与只读提示不回归 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage17/browser.log' 'PASS  矩阵06a' 'PASS  矩阵06b'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵06a
+OK    PASS  矩阵06b
+PASS=2 FAIL=0

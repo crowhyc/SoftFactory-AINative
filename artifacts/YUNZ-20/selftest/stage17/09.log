@@ -1,0 +1,80 @@
+=== 自测矩阵 09 · 部署与镜像自检（BIND_HOST=0.0.0.0 / 本机+0.0.0.0+公网三端 health / 无 node_modules / 服务资源与源码 sha256 一致 / CH-14 live 冒烟） ===
+$ bash tests/stage17/deploy_check.sh
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+=== Stage17 部署/镜像自检 2026-10-16T12:12:59+0800 ===
+--- 复用 stage9/13/15 部署口径（容器镜像 / 0.0.0.0 绑定 / 本机+0.0.0.0+公网 health / 无 node_modules / 资源与源码一致） ---
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+=== Stage15 部署/镜像自检 2026-10-16T12:12:59+0800 ===
+--- 复用部署口径（容器镜像 / 0.0.0.0 绑定 / 双端+公网 health / 无 node_modules / 资源与源码一致） ---
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+=== Stage13 部署/镜像自检 2026-10-16T12:12:59+0800 ===
+--- 复用 stage9 部署口径（容器镜像 / 0.0.0.0 绑定 / 双端+公网 health / 无 node_modules / 资源与源码一致） ---
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+=== 部署/镜像自检 2026-10-16T12:12:59+0800 ===
+容器：wbs-rongcheng  端口：4180  BIND_HOST：0.0.0.0  APP_DIR：/opt/wbs-rongcheng
+PASS  现场容器存在并运行（镜像 wbs-rongcheng:20261016115756，网络 host，挂载 /opt/wbs-rongcheng/data->/app/data）
+PASS  容器进程绑定 0.0.0.0（D-0006 授权对外暴露口径）
+PASS  运行数据挂载 = /opt/wbs-rongcheng/data（现场数据未改挂载）
+PASS  本机 http://127.0.0.1:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":14}
+PASS  http://0.0.0.0:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":14}
+PASS  宿主监听包含 0.0.0.0:4180（按 D-0006 授权对外暴露）
+PASS  公网 http://47.108.129.157:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":14}
+PASS  镜像内无 node_modules / package-lock.json（零运行时依赖）
+镜像 /app 内容：data package.json public server.js 
+PASS  服务端返回 /app.js 与运行目录源码一致（sha256 b48cd499da5f0e6145ed6a1d959fad89f222528a320f80da92e155cc98a3f98c）
+PASS  服务端返回 /styles.css 与运行目录源码一致（sha256 2bab8f68c8c84b89df767bac34d89c299911f6c25b1fdc2df32754bd3bc92b77）
+PASS  服务端返回 / 与运行目录 index.html 一致（sha256 3b762e0d00cbea856723ec4be92f0265c6eafcc2a9c137e3928887e89e8046c2）
+PASS  容器内 /app/public/app.js == 运行目录（sha256 b48cd499da5f0e6145ed6a1d959fad89f222528a320f80da92e155cc98a3f98c）
+PASS  容器内 /app/public/index.html == 运行目录（sha256 3b762e0d00cbea856723ec4be92f0265c6eafcc2a9c137e3928887e89e8046c2）
+PASS  容器内 /app/public/styles.css == 运行目录（sha256 2bab8f68c8c84b89df767bac34d89c299911f6c25b1fdc2df32754bd3bc92b77）
+PASS  容器内 /app/server.js == 运行目录（sha256 507df43016affbbb430cec31c60c96467a16cb5c105be2f274ca44adf33f52b6）
+---
+PASS=15 FAIL=0
+PASS  stage9 部署口径全部通过（容器 / 绑定 / health / 镜像无依赖 / 资源一致）
+--- 新基线 live 冒烟（CH-13：日报文本弹层） ---
+PASS  live /api/daily 返回 ok（日报数据源可达，服务端审计与 changes 保留）
+PASS  live /api/daily 仍返回 summary / blocked / changes 三个数据源（服务端汇总逻辑保留）
+PASS  live /api/daily 返回 CH-13 关键信息文本（概况行「今日延期 X 项 / 阻塞 Y 项」或兜底「今日无阻塞、延期。」）
+PASS  live app.js 已移除日报 xlsx 组装（buildDailyWorkbook / dailyBytes / DAILY_SHEET_NAMES / patchSummaryWrap；CH-13 生效）
+PASS  live app.js 含日报文本弹层与复制实现（CH-13 生效）
+PASS  live index.html 含日报弹层 DOM（daily-panel / daily-text / daily-copy；CH-13 生效）
+PASS  live app.js 含复制成功中文提示（CH-13 生效）
+PASS  公网 http://47.108.129.157:4180/api/health → {"ok":true,"service":"wbs-rongcheng","revision":14}
+---
+PASS=9 FAIL=0
+PASS  stage13（含 stage9 部署口径）全部通过
+--- CH-13 live 冒烟（日报文本弹层） ---
+PASS  live /api/daily 可达（HTTP 200，落盘 /opt/wbs-rongcheng/tests/.tmp/stage15-live/daily-2026-10-16.json）
+PASS  live /api/daily 返回 CH-13 文本体（text.body / text.lines / text.overview / 计数）
+PASS  live 概况行计数 = 事件行数（延期/阻塞 2/0 项，与 text 计数一致）
+PASS  live 概况行符合契约：今日延期 2 项 / 阻塞 0 项
+PASS  live 文本体只体现阻塞、延期（text.body 无「完成 / 普通」事件）
+PASS  live /api/daily 仍保留旧数据源 summary / blocked / changes / counts（服务端汇总逻辑保留）
+PASS  live 页面含日报弹层元素 id="daily-btn"
+PASS  live 页面含日报弹层元素 id="daily-panel"
+PASS  live 页面含日报弹层元素 id="daily-text"
+PASS  live 页面含日报弹层元素 id="daily-copy"
+PASS  live 页面含日报弹层元素 id="daily-close"
+PASS  live styles.css 含保留换行的只读文本块样式（pre-wrap）
+---
+PASS=13 FAIL=0
+PASS  stage15（含 stage13 / stage9 部署口径与 CH-13 live 冒烟）全部通过
+--- CH-14 live 冒烟（/api/stats 口径 + 只读语义 + 页面总览条） ---
+PASS  live /api/stats 结构为五阶段 × 五状态（固定顺序 未开始/已开始/已完成/延期/阻塞）
+PASS  live /api/stats 的 count 与 /api/wbs 逐阶段独立复算一致（任务总数 35）
+PASS  live 每阶段五项合计恰为 100.0%（分母 = 任务总数，最大余数法补齐）
+PASS  live /api/stats 与 /api/wbs 读同一份文档（revision 一致）
+     设计阶段样例：35 100.0%|0 0.0%|0 0.0%|0 0.0%|0 0.0%
+PASS  live /api/stats 仅接受 GET（POST → 405，无写入路径）
+PASS  live /api/stats 不构成下载路径（无 Content-Disposition）
+PASS  live 页面含总览条 DOM id="phase-overview"
+PASS  live 页面含总览条 DOM id="overview-rows"
+PASS  live 页面含总览条 DOM id="overview-total"
+PASS  live app.js 含 CH-14 总览实现（/api/stats 读取 + 刷新 + 徽标渲染，原样渲染服务端口径）
+PASS  live CH-14 总览代码块不含任何本地统计（无 filter / reduce / Math 取整，只做字符串渲染）
+PASS  live styles.css 含总览徽标五色映射（与表格阶段控件同色）
+PASS  live styles.css 含总览换行样式（窄屏自然换行）
+---
+PASS=14 FAIL=0

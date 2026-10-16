@@ -1,0 +1,22 @@
+YUNZ-37 变更包 #7（CH-14 阶段状态占比总览 + GET /api/stats）作者自测开始 2026-10-16T11:58:12+0800
+node: /bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+v24.21.0  python3: Python 3.6.8  docker: Docker version 26.1.4, build 5650f9b  today: 2026-10-16
+
+--- 准备 A：真实浏览器（Chromium 容器）用例集（总览条 / 五色 / 刷新 / 九身份 / 375px / 下载与外部请求） ---
+浏览器用例集退出码 0（完整输出：/opt/wbs-rongcheng/tests/.tmp/stage17/browser.log）
+--- 准备 B：服务端口径用例集（宿主 node：结构 / 独立复算 / 最大余数法 / 0 行边界 / 只读语义） ---
+服务端口径用例集退出码 0（完整输出：/opt/wbs-rongcheng/tests/.tmp/stage17/statcheck.log + /opt/wbs-rongcheng/tests/.tmp/stage17/statcheck-results.json）
+
+01   顶部总览条可见：五阶段各自独立一组、每行五项状态徽标，无跨阶段合并行、无手动刷新按钮 通过（PASS=3 FAIL=0）
+02   count / percentage 与 /api/stats 完全一致（多组不同状态组合）；前端原样渲染、不自行统计、不二次四舍五入 通过（PASS=6 FAIL=0）
+03   完整体边界：0 行不除零、五项合计恰为 100.0%（最大余数法 33.4 / 33.3 / 33.3）、脏数据不臆造占比 通过（PASS=3 FAIL=0）
+04   五种状态颜色与表格阶段控件完全一致（且等于五色映射）；0 项仍显示「0 0.0%」 通过（PASS=2 FAIL=0）
+05   保存 / 新增 / 删除 / 身份切换后总览实时重算刷新，无陈旧数据；本地草稿不改动服务端口径 通过（PASS=7 FAIL=0）
+06   九个身份都能看到只读总览；权限矩阵与只读提示不回归 通过（PASS=2 FAIL=0）
+07   桌面与 375px：文本/数字不溢出、不遮挡表格、无横向页面滚动；五阶段仍各成一组 通过（PASS=3 FAIL=0）
+08   回归：既有 18 项矩阵 + Stage7 + Stage9 + Stage11 + Stage13 + Stage15（CH-1…CH-13 与 409 / 重启 / 审计 / WBS 导出 / 日报弹层 / Markdown 编辑器） 通过（PASS=1 FAIL=0）
+09   部署与镜像自检（BIND_HOST=0.0.0.0 / 本机+0.0.0.0+公网三端 health / 无 node_modules / 服务资源与源码 sha256 一致 / CH-14 live 冒烟） 通过（PASS=14 FAIL=0）
+10   页面全程无外部请求、0 次新增下载（无 blob / a[download] / WBS_DOWNLOAD_HOOK 调用），/api/stats 不构成下载路径 通过（PASS=1 FAIL=0）
+
+结论：变更包 #7（CH-14 阶段状态占比总览 + GET /api/stats）作者自测矩阵 01–10 全部通过（浏览器用例集 0 / 服务端口径用例集 0）
+输出目录：/opt/wbs-rongcheng/tests/.tmp/stage17

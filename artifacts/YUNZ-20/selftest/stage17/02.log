@@ -1,0 +1,14 @@
+=== 自测矩阵 02 · count / percentage 与 /api/stats 完全一致（多组不同状态组合）；前端原样渲染、不自行统计、不二次四舍五入 ===
+$ require '/opt/wbs-rongcheng/tests/.tmp/stage17/browser.log' 'PASS  矩阵02a' 'PASS  矩阵02b' && require '/opt/wbs-rongcheng/tests/.tmp/stage17/statcheck.log' 'PASS  矩阵02a' 'PASS  矩阵02b' 'PASS  矩阵02c' 'PASS  矩阵02d' 'PASS  矩阵02e' 'PASS  矩阵02f'
+
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+OK    PASS  矩阵02a
+OK    PASS  矩阵02b
+PASS=2 FAIL=0
+OK    PASS  矩阵02a
+OK    PASS  矩阵02b
+OK    PASS  矩阵02c
+OK    PASS  矩阵02d
+OK    PASS  矩阵02e
+OK    PASS  矩阵02f
+PASS=6 FAIL=0
