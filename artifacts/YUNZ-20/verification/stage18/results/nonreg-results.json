@@ -1,0 +1,266 @@
+{
+  "base": "http://127.0.0.1:4264",
+  "checks": [
+    {
+      "id": "N01 CH-4/验收1：身份入口列出全部身份（>= 9）",
+      "ok": true,
+      "detail": {
+        "idCount": 9
+      }
+    },
+    {
+      "id": "N02 CH-9：进入工作台后身份遮罩隐藏（hidden）",
+      "ok": true,
+      "detail": {
+        "wb": true,
+        "layerHidden": true
+      }
+    },
+    {
+      "id": "N03 验收2：页面按 /api/wbs 原顺序渲染全部任务",
+      "ok": true,
+      "detail": {
+        "dom": 12,
+        "api": 12,
+        "same": true
+      }
+    },
+    {
+      "id": "N04 CH-3/CH-10：每行 5 个阶段下拉（总 = 行数 × 5）",
+      "ok": true,
+      "detail": {
+        "rows": 12,
+        "selects": 60
+      }
+    },
+    {
+      "id": "N05 CH-3：阶段下拉五色映射与页面一致（未开始灰/已开始蓝/已完成绿/延期红/阻塞黄）",
+      "ok": true,
+      "detail": {
+        "got": {
+          "未开始": "rgb(158, 158, 158)",
+          "已开始": "rgb(47, 128, 237)",
+          "已完成": "rgb(39, 174, 96)",
+          "延期": "rgb(231, 76, 60)",
+          "阻塞": "rgb(255, 212, 0)"
+        }
+      }
+    },
+    {
+      "id": "N06 CH-9/CH-5：页面无旧「状态」列、无「是否演示范围」列/入口",
+      "ok": true,
+      "detail": {
+        "headers": [
+          "序号",
+          "一级",
+          "二级",
+          "任务项",
+          "负责人",
+          "设计",
+          "开发",
+          "测试",
+          "产品",
+          "演示准备",
+          "进展说明",
+          "操作"
+        ],
+        "hasStatusCol": false,
+        "demoNodes": 0
+      }
+    },
+    {
+      "id": "N07 CH-6：本人行可编辑（日期输入未 disabled）",
+      "ok": true,
+      "detail": {
+        "id": "T-Q01",
+        "disabled": false
+      }
+    },
+    {
+      "id": "N08 CH-6：他人行只读（日期输入 disabled）",
+      "ok": true,
+      "detail": {
+        "id": "T-Q02",
+        "disabled": true
+      }
+    },
+    {
+      "id": "N09 CH-6：点击他人行只读单元格给出中文只读提示",
+      "ok": true,
+      "detail": {
+        "hidden": false,
+        "text": "当前身份「王言」对第 T-Q02 行的「任务项」只读（仅“负责人 == 自己”的行、且仅非结构性字段可改）"
+      }
+    },
+    {
+      "id": "N10 CH-2/CH-8：项目负责人可见「新增人员」入口，身份与负责人下拉与人员池同步",
+      "ok": true,
+      "detail": {
+        "pool": {
+          "addPerson": true,
+          "identityOptions": 9,
+          "ownerOptions": 10
+        },
+        "identities": 9
+      }
+    },
+    {
+      "id": "N11 CH-1：进展说明 Markdown 编辑器可用（桌面双栏）且原始 HTML 不被执行（无 script/img 注入、无 XSS 全局）",
+      "ok": true,
+      "detail": {
+        "panelOpen": true,
+        "xss": null,
+        "scriptTags": 0,
+        "imgTags": 0,
+        "tabsHidden": true,
+        "bold": true,
+        "text": "<script>window.xss=1</script> 粗体 <img src=x onerror=\"window.xss=2\">"
+      }
+    },
+    {
+      "id": "N12 CH-1：进展说明未保存即退出（有确认回退，未产生 PUT）",
+      "ok": true,
+      "detail": {
+        "puts": 0
+      }
+    },
+    {
+      "id": "N13 CH-13：日报文本弹层可用（可见 + 文本 + 复制按钮），且不产生下载",
+      "ok": true,
+      "detail": {
+        "visible": true,
+        "len": 1804,
+        "downloads": []
+      }
+    },
+    {
+      "id": "N17 CH-1（375px）：进展说明编辑入口可发现，编辑/预览标签可用且可切换",
+      "ok": true,
+      "detail": {
+        "narrow": {
+          "tabsHidden": false,
+          "editTabVisible": true,
+          "previewTabVisible": true,
+          "inputVisible": true
+        },
+        "afterTab": {
+          "previewVisible": true,
+          "editHidden": true,
+          "placeholder": "（暂无进展说明）"
+        }
+      }
+    },
+    {
+      "id": "N14 验收5：空任务项保存被前置校验拦下（错误横幅 + 不产生 PUT）",
+      "ok": true,
+      "detail": {
+        "banner": {
+          "hidden": false,
+          "text": "前置校验未通过，未向服务器提交（共 3 项）：[T001] 一级：一级不能为空；[T001] 二级：二级不能为空；[T001] 任务项：任务项不能为空"
+        },
+        "puts": 0
+      }
+    },
+    {
+      "id": "N15 验收10：无跨域/外部请求",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "id": "N16 全程无 pageerror",
+      "ok": true,
+      "detail": []
+    }
+  ],
+  "page_errors": [],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4264/",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/styles.css",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/vendor/xlsx.full.min.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/app.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/api/wbs",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/api/stats",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/api/health",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/api/stats",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/api/wbs",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/api/stats",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/api/stats",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/api/daily?tz=Asia%2FShanghai&date=2026-10-16",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/styles.css",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/vendor/xlsx.full.min.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/app.js",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/api/wbs",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/api/stats",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/api/health",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/api/stats",
+      "method": "GET"
+    },
+    {
+      "url": "http://127.0.0.1:4264/api/stats",
+      "method": "GET"
+    }
+  ],
+  "puts": [],
+  "downloads": [],
+  "pass": 17,
+  "fail": 0
+}

@@ -1,0 +1,20 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  LIVEB-01 现场顶部总览条可见且常驻（5 行，data-phase 顺序正确）  :: {"visible":true,"rows":["design","dev","test","product","demo_prep"]}
+PASS  LIVEB-02 现场每行阶段名 + 5 徽标，无跨阶段合并行，无手动刷新按钮  :: {"counts":[5,5,5,5,5],"buttons":0}
+PASS  LIVEB-03 现场 DOM 显示值与 /api/stats 逐项完全一致（含四舍五入结果）  :: "all 25 match"
+PASS  LIVEB-04 /api/stats 与 /api/wbs 同源（total == 任务数、revision == meta.revision）  :: {"total":35,"tasks":35,"rev":14}
+PASS  LIVEB-05 现场各阶段五项合计恰为 100.0%  :: [100,100,100,100,100]
+PASS  LIVEB-06 现场合计文本 ==「共 N 条」  :: {"got":"共 35 条"}
+PASS  LIVEB-07 现场五种状态徽标 computed 颜色 == 五色映射且与表格阶段控件一致  :: {"badge":{"未开始":"rgb(158, 158, 158)","已开始":"rgb(47, 128, 237)","已完成":"rgb(39, 174, 96)","延期":"rgb(231, 76, 60)","阻塞":"rgb(255, 212, 0)"},"select":{"未开始":"rgb(158, 158, 158)","已开始":"rgb(47, 128, 237)","已完成":"rgb(39, 174, 96)","延期":"rgb(231, 76, 60)"}}
+PASS  LIVEB-08 现场全部身份（12 个，含项目负责人与普通负责人）均看到同一只读总览  :: {"identities":12,"distinct":1}
+PASS  LIVEB-09 现场权限矩阵不回归：项目负责人可增删，普通负责人无增删入口  :: {"pm":{"addRow":true,"addPerson":true,"del":35},"other":{"addRow":false,"addPerson":false,"del":0}}
+PASS  LIVEB-10 现场只读浏览不改变 revision（页面加载 + 查看总览）  :: {"revBefore":14,"revAfter":14,"statsRev":14}
+PASS  LIVEB-11 现场 375px 无横向页面滚动（html/body scrollWidth <= clientWidth）  :: {"scrollWidth":375,"clientWidth":375,"body":375}
+PASS  LIVEB-12 现场 375px 徽标不溢出视口、不遮挡表格、五阶段仍各成一组  :: {"overflowBadges":[],"overviewBottom":700,"tableTop":1025}
+PASS  LIVEB-13 现场全程只读：0 次非 GET/HEAD 请求（无 PUT/POST/DELETE）  :: []
+PASS  LIVEB-14 现场全程无外部请求、0 次新增下载  :: {"external":[],"downloads":[]}
+PASS  LIVEB-15 现场全程无 pageerror  :: []
+
+[live-browser] PASS=15 FAIL=0
+[live-invariance] audit_sha_same=true wbs_sha_same=true rev=14->14
+PASS  LIVEB-16 现场只读浏览前后 audit.log 指纹与 wbs.json 指纹均不变（revision 14 -> 14）

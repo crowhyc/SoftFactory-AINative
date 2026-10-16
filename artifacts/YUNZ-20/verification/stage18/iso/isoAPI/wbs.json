@@ -1,0 +1,310 @@
+{
+  "meta": {
+    "name": "1023 蓉城战役 WBS 清单",
+    "revision": 19,
+    "updated_at": "2026-10-16T04:34:06.716Z",
+    "source": "1023 蓉城战役 WBS 清单.xlsx"
+  },
+  "identities": [
+    "项目负责人",
+    "王言",
+    "李明",
+    "张航瑞",
+    "郑述文",
+    "崔文建",
+    "余宇",
+    "黄逸偲",
+    "陈江",
+    "复验员乙"
+  ],
+  "tasks": [
+    {
+      "id": "T-Q01",
+      "level1": "一级1",
+      "level2": "二级1",
+      "task": "隔离任务 1",
+      "owner": "王言",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-01",
+        "dev": "2026-10-05",
+        "test": "2026-10-09",
+        "product": "2026-10-12",
+        "demo_prep": "2026-10-15"
+      },
+      "note": "复验连续保存 0",
+      "status": "进行中",
+      "phases": {
+        "design": "阻塞",
+        "dev": "未开始",
+        "test": "已开始",
+        "product": "已完成",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "T-Q02",
+      "level1": "一级1",
+      "level2": "二级2",
+      "task": "隔离任务 2",
+      "owner": "李明",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-01",
+        "dev": "2026-10-05",
+        "test": "2026-10-09",
+        "product": "2026-10-12",
+        "demo_prep": "2026-10-15"
+      },
+      "note": "复验连续保存 1",
+      "status": "进行中",
+      "phases": {
+        "design": "未开始",
+        "dev": "已开始",
+        "test": "已开始",
+        "product": "已完成",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "T-Q03",
+      "level1": "一级1",
+      "level2": "二级3",
+      "task": "隔离任务 3",
+      "owner": "张航瑞",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-01",
+        "dev": "2026-10-05",
+        "test": "2026-10-09",
+        "product": "2026-10-12",
+        "demo_prep": "2026-10-15"
+      },
+      "note": "复验连续保存 2",
+      "status": "进行中",
+      "phases": {
+        "design": "未开始",
+        "dev": "已完成",
+        "test": "已开始",
+        "product": "已完成",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "T-Q04",
+      "level1": "一级2",
+      "level2": "二级4",
+      "task": "隔离任务 4",
+      "owner": "郑述文",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-01",
+        "dev": "2026-10-05",
+        "test": "2026-10-09",
+        "product": "2026-10-12",
+        "demo_prep": "2026-10-15"
+      },
+      "note": "复验连续保存 3",
+      "status": "进行中",
+      "phases": {
+        "design": "已开始",
+        "dev": "延期",
+        "test": "已开始",
+        "product": "已完成",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "T-Q05",
+      "level1": "一级2",
+      "level2": "二级5",
+      "task": "隔离任务 5",
+      "owner": "王言",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-01",
+        "dev": "2026-10-05",
+        "test": "2026-10-09",
+        "product": "2026-10-12",
+        "demo_prep": "2026-10-15"
+      },
+      "note": "复验连续保存 4",
+      "status": "进行中",
+      "phases": {
+        "design": "已开始",
+        "dev": "延期",
+        "test": "已完成",
+        "product": "已完成",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "T-Q06",
+      "level1": "一级2",
+      "level2": "二级6",
+      "task": "隔离任务 6",
+      "owner": "李明",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-01",
+        "dev": "2026-10-05",
+        "test": "2026-10-09",
+        "product": "2026-10-12",
+        "demo_prep": "2026-10-15"
+      },
+      "note": "复验连续保存 5",
+      "status": "进行中",
+      "phases": {
+        "design": "已完成",
+        "dev": "阻塞",
+        "test": "已完成",
+        "product": "已完成",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "T-Q07",
+      "level1": "一级3",
+      "level2": "二级7",
+      "task": "隔离任务 7",
+      "owner": "张航瑞",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-01",
+        "dev": "2026-10-05",
+        "test": "2026-10-09",
+        "product": "2026-10-12",
+        "demo_prep": "2026-10-15"
+      },
+      "note": "复验连续保存 6",
+      "status": "进行中",
+      "phases": {
+        "design": "已完成",
+        "dev": "阻塞",
+        "test": "已完成",
+        "product": "已完成",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "T-Q08",
+      "level1": "一级3",
+      "level2": "二级8",
+      "task": "隔离任务 8",
+      "owner": "郑述文",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-01",
+        "dev": "2026-10-05",
+        "test": "2026-10-09",
+        "product": "2026-10-12",
+        "demo_prep": "2026-10-15"
+      },
+      "note": "复验连续保存 7",
+      "status": "进行中",
+      "phases": {
+        "design": "已完成",
+        "dev": "阻塞",
+        "test": "已完成",
+        "product": "已完成",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "T-Q09",
+      "level1": "一级3",
+      "level2": "二级9",
+      "task": "隔离任务 9",
+      "owner": "王言",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-01",
+        "dev": "2026-10-05",
+        "test": "2026-10-09",
+        "product": "2026-10-12",
+        "demo_prep": "2026-10-15"
+      },
+      "note": "复验连续保存 8",
+      "status": "进行中",
+      "phases": {
+        "design": "已完成",
+        "dev": "阻塞",
+        "test": "已完成",
+        "product": "已完成",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "T-Q10",
+      "level1": "一级4",
+      "level2": "二级10",
+      "task": "隔离任务 10",
+      "owner": "李明",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-01",
+        "dev": "2026-10-05",
+        "test": "2026-10-09",
+        "product": "2026-10-12",
+        "demo_prep": "2026-10-15"
+      },
+      "note": "复验连续保存 9",
+      "status": "进行中",
+      "phases": {
+        "design": "已完成",
+        "dev": "阻塞",
+        "test": "已完成",
+        "product": "已完成",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "T-Q11",
+      "level1": "一级4",
+      "level2": "二级11",
+      "task": "隔离任务 11",
+      "owner": "张航瑞",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-01",
+        "dev": "2026-10-05",
+        "test": "2026-10-09",
+        "product": "2026-10-12",
+        "demo_prep": "2026-10-15"
+      },
+      "note": "",
+      "status": "进行中",
+      "phases": {
+        "design": "延期",
+        "dev": "阻塞",
+        "test": "阻塞",
+        "product": "已完成",
+        "demo_prep": "未开始"
+      }
+    },
+    {
+      "id": "T-Q12",
+      "level1": "一级4",
+      "level2": "二级12",
+      "task": "隔离任务 12",
+      "owner": "郑述文",
+      "demo": "",
+      "dates": {
+        "design": "2026-10-01",
+        "dev": "2026-10-05",
+        "test": "2026-10-09",
+        "product": "2026-10-12",
+        "demo_prep": "2026-10-15"
+      },
+      "note": "",
+      "status": "进行中",
+      "phases": {
+        "design": "阻塞",
+        "dev": "阻塞",
+        "test": "阻塞",
+        "product": "已完成",
+        "demo_prep": "未开始"
+      }
+    }
+  ]
+}

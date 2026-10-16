@@ -1,0 +1,15 @@
+PASS  R01 导出单 sheet 且 sheet 名与模板一致  :: {"export": "工作表1", "template": "工作表1", "sheets": 1}
+PASS  R02 第 1 行 A–K 与模板逐格一致（未追加统计文字）  :: "all A–K row1 identical"
+PASS  R03 A1:C1 合并保留  :: ["A1:C1"]
+PASS  R04 第 2 行 A–K 与模板逐格一致（表头未被统计改写）  :: "all A–K row2 identical"
+PASS  R05 L2:P2 阶段进度表头 == 设计/开发/测试/产品/演示准备进度  :: ["设计进度", "开发进度", "测试进度", "产品进度", "演示准备进度"]
+PASS  R06 数据行数 = 任务数（末行 = N+2），无超出数据区残留单元格，列界 = Q  :: {"max_cell_row": 14, "max_col": "Q", "n": 12, "dimension_ref": "A1:Q38"}
+PASS  R07 A–K 数据区逐行与导出时 /api/wbs 快照一致（含 是否演示范围 / 五日期 / 进展说明）  :: "12 rows x 11 cols match"
+PASS  R08 L–P 阶段进度文字逐格 == /api/wbs phases（中文五枚举）  :: "60 cells match"
+PASS  R09 L–P 五色填充逐格匹配（未开始灰/已开始蓝/已完成绿/延期红/阻塞黄），且五色全出现  :: {"diff": [], "seen": ["27AE60", "2F80ED", "9E9E9E", "E74C3C", "FFD400"]}
+PASS  R10 全表不含 CH-14 统计（无「占比」文案 / 无「数量 百分比%」模式 / 无 % 字符 / 无旧 status 列）  :: "no stats leakage"
+PASS  R11 Q1 导出日期标签存在且为今天（Asia/Shanghai 2026-10-16）  :: {"Q1": "导出日期：2026-10-16 12:33", "today": "2026-10-16"}
+PASS  R12 下载名 == 蓉城战役WBS-YYYYMMDD.xlsx（日期为今天）  :: {"name": "蓉城战役WBS-20261016.xlsx", "today": "20261016"}
+PASS  R13 导出流程仅 1 个 xlsx 下载（导出日报不产生文件）  :: {"xlsx_files": 1}
+
+[readback] PASS=13 FAIL=0

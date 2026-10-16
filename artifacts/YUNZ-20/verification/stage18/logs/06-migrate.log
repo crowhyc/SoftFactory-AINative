@@ -1,0 +1,9 @@
+PASS  MIG-01 隔离容器启动成功（旧文档自动迁移）  :: {"healthy": true}
+PASS  MIG-02 一次性迁移：每任务生成五阶段 phases（键齐备、取值合法）  :: {"T-M1": {"design": "延期", "dev": "未开始", "test": "未开始", "product": "未开始", "demo_prep": "未开始"}, "T-M2": {"design": "延期", "dev": "未开始", "test": "未开始", "product": "未开始", "demo_prep": "未开始"}}
+PASS  MIG-03 旧 status 字段保留（不被清除/改写，4 行逐行一致）  :: {"got": ["未开始", "进行中", "已完成", "已延期"], "exp": ["未开始", "进行中", "已完成", "已延期"]}
+PASS  MIG-04 迁移规则：日期早于今天 → 延期，空日期 → 未开始  :: {"design": "延期", "dev": "未开始"}
+PASS  MIG-05 迁移审计：migrated 记录数 == 任务数 × 5  :: {"migrated": 20, "expect": 20}
+PASS  MIG-06 迁移后 /api/stats 与文档一致（total/revision、design 延期计数）  :: {"total": 4, "rev": 3, "design_delayed": 4}
+PASS  MIG-07 重启幂等：不再迁移（revision / wbs.json 指纹 / 审计行数均不变）  :: {"rev": [3, 3], "lines": [20, 20]}
+
+[migrate] PASS=7 FAIL=0

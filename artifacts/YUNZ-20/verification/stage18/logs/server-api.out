@@ -1,0 +1,19 @@
+PASS  LIVE-01 GET /api/stats 200 + JSON + ok:true + Content-Type 为 JSON  :: {"code": 200, "ct": "application/json; charset=utf-8", "ok": true}
+PASS  LIVE-02 /api/stats 结构：5 阶段（design/dev/test/product/demo_prep）  :: ["design", "dev", "test", "product", "demo_prep"]
+PASS  LIVE-03 每阶段 5 状态顺序固定（未开始/已开始/已完成/延期/阻塞）  :: ["未开始", "已开始", "已完成", "延期", "阻塞"]
+PASS  LIVE-04 各阶段五项百分比合计恰为 100.0%（total=35）  :: [100.0, 100.0, 100.0, 100.0, 100]
+PASS  LIVE-05 /api/stats 与 /api/wbs 独立复算逐项一致（count/percentage）  :: "all 25 match"
+PASS  LIVE-06 total == /api/wbs 任务数，revision == meta.revision  :: {"total": 35, "tasks": 35, "rev": 14, "wbsRev": 14}
+PASS  LIVE-07 GET /api/stats 无 Content-Disposition（不构成下载路径）  :: {}
+PASS  LIVE-08 /api/stats 仅允许 GET（POST/PUT/DELETE → 405）  :: [["POST", 405], ["PUT", 405], ["DELETE", 405]]
+PASS  LIVE-09 查看总览不产生审计记录、不改变 wbs.json（审计行数/revision 不变）  :: {"audit": [294, 294], "wbsShaSame": true, "rev": [14, 14]}
+PASS  LIVE-10 /api/health ok  :: {"ok": true, "service": "wbs-rongcheng", "revision": 14}
+PASS  ISOA-11 隔离构造数据（12 行 / 5 阶段各异分布）服务端口径逐项一致  :: "all 25 match"
+PASS  ISOB-12 0 行任务：/api/stats 200、total 0、五项全 0/0.0%、不报错  :: {"code": 200, "total": 0}
+PASS  ISOA-13 PUT 过期 If-Match → 409 conflict，且不覆盖（revision/内容不变）  :: {"code": 409, "body": {"ok": false, "reason": "conflict", "current": 7}, "rev": 7}
+PASS  ISOA-14 PUT 非法阶段枚举 → 400 且不落盘（revision/内容不变）  :: {"code": 400, "errors": [{"id": "T-Q01", "field": "phases.design", "message": "阶段进度必须是 未开始 / 已开始 / 已完成 / 延期 / 阻塞 之一"}]}
+PASS  ISOA-15 合法写入 → 200 revision+1，且 /api/stats 立即与新文档一致（写后重算）  :: {"code": 200, "rev": 8, "diff": []}
+PASS  ISOA-16 新增人员（项目负责人）→ /api/history 含「人员池」identity_added，且总览口径不受影响  :: {"put": 200, "history": 200, "has": true, "diff": []}
+PASS  ISOA-17 服务重启后数据仍在，/api/stats 与重启前逐项一致  :: {"healthy": true, "rev": [9, 9]}
+PASS  ISOA-19 连续 10 次保存：revision 递增、A–K 结构字段无丢失无重复、无未知字段被写入  :: {"loop_ok": true, "lost": [], "dup": false, "unknown": [], "changed": [], "rev": [9, 19]}
+PASS  ISOA-18 隔离实例：查看总览不写审计、不改 wbs.json  :: {"audit": [13, 13], "shaSame": true}

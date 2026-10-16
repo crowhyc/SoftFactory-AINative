@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "name": "1023 蓉城战役 WBS 清单",
+    "revision": 2,
+    "updated_at": "2026-10-01T00:00:00.000Z",
+    "source": "旧模板.xlsx"
+  },
+  "identities": [
+    "项目负责人",
+    "王言"
+  ],
+  "tasks": [
+    {
+      "id": "T-M1",
+      "level1": "迁移一级",
+      "level2": "迁移二级",
+      "task": "迁移任务 1",
+      "owner": "王言",
+      "demo": "",
+      "dates": {
+        "design": "2020-01-01",
+        "dev": "",
+        "test": "",
+        "product": "",
+        "demo_prep": ""
+      },
+      "note": "旧数据",
+      "status": "未开始"
+    },
+    {
+      "id": "T-M2",
+      "level1": "迁移一级",
+      "level2": "迁移二级",
+      "task": "迁移任务 2",
+      "owner": "王言",
+      "demo": "",
+      "dates": {
+        "design": "2020-01-02",
+        "dev": "",
+        "test": "",
+        "product": "",
+        "demo_prep": ""
+      },
+      "note": "旧数据",
+      "status": "进行中"
+    },
+    {
+      "id": "T-M3",
+      "level1": "迁移一级",
+      "level2": "迁移二级",
+      "task": "迁移任务 3",
+      "owner": "王言",
+      "demo": "",
+      "dates": {
+        "design": "2020-01-03",
+        "dev": "",
+        "test": "",
+        "product": "",
+        "demo_prep": ""
+      },
+      "note": "旧数据",
+      "status": "已完成"
+    },
+    {
+      "id": "T-M4",
+      "level1": "迁移一级",
+      "level2": "迁移二级",
+      "task": "迁移任务 4",
+      "owner": "王言",
+      "demo": "",
+      "dates": {
+        "design": "2020-01-04",
+        "dev": "",
+        "test": "",
+        "product": "",
+        "demo_prep": ""
+      },
+      "note": "旧数据",
+      "status": "已延期"
+    }
+  ]
+}

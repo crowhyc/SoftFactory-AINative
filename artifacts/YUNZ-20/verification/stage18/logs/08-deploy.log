@@ -1,0 +1,23 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  D01 运行容器存在且名称 == wbs-rongcheng  :: name=wbs-rongcheng
+PASS  D02 运行态绑定 0.0.0.0:4180（WBS_HOST=0.0.0.0 / WBS_PORT=4180）  :: WBS_HOST=0.0.0.0 WBS_PORT=4180 
+PASS  D03 host 网络 + 数据目录挂载 /opt/wbs-rongcheng/data  :: net=host mounts=/opt/wbs-rongcheng/data:/app/data 
+PASS  D04 127.0.0.1:4180/api/health ok  :: {"ok":true,"service":"wbs-rongcheng","revision":14}
+PASS  D05 0.0.0.0:4180/api/health ok  :: {"ok":true,"service":"wbs-rongcheng","revision":14}
+PASS  D06 公网 http://47.108.129.157:4180/api/health ok（失败记录实测，不据此判实现缺陷）  :: {"ok":true,"service":"wbs-rongcheng","revision":14}
+PASS  D07 镜像内无 node_modules / package-lock.json（零运行时依赖）  :: found=0 image=wbs-rongcheng:20261016115756
+PASS  D08a 运行目录 server.js 与源码快照 sha256 一致  :: runtime=507df43016af snapshot=507df43016af
+PASS  D08a 运行目录 public/app.js 与源码快照 sha256 一致  :: runtime=b48cd499da5f snapshot=b48cd499da5f
+PASS  D08a 运行目录 public/index.html 与源码快照 sha256 一致  :: runtime=3b762e0d00cb snapshot=3b762e0d00cb
+PASS  D08a 运行目录 public/styles.css 与源码快照 sha256 一致  :: runtime=2bab8f68c8c8 snapshot=2bab8f68c8c8
+PASS  D08a 运行目录 public/template.xlsx 与源码快照 sha256 一致  :: runtime=e01c269699ad snapshot=e01c269699ad
+PASS  D08b 镜像内 /app/server.js 与运行目录 sha256 一致  :: runtime=507df43016af in_image=507df43016af
+PASS  D08b 镜像内 /app/public/app.js 与运行目录 sha256 一致  :: runtime=b48cd499da5f in_image=b48cd499da5f
+PASS  D08b 镜像内 /app/public/index.html 与运行目录 sha256 一致  :: runtime=3b762e0d00cb in_image=3b762e0d00cb
+PASS  D08b 镜像内 /app/public/styles.css 与运行目录 sha256 一致  :: runtime=2bab8f68c8c8 in_image=2bab8f68c8c8
+PASS  D08b 镜像内 /app/public/template.xlsx 与运行目录 sha256 一致  :: runtime=e01c269699ad in_image=e01c269699ad
+PASS  D09 服务端 GET /index.html 返回体与运行目录 sha256 逐字节一致  :: runtime=3b762e0d00cb served=3b762e0d00cb
+PASS  D09 服务端 GET /app.js 返回体与运行目录 sha256 逐字节一致  :: runtime=b48cd499da5f served=b48cd499da5f
+PASS  D09 服务端 GET /styles.css 返回体与运行目录 sha256 逐字节一致  :: runtime=2bab8f68c8c8 served=2bab8f68c8c8
+PASS  D09 服务端 GET /template.xlsx 返回体与运行目录 sha256 逐字节一致  :: runtime=e01c269699ad served=e01c269699ad
+[deploy-consistency] PASS=21 FAIL=0

@@ -1,0 +1,11 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PASS  A-server.js 运行目录 sha256 与作者自报一致  :: got=507df43016affbbb claim=507df43016affbbb
+PASS  A-public/index.html 运行目录 sha256 与作者自报一致  :: got=3b762e0d00cbea85 claim=3b762e0d00cbea85
+PASS  A-public/app.js 运行目录 sha256 与作者自报一致  :: got=b48cd499da5f0e61 claim=b48cd499da5f0e61
+PASS  A-public/styles.css 运行目录 sha256 与作者自报一致  :: got=2bab8f68c8c84b89 claim=2bab8f68c8c84b89
+PASS  A-public 运行目录 public/ 与源码快照逐字一致（diff -rq）  :: diff -rq /opt/wbs-rongcheng/public /opt/SoftFactory-AINative/artifacts/YUNZ-20/wbs-rongcheng/public
+PASS  A-server 运行目录 server.js 与源码快照一致  :: cmp server.js
+PASS  A-commit 提交 ab040d8 只改 artifacts/YUNZ-20/（范围外 0 文件）  :: out_of_scope=0
+PASS  A-push 提交已推送 origin/main  :: origin/main=ab040d8759d4
+PASS  A-sums SHA256SUMS 已刷新（条目数 >= 700）  :: entries=783
+[author-claims] PASS=9 FAIL=0

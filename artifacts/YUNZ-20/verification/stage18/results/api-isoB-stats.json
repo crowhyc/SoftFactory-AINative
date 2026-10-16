@@ -1,0 +1,162 @@
+{
+  "ok": true,
+  "total": 0,
+  "revision": 3,
+  "phases": [
+    {
+      "key": "design",
+      "name": "设计",
+      "statuses": [
+        {
+          "value": "未开始",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "已开始",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "已完成",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "延期",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "阻塞",
+          "count": 0,
+          "percentage": 0
+        }
+      ]
+    },
+    {
+      "key": "dev",
+      "name": "开发",
+      "statuses": [
+        {
+          "value": "未开始",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "已开始",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "已完成",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "延期",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "阻塞",
+          "count": 0,
+          "percentage": 0
+        }
+      ]
+    },
+    {
+      "key": "test",
+      "name": "测试",
+      "statuses": [
+        {
+          "value": "未开始",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "已开始",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "已完成",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "延期",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "阻塞",
+          "count": 0,
+          "percentage": 0
+        }
+      ]
+    },
+    {
+      "key": "product",
+      "name": "产品",
+      "statuses": [
+        {
+          "value": "未开始",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "已开始",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "已完成",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "延期",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "阻塞",
+          "count": 0,
+          "percentage": 0
+        }
+      ]
+    },
+    {
+      "key": "demo_prep",
+      "name": "演示准备",
+      "statuses": [
+        {
+          "value": "未开始",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "已开始",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "已完成",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "延期",
+          "count": 0,
+          "percentage": 0
+        },
+        {
+          "value": "阻塞",
+          "count": 0,
+          "percentage": 0
+        }
+      ]
+    }
+  ]
+}

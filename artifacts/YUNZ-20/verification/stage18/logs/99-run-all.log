@@ -1,0 +1,37 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+=== 00 构造隔离数据 + 契约口径独立复算 ===
+    测试: 未开始=3/100.0% 已开始=0/0.0% 已完成=0/0.0% 延期=0/0.0% 阻塞=0/0.0% (sum=100.0)
+    产品: 未开始=3/100.0% 已开始=0/0.0% 已完成=0/0.0% 延期=0/0.0% 阻塞=0/0.0% (sum=100.0)
+    演示准备: 未开始=3/100.0% 已开始=0/0.0% 已完成=0/0.0% 延期=0/0.0% 阻塞=0/0.0% (sum=100.0)
+=== 01 隔离实例真实浏览器（结构/一致性/边界/五色/刷新/权限/375px） ===
+
+[iso-browser] PASS=71 FAIL=0
+=== 02 隔离实例真实浏览器导出 WBS 下载 ===
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+[export-wbs] isoA -> /qv/downloads/isoA-蓉城战役WBS-20261016.xlsx  pageerrors=0
+=== 03 WBS 导出 xlsx 独立读回（3A 不进掺） ===
+
+[readback] PASS=13 FAIL=0
+=== 04 现场真实浏览器只读 + 375px + 只读纪律 ===
+[live-browser] PASS=15 FAIL=0
+[live-invariance] audit_sha_same=true wbs_sha_same=true rev=14->14
+PASS  LIVEB-16 现场只读浏览前后 audit.log 指纹与 wbs.json 指纹均不变（revision 14 -> 14）
+=== 05 服务端口径与只读性（现场 + 隔离写路径） ===
+
+[server-api] PASS=19 FAIL=0
+=== 06 迁移幂等与旧 status 保留（CH-11/CH-12） ===
+
+[migrate] PASS=7 FAIL=0
+=== 07 CH-1…CH-13 不回归抽样 + 验收抽样 ===
+
+[nonreg-browser] PASS=17 FAIL=0
+=== 08 部署与一致性（0.0.0.0 绑定 / 三端 health / 镜像 / sha256） ===
+PASS  D09 服务端 GET /template.xlsx 返回体与运行目录 sha256 逐字节一致  :: runtime=e01c269699ad served=e01c269699ad
+[deploy-consistency] PASS=21 FAIL=0
+=== 09 作者自报核验（非结论证据，仅对照） ===
+PASS  A-sums SHA256SUMS 已刷新（条目数 >= 700）  :: entries=783
+[author-claims] PASS=9 FAIL=0
+
+  PASS 合计: 173
+  FAIL 合计: 0
+0

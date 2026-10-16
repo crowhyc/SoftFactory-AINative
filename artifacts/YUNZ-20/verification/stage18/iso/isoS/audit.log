@@ -1,0 +1,5 @@
+{"ts":"2026-10-16T04:33:19.156Z","identity":"项目负责人","revision":8,"changed":[{"id":"T-Q01","fields":["phases.design.status"]}],"added":0,"removed":0,"old":{"T-Q01":{"phases.design.status":"未开始"}},"new":{"T-Q01":{"phases.design.status":"延期"}},"snapshot":{"T-Q01":{"level1":"一级1","level2":"二级1","task":"隔离任务 1","owner":"王言"}}}
+{"ts":"2026-10-16T04:33:21.005Z","identity":"项目负责人","revision":9,"changed":[],"added":1,"removed":0,"old":{},"new":{},"snapshot":{}}
+{"ts":"2026-10-16T04:33:22.336Z","identity":"项目负责人","revision":10,"changed":[],"added":0,"removed":1,"old":{},"new":{},"snapshot":{}}
+{"ts":"2026-10-16T04:33:25.067Z","identity":"项目负责人","revision":11,"changed":[],"added":0,"removed":0,"old":{},"new":{},"snapshot":{}}
+{"type":"identity_added","identity":"项目负责人","name":"复验员甲","at":"2026-10-16T04:33:25.067Z"}
